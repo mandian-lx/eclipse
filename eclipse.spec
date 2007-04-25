@@ -24,7 +24,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 3.4
+Release:        %mkrel 3.5
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -1145,6 +1145,7 @@ JDTCORESUFFIX=$(ls $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins | grep jdt.core_ |
 install -d -m 755 $RPM_BUILD_ROOT%{_javadir}
 ln -s %{_datadir}/%{name}/plugins/org.eclipse.jdt.core_$JDTCORESUFFIX $RPM_BUILD_ROOT%{_javadir}/eclipse-ecj.jar
 ln -s %{_javadir}/eclipse-ecj.jar $RPM_BUILD_ROOT%{_javadir}/jdtcore.jar
+ln -s %{_javadir}/eclipse-ecj.jar $RPM_BUILD_ROOT%{_javadir}/ecj.jar
 
 # FIXME: get rid of this by putting logic in package build to know what version
 #        of pde.build it's using
@@ -1555,6 +1556,7 @@ fi
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/plugins
 %{_datadir}/%{name}/plugins/org.eclipse.jdt.core_*
+%{_javadir}/ecj.jar
 %{_javadir}/eclipse-ecj.jar
 %{_javadir}/jdtcore.jar
 %{_bindir}/ecj
