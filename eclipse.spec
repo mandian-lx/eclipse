@@ -24,7 +24,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 3.5
+Release:        %mkrel 8.1
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -66,9 +66,6 @@ Patch11:        %{name}-usebuiltlauncher.patch
 #    (which contains the JNI .sos) is in %{_libdir}
 # We should investigate whether or not this can go upstream
 Patch12:        %{name}-launcher-set-install-dir-and-shared-config.patch
-# Don't attempt to link to Sun's javadocs
-# FIXME:  could use sed instead
-Patch13:        %{name}-javadoclinks.patch
 # Always generate debug info when building RPMs (Andrew Haley)
 # This needs to be investigated for getEnv changes
 Patch14:        %{name}-ecj-rpmdebuginfo.patch
@@ -104,7 +101,7 @@ Patch18:        %{name}-swt-firefox.patch
 Patch19:        %{name}-swt-firefox.2.patch
 # https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=209393
 # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=29853
-Patch20:        %{name}-workaround-plugin.xml-parsing-bug-gcc9853.patch
+Patch20:        %{name}-workaround-plugin.xml-parsing-bug-gcc-bz29853.patch
 # This is already upstream in 3.3 builds.  It *may* get into 3.2.2.
 Patch21:        customBuildCallbacks.xml-add-pre.gather.bin.parts.patch
 # Add ppc64 to the list of archs with gre64.conf
@@ -416,9 +413,10 @@ pushd plugins/org.eclipse.tomcat
 %patch6 -p0
 %patch7 -p0
 popd
-sed --in-place "s/4.1.130/5.5.17/g"                      \
+sed --in-place "s/4.1.130/%{tomcatversion}/g"           \
                 features/org.eclipse.platform/build.xml \
                 plugins/org.eclipse.tomcat/build.xml    \
+                plugins/org.eclipse.tomcat/META-INF/MANIFEST.MF   \
                 assemble.*.xml
 pushd plugins/org.eclipse.help.webapp
 %patch8 -p0
@@ -457,13 +455,15 @@ sed --in-place "s:/usr/lib/eclipse:%{_libdir}/%{name}:" library/eclipse.c
 sed --in-place "s:/usr/share/eclipse:%{_datadir}/%{name}:" library/eclipse.c
 popd
 
-# Link against our system-installed javadocs
-%patch13 -p0
-sed --in-place "s:/usr/share/:%{_datadir}/:g"           \
-        plugins/org.eclipse.jdt.doc.isv/jdtOptions.txt  \
-        plugins/org.eclipse.pde.doc.user/pdeOptions.txt \
-        plugins/org.eclipse.pde.doc.user/pdeOptions     \
-        plugins/org.eclipse.platform.doc.isv/platformOptions.txt
+# use our system-installed javadocs
+sed --in-place "s|http://java.sun.com/j2se/1.4.2/docs/api|%{_javadocdir}/java|" \
+   plugins/org.eclipse.platform.doc.isv/platformOptions.txt
+sed --in-place "s|http://java.sun.com/j2se/1.5/docs/api|%{_javadocdir}/java|" \
+   plugins/org.eclipse.jdt.doc.isv/jdtaptOptions.txt                     \
+   plugins/org.eclipse.jdt.doc.isv/jdtOptions.txt
+sed --in-place "s|http://java.sun.com/j2se/1.4/docs/api|%{_javadocdir}/java|" \
+   plugins/org.eclipse.pde.doc.user/pdeOptions.txt                       \
+   plugins/org.eclipse.pde.doc.user/pdeOptions
 %patch14 -p0
 
 pushd plugins/org.eclipse.pde.build
@@ -737,13 +737,11 @@ sed --in-place "s/ppc64/x86_64/g" features/org.eclipse.platform.source/build.xml
   find -type f ! -name \*.java -a ! -name feature.xml -exec sed --in-place "s/@eye-eh-64_32@/ia64_32/g" "{}" \;
 %endif 
 
-# gjdoc can't handle Mac-encoded files
-# http://gcc.gnu.org/bugzilla/show_bug.cgi?id=29167
-pushd plugins
-for f in `find .. -name \*.java`; do
-  file $f | grep "CR line" > /dev/null && %{__perl} -pi -e 's/\r$//g' $f
-done
-popd
+%if 0
+# link to the jsch jar
+rm baseLocation/plugins/com.jcraft.jsch_0.1.28.jar
+ln -s %{_javadir}/jsch.jar baseLocation/plugins/com.jcraft.jsch_0.1.28.jar
+%endif
 
 # set the icu4j plugins for building
 pushd baseLocation/plugins
@@ -779,13 +777,6 @@ rm plugins/org.eclipse.swt.win32.win32.x86/swt.jar \
    features/org.eclipse.platform.launchers/bin/startup.jar \
    plugins/org.eclipse.team.cvs.ssh2/com.jcraft.jsch_*.jar
 
-%if 0
-pushd baseLocation/plugins
-%{__rm} com.jcraft.jsch_0.1.28.jar
-%{__ln_s} %{_javadir}/jsch.jar com.jcraft.jsch_0.1.28.jar
-popd
-%endif
-
 # make sure there are no jars left
 JARS=""
 for j in $(find -name \*.jar ! -name 'com.jcraft.jsch_0.1.28.jar'); do
@@ -804,6 +795,7 @@ tar jxf %{SOURCE20}
 env
 ORIGCLASSPATH=$CLASSPATH
 
+%if 1
 # Build jsch
 pushd baseLocation/plugins
 # extract the Manifest file
@@ -818,6 +810,7 @@ jar -Mcf ../com.jcraft.jsch_0.1.28.jar *
 popd
 # FIXME don't delete this, do what icu4j does
 rm -r baseLocation/plugins/com.jcraft.jsch_0.1.28.jar-build
+%endif
 
 # Finish the icu4j build
 pushd baseLocation/plugins
