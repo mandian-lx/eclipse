@@ -5,7 +5,7 @@ Epoch:  1
 %define tomcatversion   5.5.17
 %define tomcatsharedir  %{_datadir}/tomcat5
 %define tomcatlibdir    %{_var}/lib/tomcat5
-%define firefox_version %(rpm -q mozilla-firefox --queryformat %{VERSION} 2>/dev/null || echo 0)
+%define firefox_version %(rpm -q mozilla-firefox --queryformat %{VERSION} 2>/dev/null)
 %define firefox_dir     %(firefox-config --defines 2>/dev/null | sed -n -e 's,.*MOZ_DEFAULT_MOZILLA_FIVE_HOME=\\"\\([^\\"]*\\)\\"\\(.*\\),\\1,p')
 %define section         free
 %define eclipse_major   3
