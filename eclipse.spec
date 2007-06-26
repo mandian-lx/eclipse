@@ -14,6 +14,8 @@ Epoch:  1
 %define eclipse_micro   2
 %define libname         libswt3
 
+%define gccsuffix	4.3
+
 # All archs line up between Eclipse and Linux kernel names except i386 -> x86
 %ifarch %{ix86}
 %define eclipse_arch    x86
@@ -24,7 +26,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 8.2
+Release:        %mkrel 8.3
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -139,7 +141,7 @@ BuildRequires:  unzip
 BuildRequires:  java-javadoc
 BuildRequires:  desktop-file-utils
 %if %{gcj_support}
-BuildRequires:  gcc-java >= 0:4.1.2
+BuildRequires:  gcc%gccsuffix-java >= 0:4.1.2
 BuildRequires:  java-gcj-compat-devel >= 0:1.0.64
 BuildRequires:  gjdoc >= 0:0.7.7
 %else
@@ -176,7 +178,7 @@ JavaBeans(tm).
 %package        ecj
 Summary:        Eclipse Compiler for Java
 Group:          Development/Java
-Obsoletes:      ecj
+Obsoletes:      ecj < 3.2.0
 Provides:       ecj = %{epoch}:%{version}-%{release}
 %if %{gcj_support}
 Requires(post):   java-gcj-compat >= 0:1.0.64
@@ -713,8 +715,10 @@ popd
 # (anssi) JNIGenerator fails to run with
 # [java] java.lang.NoClassDefFoundError: java.security.Security
 # thus leaving ia64 and x86_64 with 32bit-only C source code.
-# Setting fork="yes" seems to fix it.
-%{__sed} --in-place 's,<java ,<java fork="yes" ,' plugins/org.eclipse.*/build.xml
+# Setting fork="yes" seems to fix it. jvm is used to ensure correct
+# jvm in fork mode.
+%{__sed} --in-place 's,<java ,<java fork="true" jvm="%{java}" ,' plugins/org.eclipse.*/build.xml
+%{__sed} --in-place 's,<java ,<java jvm="%{java}" ,' build.xml
 
 # there is only partial support for ppc64 in 3.2 so we have to remove this 
 # partial support to get the replacemnt hack to work
@@ -851,10 +855,10 @@ popd
   unzip -qq -d ecj-bootstrap-tmp jdtcoresrc/src/ecj.zip
   rm -f ecj-bootstrap-tmp/org/eclipse/jdt/core/JDTCompilerAdapter.java
 
-  # 1a. Build ecj with gcj -C
+  # 1a. Build ecj with gcj%gccsuffix -C
   pushd ecj-bootstrap-tmp
   for f in `find -name '*.java' | cut -c 3- | LC_ALL=C sort`; do
-      gcj -I. -Wno-deprecated -C $f
+      gcj%gccsuffix -I. -Wno-deprecated -C $f
   done
   find -name '*.class' -or -name '*.properties' -or -name '*.rsc' |\
       xargs %{jar} cf ../ecj-bootstrap.jar
@@ -864,11 +868,11 @@ popd
   rm -r ecj-bootstrap-tmp
   
   # 1b. Natively-compile it
-  gcj -fPIC -fjni -findirect-dispatch -shared -Wl,-Bsymbolic \
+  gcj%gccsuffix -fPIC -fjni -findirect-dispatch -shared -Wl,-Bsymbolic \
     -o ecj-bootstrap.jar.so ecj-bootstrap.jar
 
-  gcj-dbtool -n ecj-bootstrap.db 30000
-  gcj-dbtool -a ecj-bootstrap.db ecj-bootstrap.jar{,.so}
+  gcj-dbtool%gccsuffix -n ecj-bootstrap.db 30000
+  gcj-dbtool%gccsuffix -a ecj-bootstrap.db ecj-bootstrap.jar{,.so}
   
   # 2a. Build ecj
   export CLASSPATH=ecj-bootstrap.jar:$ORIGCLASSPATH
@@ -878,13 +882,13 @@ popd
 
 %if %{gcj_support}
   # 2b. Natively-compile ecj
-  gcj -fPIC -fjni -findirect-dispatch -shared -Wl,-Bsymbolic \
+  gcj%gccsuffix -fPIC -fjni -findirect-dispatch -shared -Wl,-Bsymbolic \
     -o jdtcoresrc/ecj.jar.so jdtcoresrc/ecj.jar
    
-  gcj-dbtool -n jdtcoresrc/ecj.db 30000
-  gcj-dbtool -a jdtcoresrc/ecj.db jdtcoresrc/ecj.jar{,.so}
+  gcj-dbtool%gccsuffix -n jdtcoresrc/ecj.db 30000
+  gcj-dbtool%gccsuffix -a jdtcoresrc/ecj.db jdtcoresrc/ecj.jar{,.so}
 
-  # Remove our gcj-built ecj
+  # Remove our gcj%gccsuffix-built ecj
   rm ecj-bootstrap.db ecj-bootstrap.jar{,.so}
 
   # To enSURE we're not using any pre-compiled ecj on the build system, set this
@@ -897,10 +901,10 @@ export CLASSPATH=`pwd`/jdtcoresrc/ecj.jar:$ORIGCLASSPATH
 
 %if %{gcj_support}
   # Natively-compile it
-  gcj -fPIC -fjni -findirect-dispatch -shared -Wl,-Bsymbolic \
+  gcj%gccsuffix -fPIC -fjni -findirect-dispatch -shared -Wl,-Bsymbolic \
     -o ecj.jar.so ecj.jar
-  gcj-dbtool -n ecj.db 30000
-  gcj-dbtool -a ecj.db ecj.jar{,.so}
+  gcj-dbtool%gccsuffix -n ecj.db 30000
+  gcj-dbtool%gccsuffix -a ecj.db ecj.jar{,.so}
   export ANT_OPTS="-Dgnu.gcj.precompiled.db.path=`pwd`/ecj.db"
   
   # Remove old native bits
@@ -913,7 +917,7 @@ export JAVA_HOME=%{java_home}
 %{ant} \
   -Dnobootstrap=true \
   -DinstallOs=linux -DinstallWs=gtk -DinstallArch=%{eclipse_arch} \
-  -Dlibsconfig=true
+  -Dlibsconfig=true -DjavacSource=1.5 -DjavacTarget=1.5
 # -Djava.home=%{_jvmdir}/java-1.5.0-gcj-1.5.0.0/jre
 
 # Build the FileInitializer application
