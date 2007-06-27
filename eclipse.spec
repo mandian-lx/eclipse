@@ -799,6 +799,9 @@ tar jxf %{SOURCE20}
 env
 ORIGCLASSPATH=$CLASSPATH
 
+# (anssi) build with the same version of gcc as gcj
+export CC=gcc%{gccsuffix}
+
 %if 1
 # Build jsch
 pushd baseLocation/plugins
