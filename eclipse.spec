@@ -140,6 +140,7 @@ BuildRequires:  cairo-devel >= 0:1.0
 BuildRequires:  unzip
 BuildRequires:  java-javadoc
 BuildRequires:  desktop-file-utils
+BuildRequires:  gcc%gccsuffix-c++
 %if %{gcj_support}
 BuildRequires:  gcc%gccsuffix-java >= 0:4.1.2
 BuildRequires:  java-gcj-compat-devel >= 0:1.0.64
