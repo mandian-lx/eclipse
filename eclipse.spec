@@ -26,7 +26,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 8.4
+Release:        %mkrel 8.3
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -801,6 +801,7 @@ ORIGCLASSPATH=$CLASSPATH
 
 # (anssi) build with the same version of gcc as gcj
 export CC=gcc%{gccsuffix}
+export CXX=g++%{gccsuffix}
 
 %if 1
 # Build jsch
