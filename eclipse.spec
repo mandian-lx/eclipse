@@ -804,6 +804,12 @@ ORIGCLASSPATH=$CLASSPATH
 export CC=gcc%{gccsuffix}
 export CXX=g++%{gccsuffix}
 
+# (anssi) and of course the gcc is hardcoded at some points of the build...
+mkdir -p gcc_to_use
+ln -sf $(which $CC) gcc_to_use/gcc
+ln -sf $(which $CXX) gcc_to_use/g++
+export PATH=$(pwd)/gcc_to_use:$PATH
+
 %if 1
 # Build jsch
 pushd baseLocation/plugins
