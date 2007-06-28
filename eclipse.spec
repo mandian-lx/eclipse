@@ -26,7 +26,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 8.3
+Release:        %mkrel 8.4
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -1182,7 +1182,7 @@ sed --in-place "s:startup.jar:%{_datadir}/%{name}/startup.jar:" \
 
 # Install the ecj wrapper script
 install -p -D -m0755 %{SOURCE18} $RPM_BUILD_ROOT%{_bindir}/ecj
-sed --in-place "s:@JAVADIR@:%{_javadir}:" $RPM_BUILD_ROOT%{_bindir}/ecj 
+sed --in-place -e "s:@JAVADIR@:%{_javadir}:;" -e "s:@gccsuffix@:%{gccsuffix}:;" $RPM_BUILD_ROOT%{_bindir}/ecj 
 
 # A sanity check.
 desktop-file-validate %{SOURCE2}
