@@ -1349,8 +1349,9 @@ build-jar-repository -s -p plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib s
 
 build-jar-repository -s -p plugins/org.junit_* junit
 
+junit4dirname=$(dirname plugins/org.junit4_*/junit-4.1.jar)
 rm plugins/org.junit4_*/junit-4.1.jar
-ln -s %{_javadir}/junit4.jar plugins/org.junit4_*/junit-4.1.jar
+ln -s %{_javadir}/junit4.jar $junit4dirname/junit-4.1.jar
 
 %if 0
 # Ensure that the zip files are the same across all builds.
