@@ -162,7 +162,7 @@ BuildRequires: lucene
 BuildRequires: lucene-demo
 BuildRequires: lucene-src
 BuildRequires: regexp 
-BuildRequires: junit >= 0:3.8.1-3jpp
+BuildRequires: junit junit4
 %if %{gcj_support}
 Requires(post):   java-gcj-compat >= 0:1.0.64
 Requires(postun): java-gcj-compat >= 0:1.0.64
@@ -262,6 +262,7 @@ Requires: tomcat5-jasper >= %{tomcatepoch}:%{tomcatversion}
 Requires: tomcat5-servlet-2.4-api >= %{tomcatepoch}:%{tomcatversion}
 Requires: lucene lucene-demo lucene-src 
 Requires: regexp
+Requires: junit junit4
 Requires(post): desktop-file-utils
 Requires(postun): desktop-file-utils
 
@@ -291,7 +292,7 @@ Requires(post):    %{name}-platform = %{epoch}:%{version}-%{release}
 Requires(postun):  %{name}-platform = %{epoch}:%{version}-%{release}
 Requires(post):    %{name}-ecj = %{epoch}:%{version}-%{release}
 Requires(postun):  %{name}-ecj = %{epoch}:%{version}-%{release}
-Requires:       junit >= 3.8.1-3jpp
+Requires:       junit junit4
 Requires:       java-javadoc
 %if %{gcj_support}
 Requires(post):   java-gcj-compat >= 0:1.0.64
@@ -675,7 +676,8 @@ build-jar-repository -s -p plugins/org.eclipse.tomcat/lib regexp
 build-jar-repository -s -p plugins/org.eclipse.tomcat/lib servletapi5
 ## END TOMCAT ##
 
-build-jar-repository -s -p plugins/org.junit junit
+rm plugins/org.junit4/junit-4.1.jar
+ln -s %{_javadir}/junit4.jar plugins/org.junit4/junit-4.1.jar
 
 pushd plugins/org.eclipse.swt/Eclipse\ SWT\ PI/gtk/library
 # /usr/lib -> /usr/lib64
@@ -1343,7 +1345,8 @@ build-jar-repository -s -p plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib r
 build-jar-repository -s -p plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib servletapi5
 ## END TOMCAT ##
 
-build-jar-repository -s -p plugins/org.junit_* junit
+rm plugins/org.junit4_*/junit-4.1.jar
+ln -s %{_javadir}/junit4.jar plugins/org.junit4_*/junit-4.1.jar
 
 %if 0
 # Ensure that the zip files are the same across all builds.
