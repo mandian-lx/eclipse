@@ -26,7 +26,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 8.3
+Release:        %mkrel 15.1
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -76,8 +76,6 @@ Patch14:        %{name}-ecj-rpmdebuginfo.patch
 # https://www.redhat.com/archives/fedora-devel-java-list/2006-April/msg00048.html
 # This needs to be submitted upstream
 Patch15:        %{name}-pde.build-add-package-build.patch
-# We need to disable junit4 and apt until GCJ can handle Java5 code
-Patch16:        %{name}-disable-junit4-apt.patch
 # This tomcat stuff will change when they move to the equinox jetty provider
 # https://bugs.eclipse.org/bugs/show_bug.cgi?id=98371
 Patch6:         %{name}-tomcat55.patch
@@ -115,6 +113,7 @@ Patch22:        %{name}-ppc64gre64.patch
 # We can remove this patch for Fedora 8.
 Patch23:        %{name}-launcher-addplatformtotildeeclipse.patch
 Patch24:        %{name}-add-ppc64-sparc64-s390-s390x.patch
+Patch25:        %{name}-osgi-Java-1.7-profile.patch
 Patch100:       %{name}-libswt-model.patch
 Patch101:       %{name}-ssh.patch
 Patch201:       %{name}-nativepresentation.patch
@@ -474,10 +473,6 @@ pushd plugins/org.eclipse.pde.build
 sed --in-place "s:/usr/share/eclipse:%{_datadir}/%{name}:" templates/package-build/build.properties
 popd
 
-# Remove apt and junit4 until we have 1.5
-%patch16 -p0
-rm plugins/org.junit4/junit-4.1.jar
-
 # Build against our firefox packages
 pushd plugins/org.eclipse.swt
 mv "Eclipse SWT Mozilla" Eclipse_SWT_Mozilla
@@ -504,6 +499,10 @@ pushd plugins/org.eclipse.platform.doc.isv
 popd
 pushd plugins/org.eclipse.platform.doc.user
 %patch21 -p0
+popd
+
+pushd plugins/org.eclipse.osgi
+%patch25 -p0
 popd
 
 # Splashscreen
@@ -684,7 +683,7 @@ sed --in-place "s:/usr/lib/:%{_libdir}/:g" build.sh
 sed --in-place "s:-L\$(AWT_LIB_PATH):-L%{java_home}/jre/lib/%{_arch}:" make_linux.mak
 popd
 
-# FIXME: figure out what's going on with build.index.  This is a gjdoc problem.  
+# FIXME: figure out what's going on with build.index.
 find plugins -type f -name \*.xml -exec sed --in-place "s/\(<antcall target=\"build.index\".*\/>\)/<\!-- \1 -->/" "{}" \;
 
 # the swt version is set to HEAD on ia64 but shouldn't be
@@ -1824,26 +1823,26 @@ fi
 %{_datadir}/%{name}/plugins/org.junit_*
 %{_datadir}/%{name}/plugins/org.eclipse.jdt.junit_*
 %{_datadir}/%{name}/plugins/org.eclipse.jdt.doc.user_*
-#%{_datadir}/%{name}/plugins/org.eclipse.jdt.apt.core_*
+%{_datadir}/%{name}/plugins/org.eclipse.jdt.apt.core_*
 %{_datadir}/%{name}/plugins/org.eclipse.jdt.ui_*
 %{_datadir}/%{name}/plugins/org.eclipse.jdt.debug_*
-#%{_datadir}/%{name}/plugins/org.eclipse.jdt.junit4.runtime_*
-#%{_datadir}/%{name}/plugins/org.junit4_*
+%{_datadir}/%{name}/plugins/org.eclipse.jdt.junit4.runtime_*
+%{_datadir}/%{name}/plugins/org.junit4_*
 %{_datadir}/%{name}/plugins/org.eclipse.jdt_*
 %{_datadir}/%{name}/plugins/org.eclipse.jdt.launching_*
 %{_datadir}/%{name}/plugins/org.eclipse.jdt.core.manipulation_*
-#%{_datadir}/%{name}/plugins/org.eclipse.jdt.apt.ui_*
+%{_datadir}/%{name}/plugins/org.eclipse.jdt.apt.ui_*
 %{_datadir}/%{name}/plugins/org.eclipse.jdt.junit.runtime_*
 %{_datadir}/%{name}/plugins/org.eclipse.jdt.debug.ui_*
 %if %{gcj_support}
+%{_libdir}/gcj/%{name}/junit-4.1.jar*
 %{_libdir}/gcj/%{name}/org.eclipse.ant.ui_*
-#%{_libdir}/gcj/%{name}/org.eclipse.jdt.apt.core_*
+%{_libdir}/gcj/%{name}/org.eclipse.jdt.apt.core_*
 %{_libdir}/gcj/%{name}/org.eclipse.jdt.ui_*
-#%{_libdir}/gcj/%{name}/org.eclipse.jdt.junit4.runtime_*
-#%{_libdir}/gcj/%{name}/org.junit4_*
+%{_libdir}/gcj/%{name}/org.eclipse.jdt.junit4.runtime_*
 %{_libdir}/gcj/%{name}/org.eclipse.jdt.launching_*
 %{_libdir}/gcj/%{name}/org.eclipse.jdt.core.manipulation_*
-#%{_libdir}/gcj/%{name}/org.eclipse.jdt.apt.ui_*
+%{_libdir}/gcj/%{name}/org.eclipse.jdt.apt.ui_*
 %{_libdir}/gcj/%{name}/org.eclipse.jdt.debug.ui_*
 %{_libdir}/gcj/%{name}/junitruntime.jar.*
 %{_libdir}/gcj/%{name}/junitsupport.jar.*
