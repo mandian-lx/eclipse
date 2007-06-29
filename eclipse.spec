@@ -676,6 +676,8 @@ build-jar-repository -s -p plugins/org.eclipse.tomcat/lib regexp
 build-jar-repository -s -p plugins/org.eclipse.tomcat/lib servletapi5
 ## END TOMCAT ##
 
+build-jar-repository -s -p plugins/org.junit junit
+
 rm plugins/org.junit4/junit-4.1.jar
 ln -s %{_javadir}/junit4.jar plugins/org.junit4/junit-4.1.jar
 
@@ -1344,6 +1346,8 @@ build-jar-repository -s -p plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib j
 build-jar-repository -s -p plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib regexp
 build-jar-repository -s -p plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib servletapi5
 ## END TOMCAT ##
+
+build-jar-repository -s -p plugins/org.junit_* junit
 
 rm plugins/org.junit4_*/junit-4.1.jar
 ln -s %{_javadir}/junit4.jar plugins/org.junit4_*/junit-4.1.jar
