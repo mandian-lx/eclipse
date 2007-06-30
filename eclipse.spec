@@ -2,9 +2,8 @@ Epoch:  1
 
 %define gcj_support     1
 %define tomcatepoch     0
-%define tomcatversion   5.5.17
+%define tomcatversion   5.5.23
 %define tomcatsharedir  %{_datadir}/tomcat5
-%define tomcatlibdir    %{_var}/lib/tomcat5
 %define firefox_version %(rpm -q mozilla-firefox --queryformat %{VERSION} 2>/dev/null)
 %define firefox_dir     %(firefox-config --defines 2>/dev/null | sed -n -e 's,.*MOZ_DEFAULT_MOZILLA_FIVE_HOME=\\"\\([^\\"]*\\)\\"\\(.*\\),\\1,p')
 %define section         free
@@ -646,20 +645,20 @@ rm plugins/org.eclipse.tomcat/tomcat-coyote.jar
 rm plugins/org.eclipse.tomcat/tomcat-util.jar
 mkdir -p plugins/org.eclipse.tomcat/lib
 ln -s %{tomcatsharedir}/bin/bootstrap.jar plugins/org.eclipse.tomcat/lib/bootstrap.jar
-ln -s %{tomcatlibdir}/server/lib/catalina.jar plugins/org.eclipse.tomcat/lib/catalina.jar
-ln -s %{tomcatlibdir}/server/lib/catalina-optional.jar plugins/org.eclipse.tomcat/lib/catalina-optional.jar
+ln -s %{_javadir}/tomcat5/catalina.jar plugins/org.eclipse.tomcat/lib/catalina.jar
+ln -s %{_javadir}/tomcat5/catalina-optional.jar plugins/org.eclipse.tomcat/lib/catalina-optional.jar
 ln -s %{_javadir}/jasper5-compiler.jar plugins/org.eclipse.tomcat/lib/jasper-compiler.jar
 ln -s %{_javadir}/jasper5-runtime.jar plugins/org.eclipse.tomcat/lib/jasper-runtime.jar
 ln -s %{_javadir}/mx4j/mx4j.jar plugins/org.eclipse.tomcat/lib/mx4j.jar
 ln -s %{_javadir}/mx4j/mx4j-impl.jar plugins/org.eclipse.tomcat/lib/mx4j-impl.jar
 ln -s %{_javadir}/mx4j/mx4j-jmx.jar plugins/org.eclipse.tomcat/lib/mx4j-jmx.jar
-ln -s %{tomcatlibdir}/common/lib/naming-factory.jar plugins/org.eclipse.tomcat/lib/naming-factory.jar
-ln -s %{tomcatlibdir}/common/lib/naming-resources.jar plugins/org.eclipse.tomcat/lib/naming-resources.jar
-ln -s %{tomcatlibdir}/server/lib/servlets-default.jar plugins/org.eclipse.tomcat/lib/servlets-default.jar
-ln -s %{tomcatlibdir}/server/lib/servlets-invoker.jar plugins/org.eclipse.tomcat/lib/servlets-invoker.jar
-ln -s %{tomcatlibdir}/server/lib/tomcat-coyote.jar plugins/org.eclipse.tomcat/lib/tomcat-coyote.jar
-ln -s %{tomcatlibdir}/server/lib/tomcat-http.jar plugins/org.eclipse.tomcat/lib/tomcat-http.jar
-ln -s %{tomcatlibdir}/server/lib/tomcat-util.jar plugins/org.eclipse.tomcat/lib/tomcat-util.jar
+ln -s %{_javadir}/tomcat5/naming-factory.jar plugins/org.eclipse.tomcat/lib/naming-factory.jar
+ln -s %{_javadir}/tomcat5/naming-resources.jar plugins/org.eclipse.tomcat/lib/naming-resources.jar
+ln -s %{_javadir}/tomcat5/servlets-default.jar plugins/org.eclipse.tomcat/lib/servlets-default.jar
+ln -s %{_javadir}/tomcat5/servlets-invoker.jar plugins/org.eclipse.tomcat/lib/servlets-invoker.jar
+ln -s %{_javadir}/tomcat5/tomcat-coyote.jar plugins/org.eclipse.tomcat/lib/tomcat-coyote.jar
+ln -s %{_javadir}/tomcat5/tomcat-http.jar plugins/org.eclipse.tomcat/lib/tomcat-http.jar
+ln -s %{_javadir}/tomcat5/tomcat-util.jar plugins/org.eclipse.tomcat/lib/tomcat-util.jar
 build-jar-repository -s -p plugins/org.eclipse.tomcat/lib commons-beanutils
 build-jar-repository -s -p plugins/org.eclipse.tomcat/lib commons-collections
 build-jar-repository -s -p plugins/org.eclipse.tomcat/lib commons-dbcp
@@ -1317,20 +1316,20 @@ ln -s %{_datadir}/lucene/lucene-demos.jar plugins/org.apache.lucene_1.4.103.v200
 TOMCATPLUGINVERSION=$(ls plugins | grep tomcat | sed 's/org.eclipse.tomcat_//')
 mkdir -p plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib
 ln -s %{tomcatsharedir}/bin/bootstrap.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/bootstrap.jar
-ln -s %{tomcatlibdir}/server/lib/catalina.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/catalina.jar
-ln -s %{tomcatlibdir}/server/lib/catalina-optional.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/catalina-optional.jar
+ln -s %{_javadir}/tomcat5/catalina.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/catalina.jar
+ln -s %{_javadir}/tomcat5/catalina-optional.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/catalina-optional.jar
 ln -s %{_javadir}/jasper5-compiler.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/jasper-compiler.jar
 ln -s %{_javadir}/jasper5-runtime.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/jasper-runtime.jar
 ln -s %{_javadir}/mx4j/mx4j.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/mx4j.jar
 ln -s %{_javadir}/mx4j/mx4j-impl.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/mx4j-impl.jar
 ln -s %{_javadir}/mx4j/mx4j-jmx.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/mx4j-jmx.jar
-ln -s %{tomcatlibdir}/common/lib/naming-factory.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/naming-factory.jar
-ln -s %{tomcatlibdir}/common/lib/naming-resources.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/naming-resources.jar
-ln -s %{tomcatlibdir}/server/lib/servlets-default.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/servlets-default.jar
-ln -s %{tomcatlibdir}/server/lib/servlets-invoker.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/servlets-invoker.jar
-ln -s %{tomcatlibdir}/server/lib/tomcat-coyote.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/tomcat-coyote.jar
-ln -s %{tomcatlibdir}/server/lib/tomcat-http.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/tomcat-http.jar
-ln -s %{tomcatlibdir}/server/lib/tomcat-util.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/tomcat-util.jar
+ln -s %{_javadir}/tomcat5/naming-factory.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/naming-factory.jar
+ln -s %{_javadir}/tomcat5/naming-resources.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/naming-resources.jar
+ln -s %{_javadir}/tomcat5/servlets-default.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/servlets-default.jar
+ln -s %{_javadir}/tomcat5/servlets-invoker.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/servlets-invoker.jar
+ln -s %{_javadir}/tomcat5/tomcat-coyote.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/tomcat-coyote.jar
+ln -s %{_javadir}/tomcat5/tomcat-http.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/tomcat-http.jar
+ln -s %{_javadir}/tomcat5/tomcat-util.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib/tomcat-util.jar
 build-jar-repository -s -p plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib commons-beanutils
 build-jar-repository -s -p plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib commons-collections
 build-jar-repository -s -p plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib commons-dbcp
