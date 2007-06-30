@@ -1842,7 +1842,6 @@ fi
 %{_datadir}/%{name}/plugins/org.eclipse.jdt.junit.runtime_*
 %{_datadir}/%{name}/plugins/org.eclipse.jdt.debug.ui_*
 %if %{gcj_support}
-%{_libdir}/gcj/%{name}/junit-4.1.jar*
 %{_libdir}/gcj/%{name}/org.eclipse.ant.ui_*
 %{_libdir}/gcj/%{name}/org.eclipse.jdt.apt.core_*
 %{_libdir}/gcj/%{name}/org.eclipse.jdt.ui_*
