@@ -13,8 +13,6 @@ Epoch:  1
 %define eclipse_micro   2
 %define libname         libswt3
 
-%define gccsuffix	4.3
-
 # All archs line up between Eclipse and Linux kernel names except i386 -> x86
 %ifarch %{ix86}
 %define eclipse_arch    x86
@@ -25,7 +23,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 15.1
+Release:        %mkrel 15.2
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -138,11 +136,8 @@ BuildRequires:  cairo-devel >= 0:1.0
 BuildRequires:  unzip
 BuildRequires:  java-javadoc
 BuildRequires:  desktop-file-utils
-BuildRequires:  gcc%gccsuffix-c++
 %if %{gcj_support}
-BuildRequires:  gcc%gccsuffix-java >= 0:4.1.2
 BuildRequires:  java-gcj-compat-devel >= 0:1.0.64
-BuildRequires:  gjdoc >= 0:0.7.7
 %else
 BuildRequires:  java-1.4.2-gcj-compat-devel >= 0:1.4.2
 %endif
@@ -802,16 +797,6 @@ tar jxf %{SOURCE20}
 env
 ORIGCLASSPATH=$CLASSPATH
 
-# (anssi) build with the same version of gcc as gcj
-export CC=gcc%{gccsuffix}
-export CXX=g++%{gccsuffix}
-
-# (anssi) and of course the gcc is hardcoded at some points of the build...
-mkdir -p gcc_to_use
-ln -sf $(which $CC) gcc_to_use/gcc
-ln -sf $(which $CXX) gcc_to_use/g++
-export PATH=$(pwd)/gcc_to_use:$PATH
-
 %if 1
 # Build jsch
 pushd baseLocation/plugins
@@ -868,10 +853,10 @@ popd
   unzip -qq -d ecj-bootstrap-tmp jdtcoresrc/src/ecj.zip
   rm -f ecj-bootstrap-tmp/org/eclipse/jdt/core/JDTCompilerAdapter.java
 
-  # 1a. Build ecj with gcj%gccsuffix -C
+  # 1a. Build ecj with %gcj -C
   pushd ecj-bootstrap-tmp
   for f in `find -name '*.java' | cut -c 3- | LC_ALL=C sort`; do
-      gcj%gccsuffix -I. -Wno-deprecated -C $f
+      %gcj -I. -Wno-deprecated -C $f
   done
   find -name '*.class' -or -name '*.properties' -or -name '*.rsc' |\
       xargs %{jar} cf ../ecj-bootstrap.jar
@@ -881,11 +866,11 @@ popd
   rm -r ecj-bootstrap-tmp
   
   # 1b. Natively-compile it
-  gcj%gccsuffix -fPIC -fjni -findirect-dispatch -shared -Wl,-Bsymbolic \
+  %gcj -fPIC -fjni -findirect-dispatch -shared -Wl,-Bsymbolic \
     -o ecj-bootstrap.jar.so ecj-bootstrap.jar
 
-  gcj-dbtool%gccsuffix -n ecj-bootstrap.db 30000
-  gcj-dbtool%gccsuffix -a ecj-bootstrap.db ecj-bootstrap.jar{,.so}
+  %gcj_dbtool -n ecj-bootstrap.db 30000
+  %gcj_dbtool -a ecj-bootstrap.db ecj-bootstrap.jar{,.so}
   
   # 2a. Build ecj
   export CLASSPATH=ecj-bootstrap.jar:$ORIGCLASSPATH
@@ -895,13 +880,13 @@ popd
 
 %if %{gcj_support}
   # 2b. Natively-compile ecj
-  gcj%gccsuffix -fPIC -fjni -findirect-dispatch -shared -Wl,-Bsymbolic \
+  %gcj -fPIC -fjni -findirect-dispatch -shared -Wl,-Bsymbolic \
     -o jdtcoresrc/ecj.jar.so jdtcoresrc/ecj.jar
    
-  gcj-dbtool%gccsuffix -n jdtcoresrc/ecj.db 30000
-  gcj-dbtool%gccsuffix -a jdtcoresrc/ecj.db jdtcoresrc/ecj.jar{,.so}
+  %gcj_dbtool -n jdtcoresrc/ecj.db 30000
+  %gcj_dbtool -a jdtcoresrc/ecj.db jdtcoresrc/ecj.jar{,.so}
 
-  # Remove our gcj%gccsuffix-built ecj
+  # Remove our %gcj-built ecj
   rm ecj-bootstrap.db ecj-bootstrap.jar{,.so}
 
   # To enSURE we're not using any pre-compiled ecj on the build system, set this
@@ -914,10 +899,10 @@ export CLASSPATH=`pwd`/jdtcoresrc/ecj.jar:$ORIGCLASSPATH
 
 %if %{gcj_support}
   # Natively-compile it
-  gcj%gccsuffix -fPIC -fjni -findirect-dispatch -shared -Wl,-Bsymbolic \
+  %gcj -fPIC -fjni -findirect-dispatch -shared -Wl,-Bsymbolic \
     -o ecj.jar.so ecj.jar
-  gcj-dbtool%gccsuffix -n ecj.db 30000
-  gcj-dbtool%gccsuffix -a ecj.db ecj.jar{,.so}
+  %gcj_dbtool -n ecj.db 30000
+  %gcj_dbtool -a ecj.db ecj.jar{,.so}
   export ANT_OPTS="-Dgnu.gcj.precompiled.db.path=`pwd`/ecj.db"
   
   # Remove old native bits
@@ -1192,7 +1177,7 @@ sed --in-place "s:startup.jar:%{_datadir}/%{name}/startup.jar:" \
 
 # Install the ecj wrapper script
 install -p -D -m0755 %{SOURCE18} $RPM_BUILD_ROOT%{_bindir}/ecj
-sed --in-place -e "s:@JAVADIR@:%{_javadir}:;" -e "s:@gccsuffix@:%{gccsuffix}:;" $RPM_BUILD_ROOT%{_bindir}/ecj 
+sed --in-place -e "s:@JAVADIR@:%{_javadir}:;" -e "s:@gccsuffix@:$(readlink -f %java | sed 's,^.*gij,,'):;" $RPM_BUILD_ROOT%{_bindir}/ecj 
 
 # A sanity check.
 desktop-file-validate %{SOURCE2}
