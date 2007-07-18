@@ -756,7 +756,7 @@ mkdir -p icu4j-build-temp
 pushd icu4j-build-temp
 unzip -qq %{SOURCE7} 
 sed --in-place "s/ .*bootclasspath=.*//g" build.xml
-ant eclipseProjects
+%ant eclipseProjects
 popd
 
 mkdir -p icu4j-build
