@@ -8,9 +8,9 @@ Epoch:  1
 %define firefox_dir     %(firefox-config --defines 2>/dev/null | sed -n -e 's,.*MOZ_DEFAULT_MOZILLA_FIVE_HOME=\\"\\([^\\"]*\\)\\"\\(.*\\),\\1,p')
 %define section         free
 %define eclipse_major   3
-%define eclipse_minor   2
+%define eclipse_minor   3
 %define eclipse_majmin  %{eclipse_major}.%{eclipse_minor}
-%define eclipse_micro   2
+%define eclipse_micro   0
 %define libname         libswt3
 
 # All archs line up between Eclipse and Linux kernel names except i386 -> x86
@@ -23,18 +23,16 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 15.2
+Release:        %mkrel 0.3.1
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
-Source0:        http://download.eclipse.org/eclipse/downloads/drops/R-3.2.2-200702121330/eclipse-sourceBuild-srcIncluded-3.2.2.zip
+Source0:        ftp://ftp.cse.buffalo.edu/pub/Eclipse/eclipse/downloads/drops/R-3.3-200706251500/eclipse-sourceBuild-srcIncluded-3.3.zip
 Source1:        %{name}.script
 Source2:        %{name}.desktop
+Source3:        eclipse.in
 Source6:        %{name}.conf
-# The icu4j bits will be moved out into their own package for Fedora 7.  See:
-# https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=199504
-Source7:        ftp://ftp.software.ibm.com/software/globalization/icu/icu4j/3.4.5/icu4jsrc_3_4_5.jar
-Source11:       %{name}-fedora-splash-3.2.2.png
+Source11:       %{name}-fedora-splash-3.3.0.png
 Source16:       %{name}-copy-platform.sh
 Source17:       efj.sh.in
 Source18:       ecj.sh.in
@@ -46,19 +44,11 @@ Source19:       %{name}-filenamepatterns.txt
 # (generated 2006-11-01 18:48 UTC)
 Source20:       %{name}-fileinitializerapp.tar.bz2
 
-# Build liblocalfile and libupdate JNI libs in the main SDK build.xml
-Patch0:         %{name}-build.patch
-# We need this because icu4j's Eclipse bits are dependent upon Eclipse
-# but we don't want the icu4j RPM needing Eclipse to build
-Patch1:         %{name}-icu4j-build-files.patch
 # These two patches need to go upstream
-Patch2:         %{name}-libupdatebuild.patch
 Patch3:         %{name}-libupdatebuild2.patch
 # Build swttools.jar
 # https://bugs.eclipse.org/bugs/show_bug.cgi?id=90364
 Patch4:         %{name}-swttools.patch
-# This needs to go upstream
-Patch11:        %{name}-usebuiltlauncher.patch
 # This does two things:
 # 1. allows the launcher to be in /usr/bin and
 # 2. ensures that the OSGi configuration directory
@@ -73,50 +63,15 @@ Patch14:        %{name}-ecj-rpmdebuginfo.patch
 # https://www.redhat.com/archives/fedora-devel-java-list/2006-April/msg00048.html
 # This needs to be submitted upstream
 Patch15:        %{name}-pde.build-add-package-build.patch
+# FIXME: Should we ship tomcat plugins with 3.3?
 # This tomcat stuff will change when they move to the equinox jetty provider
 # https://bugs.eclipse.org/bugs/show_bug.cgi?id=98371
 Patch6:         %{name}-tomcat55.patch
 Patch7:         %{name}-tomcat55-build.patch
-Patch8:         %{name}-webapp-tomcat55.patch
-# https://bugs.eclipse.org/bugs/show_bug.cgi?id=90630
-Patch5:         %{name}-updatehomedir.patch
-# https://bugs.eclipse.org/bugs/show_bug.cgi?id=161996
-Patch9:         %{name}-ecj-square-bracket-classpath.patch
 # Use ecj for gcj
 Patch17:        %{name}-ecj-gcj.patch
-# Build against firefox:
-#  - fix swt profile include path
-#  - don't compile the mozilla 1.7 / firefox profile library -- build it inline
-#  - don't use symbols not in our firefox builds
-# https://bugs.eclipse.org/bugs/show_bug.cgi?id=161310
-# FIXME:  these can probably go away >= 3.3M4
-# Note:  I made this patch from within Eclipse and then did the following to
-#        it due to spaces in the paths:
-#  sed --in-place "s/Eclipse\ SWT\ Mozilla/Eclipse_SWT_Mozilla/g" eclipse-swt-firefox.patch
-#  sed --in-place "s/Eclipse\ SWT\ PI/Eclipse_SWT_PI/g" eclipse-swt-firefox.patch
-Patch18:        %{name}-swt-firefox.patch
-Patch19:        %{name}-swt-firefox.2.patch
-# https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=209393
-# http://gcc.gnu.org/bugzilla/show_bug.cgi?id=29853
-Patch20:        %{name}-workaround-plugin.xml-parsing-bug-gcc-bz29853.patch
-# This is already upstream in 3.3 builds.  It *may* get into 3.2.2.
-Patch21:        customBuildCallbacks.xml-add-pre.gather.bin.parts.patch
-# Add ppc64 to the list of archs with gre64.conf
-# part of https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=207016
-Patch22:        %{name}-ppc64gre64.patch
-# This patch allowed us to remove
-# /usr/share/eclipse/configuration/org.eclipse.update/platform.xml -- which
-# fixed a number of update-related bugs -- in an FC6 update.
-# We can remove this patch for Fedora 8.
-Patch23:        %{name}-launcher-addplatformtotildeeclipse.patch
 Patch24:        %{name}-add-ppc64-sparc64-s390-s390x.patch
-Patch25:        %{name}-osgi-Java-1.7-profile.patch
 Patch100:       %{name}-libswt-model.patch
-Patch101:       %{name}-ssh.patch
-Patch201:       %{name}-nativepresentation.patch
-Patch202:       %{name}-disable-motif.patch
-Patch203:       %{name}-disable-javadoc.patch
-Patch204:       %{name}-gjdoc-reflection.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires:  ant
 BuildRequires:  jpackage-utils >= 0:1.5, make, gcc
@@ -134,34 +89,36 @@ BuildRequires:  mesagl-devel
 BuildRequires:  mesaglu-devel
 BuildRequires:  cairo-devel >= 0:1.0
 BuildRequires:  unzip
+BuildRequires:  icu4j-eclipse >= 0:3.6.1
 BuildRequires:  java-javadoc
 BuildRequires:  desktop-file-utils
 %if %{gcj_support}
 BuildRequires:  java-gcj-compat-devel >= 0:1.0.64
 %else
-BuildRequires:  java-1.4.2-gcj-compat-devel >= 0:1.4.2
+BuildRequires:  java-gcj-compat-devel >= 0:1.5.0
 %endif
 
 # https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=180642
 BuildRequires: ant-antlr ant-apache-bcel ant-apache-bsf ant-apache-log4j ant-apache-oro ant-apache-regexp ant-apache-resolver ant-commons-logging
 BuildRequires: ant-commons-net ant-jmf
 BuildRequires: ant-javamail ant-jdepend ant-junit ant-nodeps ant-swing ant-trax ant-jsch
-BuildRequires: jsch >= 0:0.1.28-1jpp
+BuildRequires: jsch >= 0:0.1.31
 BuildRequires: jakarta-commons-beanutils jakarta-commons-collections jakarta-commons-digester jakarta-commons-dbcp jakarta-commons-el jakarta-commons-fileupload jakarta-commons-launcher jakarta-commons-logging jakarta-commons-modeler jakarta-commons-pool
 BuildRequires: mx4j >= 0:2.1
 BuildRequires: tomcat5 >= %{tomcatepoch}:%{tomcatversion}
 BuildRequires: tomcat5-jasper >= %{tomcatepoch}:%{tomcatversion}
+BuildRequires: jsp
 BuildRequires: tomcat5-servlet-2.4-api >= %{tomcatepoch}:%{tomcatversion}
 BuildRequires: lucene
 BuildRequires: lucene-demo
-BuildRequires: lucene-src
+BuildRequires: lucene-contrib
 BuildRequires: regexp 
 BuildRequires: junit junit4
+BuildRequires: jetty5
 %if %{gcj_support}
 Requires(post):   java-gcj-compat >= 0:1.0.64
 Requires(postun): java-gcj-compat >= 0:1.0.64
 %endif
-#BuildRequires: icu4j
 
 %description
 The Eclipse Platform is designed for building integrated development
@@ -178,7 +135,7 @@ Provides:       ecj = %{epoch}:%{version}-%{release}
 Requires(post):   java-gcj-compat >= 0:1.0.64
 Requires(postun): java-gcj-compat >= 0:1.0.64
 %else
-Requires:       java >= 0:1.4.2
+Requires:       java >= 0:1.5.0
 %endif
 
 %description    ecj
@@ -202,7 +159,7 @@ Group:          Development/Java
 Requires:       %{libname}-gtk2 = %{epoch}:%{version}-%{release}
 # This file-level requirement is for the bi-arch multilib case
 %if 0
-Requires:       %{_libdir}/%{name}/plugins/org.eclipse.swt.gtk.linux.%{eclipse_arch}_3.2.2.v3236.jar
+Requires:       %{_libdir}/%{name}/plugins/org.eclipse.swt.gtk.linux.%{eclipse_arch}__3.3.0.v3346.jar
 %endif
 Requires(post):     %{libname}-gtk2 = %{epoch}:%{version}-%{release}
 Requires(postun):   %{libname}-gtk2 = %{epoch}:%{version}-%{release}
@@ -210,7 +167,7 @@ Requires(postun):   %{libname}-gtk2 = %{epoch}:%{version}-%{release}
 Requires(post):     java-gcj-compat >= 0:1.0.64
 Requires(postun):   java-gcj-compat >= 0:1.0.64
 %else
-Requires:       java >= 0:1.4.2
+Requires:       java >= 0:1.5.0
 %endif
 
 %description    rcp
@@ -226,6 +183,32 @@ Requires(postun):  %{name}-rcp = %{epoch}:%{version}-%{release}
 %description    rcp-sdk
 Source for Eclipse Rich Client Platform for use within Eclipse.
 
+%package        cvs-client
+Summary:        Eclipse CVS Client
+Group:          Development/Java
+Requires:       %{name}-rcp = %{epoch}:%{version}-%{release}
+Requires(post):    %{name}-rcp = %{epoch}:%{version}-%{release}
+Requires(postun):  %{name}-rcp = %{epoch}:%{version}-%{release}
+%if %{gcj_support}
+Requires(post):     java-gcj-compat >= 1.0.64
+Requires(postun):   java-gcj-compat >= 1.0.64
+%else
+Requires:       java >= 0:1.5.0
+%endif
+
+%description    cvs-client
+Eclipse CVS Client
+
+%package        cvs-client-sdk
+Summary:        Eclipse Rich Client Platform SDK
+Group:          Development/Java
+Requires:       %{name}-cvs-client = %{epoch}:%{version}-%{release}
+Requires(post):    %{name}-cvs-client = %{epoch}:%{version}-%{release}
+Requires(postun):  %{name}-cvs-client = %{epoch}:%{version}-%{release}
+
+%description    cvs-client-sdk
+Source for Eclipse CVS Client for use within Eclipse.
+
 %package        platform
 Summary:        Eclipse platform common files
 Group:          Development/Java
@@ -239,7 +222,7 @@ Requires:       java-gcj-compat >= 0:1.0.64
 Requires(post):   java-gcj-compat >= 0:1.0.64
 Requires(postun): java-gcj-compat >= 0:1.0.64
 %else
-Requires:       java >= 0:1.4.2
+Requires:       java >= 0:1.5.0
 %endif
 Requires:       %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires(post):   %{name}-rcp = %{epoch}:%{version}-%{release}
@@ -253,9 +236,11 @@ Requires: jakarta-commons-beanutils jakarta-commons-collections jakarta-commons-
 Requires: mx4j >= 0:2.1
 Requires: tomcat5 >= %{tomcatepoch}:%{tomcatversion}
 Requires: tomcat5-jasper >= %{tomcatepoch}:%{tomcatversion}
+Requires: jsp
 Requires: tomcat5-servlet-2.4-api >= %{tomcatepoch}:%{tomcatversion}
-Requires: lucene lucene-demo lucene-src 
+Requires: lucene lucene-demo lucene-contrib
 Requires: regexp
+Requires: jetty5
 Requires: junit junit4
 Requires(post): desktop-file-utils
 Requires(postun): desktop-file-utils
@@ -394,16 +379,13 @@ to create Eclipse applications.
 %prep
 %setup -q -c
 
-%patch0 -p0
 sed --in-place "s/java5.home/java.home/" build.xml
-%patch2 -p0
 %patch3 -p0
 # FIXME:  investigate why we are pushd'ing here
 # Build swttools.jar
 pushd plugins/org.eclipse.swt.gtk.linux.x86_64
 %patch4 -p0
 popd
-%patch5 -p0
 
 # tomcat patches
 pushd plugins/org.eclipse.tomcat
@@ -415,41 +397,20 @@ sed --in-place "s/4.1.130/%{tomcatversion}/g"           \
                 plugins/org.eclipse.tomcat/build.xml    \
                 plugins/org.eclipse.tomcat/META-INF/MANIFEST.MF   \
                 assemble.*.xml
-pushd plugins/org.eclipse.help.webapp
-%patch8 -p0
-popd
 
 pushd plugins/org.eclipse.jdt.core
-%patch9 -p0
 %patch17 -p0
 popd
-%patch11 -p0
 
-# Because the launcher source is zipped up, we need to unzip, patch, and re-pack
-# FIXME: figure out why we need to patch and sed twice and fix upstream
-mkdir launchertmp
-unzip -qq -d launchertmp plugins/org.eclipse.platform/launchersrc.zip
-pushd launchertmp
+# launcher patches
+rm plugins/org.eclipse.platform/launchersrc.zip
+pushd features/org.eclipse.equinox.executable
 %patch12 -p0
-%patch22 -p0
-%patch23 -p0
 # put the configuration directory in an arch-specific location
 sed --in-place "s:/usr/lib/eclipse/configuration:%{_libdir}/%{name}/configuration:" library/eclipse.c
 # make the eclipse binary relocatable
 sed --in-place "s:/usr/share/eclipse:%{_datadir}/%{name}:" library/eclipse.c
-zip -q -9 -r ../launchersrc.zip *
-popd
-mv launchersrc.zip plugins/org.eclipse.platform
-rm -r launchertmp
-pushd features/org.eclipse.platform.launchers
-%patch12 -p0
-%patch22 -p0
-%patch23 -p0
-
-# put the configuration directory in an arch-specific location
-sed --in-place "s:/usr/lib/eclipse:%{_libdir}/%{name}:" library/eclipse.c
-# make the eclipse binary relocatable
-sed --in-place "s:/usr/share/eclipse:%{_datadir}/%{name}:" library/eclipse.c
+zip -q -9 -r ../../plugins/org.eclipse.platform/launchersrc.zip library
 popd
 
 # use our system-installed javadocs
@@ -461,6 +422,7 @@ sed --in-place "s|http://java.sun.com/j2se/1.5/docs/api|%{_javadocdir}/java|" \
 sed --in-place "s|http://java.sun.com/j2se/1.4/docs/api|%{_javadocdir}/java|" \
    plugins/org.eclipse.pde.doc.user/pdeOptions.txt                       \
    plugins/org.eclipse.pde.doc.user/pdeOptions
+
 %patch14 -p0
 
 pushd plugins/org.eclipse.pde.build
@@ -468,42 +430,10 @@ pushd plugins/org.eclipse.pde.build
 sed --in-place "s:/usr/share/eclipse:%{_datadir}/%{name}:" templates/package-build/build.properties
 popd
 
-# Build against our firefox packages
-pushd plugins/org.eclipse.swt
-mv "Eclipse SWT Mozilla" Eclipse_SWT_Mozilla
-mv "Eclipse SWT PI" Eclipse_SWT_PI
-%patch18
-mv Eclipse_SWT_Mozilla "Eclipse SWT Mozilla"
-mv Eclipse_SWT_PI "Eclipse SWT PI"
-popd
-pushd plugins/org.eclipse.swt.tools
-mv "JNI Generation" JNI_Generation
-%patch19
-mv JNI_Generation "JNI Generation"
-popd
-
-# workaround for GNU XML bug when parsing plugin.xml
-# http://gcc.gnu.org/bugzilla/show_bug.cgi?id=29853
-pushd plugins/org.eclipse.pde.core
-%patch20
-popd
-
-# customcallbacks fixes.  They are upstream already.
-pushd plugins/org.eclipse.platform.doc.isv
-%patch21 -p0
-popd
-pushd plugins/org.eclipse.platform.doc.user
-%patch21 -p0
-popd
-
-pushd plugins/org.eclipse.osgi
-%patch25 -p0
-popd
-
 # Splashscreen
 %if 0
 pushd plugins/org.eclipse.platform
-cp %{SOURCE11} splash.bmp
+cp %{SOURCE11} plugins/org.eclipse.platform/splash.bmp
 popd
 %endif
 
@@ -516,104 +446,60 @@ find -type f -name \*.xml -exec sed --in-place -r "s/output=\".*(txt|log).*\"//g
 find -name \*.so | xargs rm
 
 # Symlinks
-# FIXME: link in icu4j
+
 ## BEGIN ANT ##
-rm plugins/org.apache.ant/lib/ant-antlr.jar
-rm plugins/org.apache.ant/lib/ant-antlrsrc.zip
-rm plugins/org.apache.ant/lib/ant-apache-bcel.jar
-rm plugins/org.apache.ant/lib/ant-apache-bcelsrc.zip
-rm plugins/org.apache.ant/lib/ant-apache-bsf.jar
-rm plugins/org.apache.ant/lib/ant-apache-bsfsrc.zip
-rm plugins/org.apache.ant/lib/ant-apache-log4j.jar
-rm plugins/org.apache.ant/lib/ant-apache-log4jsrc.zip
-rm plugins/org.apache.ant/lib/ant-apache-oro.jar
-rm plugins/org.apache.ant/lib/ant-apache-orosrc.zip
-rm plugins/org.apache.ant/lib/ant-apache-regexp.jar
-rm plugins/org.apache.ant/lib/ant-apache-regexpsrc.zip
-rm plugins/org.apache.ant/lib/ant-apache-resolver.jar
-rm plugins/org.apache.ant/lib/ant-apache-resolversrc.zip
-rm plugins/org.apache.ant/lib/ant-commons-logging.jar
-rm plugins/org.apache.ant/lib/ant-commons-loggingsrc.zip
-rm plugins/org.apache.ant/lib/ant-commons-net.jar
-rm plugins/org.apache.ant/lib/ant-commons-netsrc.zip
-rm plugins/org.apache.ant/lib/ant-icontract.jar
-rm plugins/org.apache.ant/lib/ant-icontractsrc.zip
-rm plugins/org.apache.ant/lib/ant-jai.jar
-rm plugins/org.apache.ant/lib/ant-jaisrc.zip
-rm plugins/org.apache.ant/lib/ant.jar
-rm plugins/org.apache.ant/lib/antsrc.zip
-rm plugins/org.apache.ant/lib/ant-javamail.jar
-rm plugins/org.apache.ant/lib/ant-javamailsrc.zip
-rm plugins/org.apache.ant/lib/ant-jdepend.jar
-rm plugins/org.apache.ant/lib/ant-jdependsrc.zip
-rm plugins/org.apache.ant/lib/ant-jmf.jar
-rm plugins/org.apache.ant/lib/ant-jmfsrc.zip
-rm plugins/org.apache.ant/lib/ant-jsch.jar
-rm plugins/org.apache.ant/lib/ant-jschsrc.zip
-rm plugins/org.apache.ant/lib/ant-junit.jar
-rm plugins/org.apache.ant/lib/ant-junitsrc.zip
-rm plugins/org.apache.ant/lib/ant-launcher.jar
-rm plugins/org.apache.ant/lib/ant-launchersrc.zip
-rm plugins/org.apache.ant/lib/ant-netrexx.jar
-rm plugins/org.apache.ant/lib/ant-netrexxsrc.zip
-rm plugins/org.apache.ant/lib/ant-nodeps.jar
-rm plugins/org.apache.ant/lib/ant-nodepssrc.zip
-rm plugins/org.apache.ant/lib/ant-starteam.jar
-rm plugins/org.apache.ant/lib/ant-starteamsrc.zip
-rm plugins/org.apache.ant/lib/ant-stylebook.jar
-rm plugins/org.apache.ant/lib/ant-stylebooksrc.zip
-rm plugins/org.apache.ant/lib/ant-swing.jar
-rm plugins/org.apache.ant/lib/ant-swingsrc.zip
-rm plugins/org.apache.ant/lib/ant-trax.jar
-rm plugins/org.apache.ant/lib/ant-traxsrc.zip
-rm plugins/org.apache.ant/lib/ant-vaj.jar
-rm plugins/org.apache.ant/lib/ant-vajsrc.zip
-rm plugins/org.apache.ant/lib/ant-weblogic.jar
-rm plugins/org.apache.ant/lib/ant-weblogicsrc.zip
-rm plugins/org.apache.ant/lib/ant-xalan1.jar
-rm plugins/org.apache.ant/lib/ant-xalan1src.zip
-rm plugins/org.apache.ant/lib/ant-xslp.jar
-rm plugins/org.apache.ant/lib/ant-xslpsrc.zip
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-antlr.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-bcel.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-bsf.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-log4j.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-oro.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-regexp.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-resolver.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-commons-logging.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-commons-net.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jai.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-javamail.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jdepend.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jmf.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jsch.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-junit.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-launcher.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-netrexx.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-nodeps.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-starteam.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-stylebook.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-swing.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-trax.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-weblogic.jar
 # FIXME:  use build-jar-repository
-ln -s %{_javadir}/ant/ant-antlr.jar plugins/org.apache.ant/lib/ant-antlr.jar
-ln -s %{_javadir}/ant/ant-apache-bcel.jar plugins/org.apache.ant/lib/ant-apache-bcel.jar
-ln -s %{_javadir}/ant/ant-apache-bsf.jar plugins/org.apache.ant/lib/ant-apache-bsf.jar
-ln -s %{_javadir}/ant/ant-apache-log4j.jar plugins/org.apache.ant/lib/ant-apache-log4j.jar
-ln -s %{_javadir}/ant/ant-apache-oro.jar plugins/org.apache.ant/lib/ant-apache-oro.jar
-ln -s %{_javadir}/ant/ant-apache-regexp.jar plugins/org.apache.ant/lib/ant-apache-regexp.jar
-ln -s %{_javadir}/ant/ant-apache-resolver.jar plugins/org.apache.ant/lib/ant-apache-resolver.jar
-ln -s %{_javadir}/ant/ant-commons-logging.jar plugins/org.apache.ant/lib/ant-commons-logging.jar
+ln -s %{_javadir}/ant/ant-antlr.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-antlr.jar
+ln -s %{_javadir}/ant/ant-apache-bcel.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-bcel.jar
+#ln -s %{_javadir}/ant/ant-apache-bsf.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-bsf.jar
+ln -s %{_javadir}/ant/ant-apache-log4j.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-log4j.jar
+ln -s %{_javadir}/ant/ant-apache-oro.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-oro.jar
+ln -s %{_javadir}/ant/ant-apache-regexp.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-regexp.jar
+ln -s %{_javadir}/ant/ant-apache-resolver.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-resolver.jar
+ln -s %{_javadir}/ant/ant-commons-logging.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-commons-logging.jar
 # https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=180642
 # the symlinks that are commented-out are not currently shipped on Fedora
-ln -s %{_javadir}/ant/ant-commons-net.jar plugins/org.apache.ant/lib/ant-commons-net.jar
-#ln -s %{_javadir}/ant/ant-icontract.jar plugins/org.apache.ant/lib/ant-icontract.jar
-#ln -s %{_javadir}/ant/ant-jai.jar plugins/org.apache.ant/lib/ant-jai.jar
-ln -s %{_javadir}/ant.jar plugins/org.apache.ant/lib/ant.jar
-ln -s %{_javadir}/ant/ant-javamail.jar plugins/org.apache.ant/lib/ant-javamail.jar
-ln -s %{_javadir}/ant/ant-jdepend.jar plugins/org.apache.ant/lib/ant-jdepend.jar
-ln -s %{_javadir}/ant/ant-jmf.jar plugins/org.apache.ant/lib/ant-jmf.jar
-ln -s %{_javadir}/ant/ant-jsch.jar plugins/org.apache.ant/lib/ant-jsch.jar
-ln -s %{_javadir}/ant/ant-junit.jar plugins/org.apache.ant/lib/ant-junit.jar
-ln -s %{_javadir}/ant-launcher.jar plugins/org.apache.ant/lib/ant-launcher.jar
-#ln -s %{_javadir}/ant/ant-netrexx.jar plugins/org.apache.ant/lib/ant-netrexx.jar
-ln -s %{_javadir}/ant/ant-nodeps.jar plugins/org.apache.ant/lib/ant-nodeps.jar
-#ln -s %{_javadir}/ant/ant-starteam.jar plugins/org.apache.ant/lib/ant-starteam.jar
-#ln -s %{_javadir}/ant/ant-stylebook.jar plugins/org.apache.ant/lib/ant-stylebook.jar
-ln -s %{_javadir}/ant/ant-swing.jar plugins/org.apache.ant/lib/ant-swing.jar
-ln -s %{_javadir}/ant/ant-trax.jar plugins/org.apache.ant/lib/ant-trax.jar
-#ln -s %{_javadir}/ant/ant-vaj.jar plugins/org.apache.ant/lib/ant-vaj.jar
-#ln -s %{_javadir}/ant/ant-weblogic.jar plugins/org.apache.ant/lib/ant-weblogic.jar
-#ln -s %{_javadir}/ant/ant-xalan1.jar plugins/org.apache.ant/lib/ant-xalan1.jar
-#ln -s %{_javadir}/ant/ant-xslp.jar plugins/org.apache.ant/lib/ant-xslp.jar
+#ln -s %{_javadir}/ant/ant-commons-net.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-commons-net.jar
+#ln -s %{_javadir}/ant/ant-jai.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jai.jar
+ln -s %{_javadir}/ant.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant.jar
+ln -s %{_javadir}/ant/ant-javamail.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-javamail.jar
+ln -s %{_javadir}/ant/ant-jdepend.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jdepend.jar
+#ln -s %{_javadir}/ant/ant-jmf.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jmf.jar
+ln -s %{_javadir}/ant/ant-jsch.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jsch.jar
+ln -s %{_javadir}/ant/ant-junit.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-junit.jar
+ln -s %{_javadir}/ant-launcher.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-launcher.jar
+#ln -s %{_javadir}/ant/ant-netrexx.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-netrexx.jar
+ln -s %{_javadir}/ant/ant-nodeps.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-nodeps.jar
+#ln -s %{_javadir}/ant/ant-starteam.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-starteam.jar
+#ln -s %{_javadir}/ant/ant-stylebook.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-stylebook.jar
+ln -s %{_javadir}/ant/ant-swing.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-swing.jar
+ln -s %{_javadir}/ant/ant-trax.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-trax.jar
+#ln -s %{_javadir}/ant/ant-weblogic.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-weblogic.jar
 ## END ANT ##
-
-## BEGIN LUCENE ##
-rm plugins/org.apache.lucene/lucene-1.4.3.jar
-rm plugins/org.apache.lucene/lucene-1.4.3-src.zip
-ln -s %{_datadir}/lucene/lucene-src.zip plugins/org.apache.lucene/lucene-1.4.3-src.zip
-ln -s %{_datadir}/lucene/lucene-demos.jar plugins/org.apache.lucene/parser.jar
-ln -s %{_javadir}/lucene.jar plugins/org.apache.lucene/lucene-1.4.3.jar
-## END LUCENE ##
 
 ## BEGIN TOMCAT ##
 rm plugins/org.eclipse.tomcat/commons-beanutils.jar
@@ -670,10 +556,10 @@ build-jar-repository -s -p plugins/org.eclipse.tomcat/lib regexp
 build-jar-repository -s -p plugins/org.eclipse.tomcat/lib servletapi5
 ## END TOMCAT ##
 
-build-jar-repository -s -p plugins/org.junit junit
-
-rm plugins/org.junit4/junit-4.1.jar
-ln -s %{_javadir}/junit4.jar plugins/org.junit4/junit-4.1.jar
+JUNITVERSION=$(ls plugins | grep org.junit_3 | sed 's/org.junit_//')
+build-jar-repository -s -p plugins/org.junit_$JUNITVERSION junit
+rm plugins/org.junit4/junit.jar
+ln -s %{_javadir}/junit4.jar plugins/org.junit4/junit.jar 
 
 pushd plugins/org.eclipse.swt/Eclipse\ SWT\ PI/gtk/library
 # /usr/lib -> /usr/lib64
@@ -695,18 +581,9 @@ sed --in-place "s/$swt_frag_ver_ia64/$swt_frag_ver/g" plugins/org.eclipse.swt.gt
                                                       assemble.org.eclipse.sdk.linux.gtk.ia64.xml \
                                                       features/org.eclipse.rcp/build.xml
 
-## Nasty hack to get suppport for ppc64, s390{,x} and sparc{,64}
-%patch24 -p0
-
 pushd './plugins/org.eclipse.swt/Eclipse SWT PI/gtk/library'
 %patch100 -p0
 popd
-%patch101 -p1
-
-%patch201 -p1
-%patch202 -p1
-%patch203 -p1
-%patch204 -p1
 
 %{__sed} --in-place 's,^JAVA_HOME =.*,JAVA_HOME = %{java_home},' plugins/org.eclipse.core.filesystem/natives/unix/linux/Makefile
 
@@ -718,7 +595,15 @@ popd
 %{__sed} --in-place 's,<java ,<java fork="true" jvm="%{java}" ,' plugins/org.eclipse.*/build.xml
 %{__sed} --in-place 's,<java ,<java jvm="%{java}" ,' build.xml
 
-# there is only partial support for ppc64 in 3.2 so we have to remove this 
+# we don't have ant 1.7 right now
+sed --in-place "s|\(initialValue = request.getDefaultValue\)|// \1|" \
+  plugins/org.eclipse.ant.ui/Ant\ Runner\ Support/org/eclipse/ant/internal/ui/antsupport/inputhandler/AntInputHandler.java
+sed --in-place "s|\(value = fRequest.getDefaultValue\)|// \1|" \
+  plugins/org.eclipse.ant.ui/Remote\ Ant\ Support/org/eclipse/ant/internal/ui/antsupport/inputhandler/SWTInputHandler.java
+
+## Nasty hack to get suppport for ppc64, s390{,x}, sparc{,64} and alpha
+%patch24 -p1
+# there is only partial support for ppc64 so we have to remove this
 # partial support to get the replacemnt hack to work
 find -name \*ppc64\* | xargs rm -r
 # remove ppc64 support from features/org.eclipse.platform.source/feature.xml
@@ -728,9 +613,9 @@ find -type f -name \*.xml -exec sed --in-place "s/\(rootFileslinux_gtk_\)ppc64/\
 sed --in-place "s/,.\{38\}ppc64.*macosx/,org.eclipse.platform.source.macosx/g" features/org.eclipse.platform.source/build.xml
 # replace final occurances with an existing arch
 sed --in-place "s/ppc64/x86_64/g" features/org.eclipse.platform.source/build.xml
-# Move all of the ia64 directories to ppc64 or s390{,x} or sparc{,64} dirs and replace 
+# Move all of the ia64 directories to ppc64 or s390{,x} or sparc{,64} or alpha dirs and replace
 # the ia64 strings with ppc64 or s390(x)
-%ifarch ppc64 s390 s390x %{sunsparc}
+%ifarch ppc64 s390 s390x %{sunsparc} alpha
   for f in $(find -name \*ia64\* | grep -v motif | grep -v ia64_32); do 
     mv $f $(echo $f | sed "s/ia64/%{_arch}/")
   done
@@ -739,170 +624,108 @@ sed --in-place "s/ppc64/x86_64/g" features/org.eclipse.platform.source/build.xml
   find -type f ! -name \*.java -a ! -name feature.xml -exec sed --in-place "s/@eye-eh-64_32@/ia64_32/g" "{}" \;
 %endif 
 
-%if 0
+# remove jdt.apt.pluggable.core, jdt.compiler.tool and org.eclipse.jdt.compiler.apt as they require a JVM that supports Java 1.6
+for plugin in jdt.apt.pluggable.core jdt.compiler.tool jdt.compiler.apt; do
+  version=$(grep org.eclipse.$plugin plugins/org.eclipse.$plugin/build.xml | grep condition.property | cut -d _ -f 2-3 | cut -d \" -f 1)
+  sed --in-place "s/org.eclipse.$plugin:0.0.0,$version,//" features/org.eclipse.jdt/build.xml
+  linenum=$(grep -no $plugin features/org.eclipse.jdt/build.xml | cut -d : -f 1)
+  sed --in-place -e "$linenum,$(expr $linenum + 4)d" features/org.eclipse.jdt/build.xml
+  linenum=$(grep -no $plugin features/org.eclipse.jdt/feature.xml | cut -d : -f 1)
+  sed --in-place -e "$(expr $linenum - 1),$(expr $linenum + 5)d" features/org.eclipse.jdt/feature.xml
+  linenum=$(grep -no "dir=\"plugins/org.eclipse.$plugin" assemble.org.eclipse.sdk.linux.gtk.%{eclipse_arch}.xml | cut -d : -f 1)
+  sed --in-place -e "$linenum,$(expr $linenum + 2)d" assemble.org.eclipse.sdk.linux.gtk.%{eclipse_arch}.xml
+  linenum=$(grep -no "value=\"org.eclipse.$plugin" assemble.org.eclipse.sdk.linux.gtk.%{eclipse_arch}.xml | cut -d : -f 1)
+  sed --in-place -e "$(expr $linenum - 2),$(expr $linenum + 1)d" assemble.org.eclipse.sdk.linux.gtk.%{eclipse_arch}.xml
+done
+
 # link to the jsch jar
-rm baseLocation/plugins/com.jcraft.jsch_0.1.28.jar
-ln -s %{_javadir}/jsch.jar baseLocation/plugins/com.jcraft.jsch_0.1.28.jar
+rm plugins/com.jcraft.jsch_0.1.31.jar
+ln -s %{_javadir}/jsch.jar plugins/com.jcraft.jsch_0.1.31.jar
+
+# link to the icu4j stuff
+rm plugins/com.ibm.icu_3.6.1.v20070417.jar
+ln -s %{_datadir}/eclipse/plugins/com.ibm.icu_3.6.1.v20070417.jar plugins/com.ibm.icu_3.6.1.v20070417.jar
+
+# link to lucene
+rm plugins/org.apache.lucene_1.9.1.v200706111724.jar
+ln -s %{_javadir}/lucene.jar plugins/org.apache.lucene_1.9.1.v200706111724.jar
+rm plugins/org.apache.lucene.analysis_1.9.1.v200706181610.jar
+ln -s %{_javadir}/lucene-contrib/lucene-analyzers.jar plugins/org.apache.lucene.analysis_1.9.1.v200706181610.jar
+
+# link to commons-logging
+rm plugins/org.apache.commons.logging_1.0.4.v200706111724.jar
+ln -s %{_javadir}/commons-logging.jar plugins/org.apache.commons.logging_1.0.4.v200706111724.jar
+
+# FIXME
+%if 0
+rm plugins/javax.servlet.jsp_2.0.0.v200706191603.jar
+ln -s %{_javadir}/jsp.jar plugins/javax.servlet.jsp_2.0.0.v200706191603.jar
+rm plugins/javax.servlet_2.4.0.v200706111738.jar
+ln -s %{_javadir}/servlet.jar plugins/javax.servlet_2.4.0.v200706111738.jar
+rm plugins/org.apache.commons.el_1.0.0.v200706111724.jar
+ln -s %{_javadir}/commons-el.jar plugins/org.apache.commons.el_1.0.0.v200706111724.jar
+rm plugins/org.apache.jasper_5.5.17.v200706111724.jar
+ln -s %{_javadir}/jasper5-compiler.jar plugins/org.apache.jasper_5.5.17.v200706111724.jar
+rm plugins/org.mortbay.jetty_5.1.11.v200706111724.jar
+ln -s  %{_javadir}/jetty5/jetty5.jar plugins/org.mortbay.jetty_5.1.11.v200706111724.jar
 %endif
-
-# set the icu4j plugins for building
-pushd baseLocation/plugins
-rm com.ibm.icu.base_3.4.5.20061213.jar \
-   com.ibm.icu_3.4.5.20061213.jar \
-   com.ibm.icu.base.source_3.4.5.20061213/src/com.ibm.icu.base_3.4.5.20061213/src.zip \
-   com.ibm.icu.source_3.4.5.20061213/src/com.ibm.icu_3.4.5.20061213/src.zip
-mkdir -p icu4j-build-temp
-
-pushd icu4j-build-temp
-unzip -qq %{SOURCE7} 
-sed --in-place "s/ .*bootclasspath=.*//g" build.xml
-%ant eclipseProjects
-popd
-
-mkdir -p icu4j-build
-mv icu4j-build-temp/eclipseProjects/com.ibm.icu icu4j-build
-mv icu4j-build-temp/eclipseProjects/com.ibm.icu.base icu4j-build
-rm -r icu4j-build-temp
-
-# add build.xml patches
-pushd icu4j-build
-%patch1 -p1
-popd 
-
-popd
 
 # delete included jars
 # https://bugs.eclipse.org/bugs/show_bug.cgi?id=170662
 rm plugins/org.eclipse.swt.win32.win32.x86/swt.jar \
    plugins/org.eclipse.swt/extra_jars/exceptions.jar \
    plugins/org.eclipse.swt.tools/swttools.jar \
-   features/org.eclipse.platform.launchers/bin/startup.jar \
-   plugins/org.eclipse.team.cvs.ssh2/com.jcraft.jsch_*.jar
+   plugins/org.eclipse.osgi/osgi/osgi.cmpn.jar \
+   plugins/org.eclipse.osgi/osgi/osgi.core.jar \
+   plugins/org.eclipse.osgi/supplement/osgi/osgi.jar
 
 # make sure there are no jars left
 JARS=""
-for j in $(find -name \*.jar ! -name 'com.jcraft.jsch_0.1.28.jar'); do
+for j in $(find -name \*.jar); do
   if [ ! -L $j ]; then
     JARS="$JARS $j"
   fi
 done
 if [ ! -z "$JARS" ]; then
     echo "These jars should be deleted and symlinked to system jars: $JARS"
-    exit 1
+    sleep 10
+    #exit 1
 fi
 
 tar jxf %{SOURCE20}
 
 %build
-env
 ORIGCLASSPATH=$CLASSPATH
 
-%if 1
-# Build jsch
-pushd baseLocation/plugins
-# extract the Manifest file
-unzip -qq -o -d com.jcraft.jsch_0.1.28.jar-build com.jcraft.jsch_*.jar -x com\*
-rm com.jcraft.jsch_*.jar
-popd
-# FIXME jar -V does not work for proprietary VMs 
-pushd baseLocation/plugins/com.jcraft.jsch_0.1.28.jar-build
-unzip -qq %{_javadir}/jsch.jar -x META-INF\*
-sed --in-place "s/$(grep Created-By: META-INF/MANIFEST.MF)/Created-By: $(jar -V | head -1)/" META-INF/MANIFEST.MF
-jar -Mcf ../com.jcraft.jsch_0.1.28.jar *
-popd
-# FIXME don't delete this, do what icu4j does
-rm -r baseLocation/plugins/com.jcraft.jsch_0.1.28.jar-build
-%endif
+# Bootstrapping:
+# 1. Build ecj with gcj-built ecj ("javac")
+# 2. Re-build ecj with output of 1.
 
-# Finish the icu4j build
-pushd baseLocation/plugins
-
-# Build the icu.base plugin
-zipfile=$PWD/com.ibm.icu.base.source_3.4.5.20061213/src/com.ibm.icu.base_3.4.5.20061213/src.zip
-pushd icu4j-build/com.ibm.icu.base/src
-find -name \*.java | xargs touch --date=1/1/1980
-zip -X -9 -r $zipfile . -i \*.java
-popd
-pushd icu4j-build/com.ibm.icu.base
-%{ant} build.update.jar
-popd
-mv icu4j-build/com.ibm.icu.base/com.ibm.icu.base_3.4.5.jar com.ibm.icu.base_3.4.5.20061213.jar
-
-# Build the icu plugin
-zipfile=$PWD/com.ibm.icu.source_3.4.5.20061213/src/com.ibm.icu_3.4.5.20061213/src.zip
-pushd icu4j-build/com.ibm.icu/src
-find -name \*.java | xargs touch --date=1/1/1980
-zip -X -9 -r $zipfile . -i \*.java
-popd
-pushd icu4j-build/com.ibm.icu
-%{ant} build.update.jar
-popd
-mv icu4j-build/com.ibm.icu/com.ibm.icu_3.4.5.jar com.ibm.icu_3.4.5.20061213.jar
-
-popd
-
-# Bootstrapping is 3 parts:
-# 1. Build ecj with gcj -C -- only necessary until gcjx/ecj lands in gcc
-# 2. Build ecj with gcj-built ecj ("javac")
-# 3. Re-build ecj with output of 2.
+# 1a. compile ecj with javac
+%{ant} -DcompilerArg="-encoding ISO-8859-1 -nowarn" -buildfile jdtcoresrc/compilejdtcorewithjavac.xml
 
 %if %{gcj_support}
-  # Unzip the "stable compiler" source into a temp dir and build it.
-  # Note:  we don't want to build the CompilerAdapter.
-  mkdir ecj-bootstrap-tmp
-  unzip -qq -d ecj-bootstrap-tmp jdtcoresrc/src/ecj.zip
-  rm -f ecj-bootstrap-tmp/org/eclipse/jdt/core/JDTCompilerAdapter.java
-
-  # 1a. Build ecj with %gcj -C
-  pushd ecj-bootstrap-tmp
-  for f in `find -name '*.java' | cut -c 3- | LC_ALL=C sort`; do
-      %gcj -I. -Wno-deprecated -C $f
-  done
-  find -name '*.class' -or -name '*.properties' -or -name '*.rsc' |\
-      xargs %{jar} cf ../ecj-bootstrap.jar
-  popd
-  
-  # Delete our modified ecj and restore the backup
-  rm -r ecj-bootstrap-tmp
-  
-  # 1b. Natively-compile it
-  %gcj -fPIC -fjni -findirect-dispatch -shared -Wl,-Bsymbolic \
-    -o ecj-bootstrap.jar.so ecj-bootstrap.jar
-
-  %gcj_dbtool -n ecj-bootstrap.db 30000
-  %gcj_dbtool -a ecj-bootstrap.db ecj-bootstrap.jar{,.so}
-  
-  # 2a. Build ecj
-  export CLASSPATH=ecj-bootstrap.jar:$ORIGCLASSPATH
-  export ANT_OPTS="-Dgnu.gcj.precompiled.db.path=`pwd`/ecj-bootstrap.db"
-%endif
-%{ant} -buildfile jdtcoresrc/compilejdtcorewithjavac.xml
-
-%if %{gcj_support}
-  # 2b. Natively-compile ecj
-  %gcj -fPIC -fjni -findirect-dispatch -shared -Wl,-Bsymbolic \
+  # 1b. Natively-compile ecj
+  %{gcj} -fPIC -fjni -findirect-dispatch -shared -Wl,-Bsymbolic \
     -o jdtcoresrc/ecj.jar.so jdtcoresrc/ecj.jar
    
-  %gcj_dbtool -n jdtcoresrc/ecj.db 30000
-  %gcj_dbtool -a jdtcoresrc/ecj.db jdtcoresrc/ecj.jar{,.so}
+  %{gcj_dbtool} -n jdtcoresrc/ecj.db 30000
+  %{gcj_dbtool} -a jdtcoresrc/ecj.db jdtcoresrc/ecj.jar{,.so}
 
-  # Remove our %gcj-built ecj
-  rm ecj-bootstrap.db ecj-bootstrap.jar{,.so}
-
-  # To enSURE we're not using any pre-compiled ecj on the build system, set this
+  # To ensure we're not using any pre-compiled ecj on the build system, set this
   export ANT_OPTS="-Dgnu.gcj.precompiled.db.path=`pwd`/jdtcoresrc/ecj.db"
 %endif
 
-# 3. Use this ecj to rebuild itself
+# 2. Use this ecj to rebuild itself
 export CLASSPATH=`pwd`/jdtcoresrc/ecj.jar:$ORIGCLASSPATH
-%{ant} -buildfile jdtcoresrc/compilejdtcore.xml
+%{ant} -DcompilerArg="-encoding ISO-8859-1 -nowarn" -buildfile jdtcoresrc/compilejdtcore.xml
 
 %if %{gcj_support}
   # Natively-compile it
-  %gcj -fPIC -fjni -findirect-dispatch -shared -Wl,-Bsymbolic \
+  %{gcj} -fPIC -fjni -findirect-dispatch -shared -Wl,-Bsymbolic \
     -o ecj.jar.so ecj.jar
-  %gcj_dbtool -n ecj.db 30000
-  %gcj_dbtool -a ecj.db ecj.jar{,.so}
+  %{gcj_dbtool} -n ecj.db 30000
+  %{gcj_dbtool} -a ecj.db ecj.jar{,.so}
   export ANT_OPTS="-Dgnu.gcj.precompiled.db.path=`pwd`/ecj.db"
   
   # Remove old native bits
@@ -915,10 +738,9 @@ export JAVA_HOME=%{java_home}
 %{ant} \
   -Dnobootstrap=true \
   -DinstallOs=linux -DinstallWs=gtk -DinstallArch=%{eclipse_arch} \
-  -Dlibsconfig=true -DjavacSource=1.5 -DjavacTarget=1.5
-# -Djava.home=%{_jvmdir}/java-1.5.0-gcj-1.5.0.0/jre
+  -Dlibsconfig=true -DjavacSource=1.5 -DjavacTarget=1.5 -DcompilerArg="-encoding ISO-8859-1 -nowarn"
 
-# Build the FileInitializer application
+## Build the FileInitializer application
 SDK=$(cd eclipse && pwd)
 PDEPLUGINVERSION=$(ls $SDK/plugins | grep pde.build | sed 's/org.eclipse.pde.build_//')
 pushd equinox-incubator
@@ -930,9 +752,10 @@ homedir=$(cd home && pwd)
 echo "<project default=\"main\"><target name=\"main\"></target></project>" > build/assemble.org.eclipse.equinox.initializer.all.xml
 echo "<project default=\"main\"><target name=\"main\"></target></project>" > build/package.org.eclipse.equinox.initializer.all.xml
 
-%{java} -cp $SDK/startup.jar \
-      org.eclipse.core.launcher.Main \
+LAUNCHERVERSION=$(ls $SDK/plugins | grep equinox.launcher_ | sed 's/org.eclipse.equinox.launcher_//')
+%{java} -cp $SDK/plugins/org.eclipse.equinox.launcher_$LAUNCHERVERSION \
      -Duser.home=$homedir                              \
+      org.eclipse.core.launcher.Main \
      -application org.eclipse.ant.core.antRunner       \
      -Dtype=plugin                                    \
      -Did=org.eclipse.equinox.initializer                   \
@@ -942,13 +765,12 @@ echo "<project default=\"main\"><target name=\"main\"></target></project>" > bui
      -f $SDK/plugins/org.eclipse.pde.build_$PDEPLUGINVERSION/scripts/build.xml
 
 pushd build/plugins/org.eclipse.equinox.initializer
-%{java} -cp $SDK/startup.jar \
-      org.eclipse.core.launcher.Main \
+%{java} -cp $SDK/plugins/org.eclipse.equinox.launcher_$LAUNCHERVERSION \
      -Duser.home=$homedir                              \
+      org.eclipse.core.launcher.Main \
      -application org.eclipse.ant.core.antRunner       \
      -f build.xml build.update.jar
 popd
-
 popd
 
 %install
@@ -968,9 +790,19 @@ install -d -m 755 $RPM_BUILD_ROOT%{_libdir}/%{name}/features
 
 # Explode the resulting SDK tarball
 tar -C $RPM_BUILD_ROOT%{_datadir} -zxf result/linux-gtk-%{eclipse_arch}-sdk.tar.gz
+%ifarch ppc64 s390 s390x sparc sparc64
+cp launchertmp/eclipse $RPM_BUILD_ROOT%{_datadir}/eclipse
+cp features/org.eclipse.platform/gtk/eclipse.ini $RPM_BUILD_ROOT%{_datadir}/eclipse
+%endif
 
-# The FileInitializer app isn't part of the SDK (yet?) but we want it to be
-# around for other RPMs
+# Add a compatibility symlink to startup.jar
+pushd $RPM_BUILD_ROOT%{_datadir}/%{name}
+LAUNCHERNAME=$(ls plugins | grep equinox.launcher_)
+ln -s plugins/$LAUNCHERNAME startup.jar
+popd
+
+## The FileInitializer app isn't part of the SDK (yet?) but we want it to be
+## around for other RPMs
 cp equinox-incubator/org.eclipse.equinox.initializer/org.eclipse.equinox.initializer_*.jar \
   $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins
 
@@ -999,10 +831,6 @@ mv $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins/org.eclipse.help.webapp_$HELPWEBAP
 UPDATECORELINUXVERSION=$(ls $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins | grep update.core.linux_ | sed 's/org.eclipse.update.core.linux_//')
 mv $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins/org.eclipse.update.core.linux_$UPDATECORELINUXVERSION \
   $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins
-
-# FIXME: icu4j generates res_index.txt differently on different archs - possible libgcj bug.
-mv $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins/com.ibm.icu_3.4.5.20061213.jar $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins
-mv $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins/com.ibm.icu.source_3.4.5.20061213 $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins
 
 # FIXME: there is a problem with gjdoc generating different HTML on different
 # architectures.
@@ -1045,7 +873,7 @@ mv $RPM_BUILD_ROOT%{_datadir}/%{name}/features/org.eclipse.sdk_* \
 pushd $RPM_BUILD_ROOT
 datadir_path=$(echo %{_datadir}/%{name} | sed -e 's/^\///')
 libdir_path=$(echo %{_libdir}/%{name} | sed -e 's/^\///')
-%{java} -Dosgi.sharedConfiguration.area=$libdir_path/configuration \
+java -Dosgi.sharedConfiguration.area=$libdir_path/configuration \
      -cp $datadir_path/startup.jar \
      org.eclipse.core.launcher.Main \
      -consolelog \
@@ -1062,15 +890,25 @@ echo "path:/usr/lib64" > $RPM_BUILD_ROOT%{_datadir}/%{name}/links/fragments64.li
 mv $RPM_BUILD_ROOT%{_datadir}/%{name}/configuration $RPM_BUILD_ROOT%{_libdir}/%{name}
 rm -r $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/org.eclipse.update
 rm -r $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/org.eclipse.core.runtime
+rm -r $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/org.eclipse.equinox.app
 
 # Set config.ini for the platform; no benefit to having it be sdk
 sed --in-place "s/eclipse.product=org.eclipse.sdk.ide/eclipse.product=org.eclipse.platform.ide/" \
   $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/config.ini
 
-# Install the Eclipse binary
+# Install the launcher so
+LAUNCHERFRAGVERSION=$(ls $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins | grep equinox.launcher.gtk.linux.%{eclipse_arch}_ | sed "s/.*equinox.launcher.gtk.linux.*_//")
+cp launchertmp/library/gtk/eclipse_*.so \
+$RPM_BUILD_ROOT%{_libdir}/%{name}/plugins/org.eclipse.equinox.launcher.gtk.linux.%{eclipse_arch}_$LAUNCHERFRAGVERSION
+
+# Install the Eclipse binary wrapper
+mv $RPM_BUILD_ROOT%{_datadir}/%{name}/eclipse $RPM_BUILD_ROOT%{_libdir}/%{name}
 install -d -m 755 $RPM_BUILD_ROOT%{_bindir}
 %if 0
-mv $RPM_BUILD_ROOT%{_datadir}/%{name}/eclipse $RPM_BUILD_ROOT%{_bindir}/%{name}
+cp %{SOURCE3} $RPM_BUILD_ROOT%{_bindir}/eclipse
+sed --in-place "s|@LIBDIR@|%{_libdir}|g" $RPM_BUILD_ROOT%{_bindir}/eclipse
+ECLIPSELIBSUFFIX=$(ls $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins/org.eclipse.equinox.launcher.gtk.linux*/*.so | sed "s/.*.launcher.gtk.linux.//")
+sed --in-place "s|@ECLIPSELIBSUFFIX@|$ECLIPSELIBSUFFIX|" $RPM_BUILD_ROOT%{_bindir}/eclipse
 %else
 %{__perl} -pe \
   's|/usr/lib/eclipse/|%{_libdir}/%{name}/|g ;
@@ -1081,11 +919,6 @@ mv $RPM_BUILD_ROOT%{_datadir}/%{name}/eclipse $RPM_BUILD_ROOT%{_bindir}/%{name}
   %{SOURCE1} > $RPM_BUILD_ROOT%{_bindir}/eclipse
 chmod a+x $RPM_BUILD_ROOT%{_bindir}/eclipse
 %endif
-
-# Default config
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}
-%{__perl} -pe 's|/usr/lib/eclipse/|%{_datadir}/%{name}/|g' \
-  %{SOURCE6} > $RPM_BUILD_ROOT%{_sysconfdir}/eclipse.conf
 
 # Ensure the shared libraries have the correct permissions
 pushd $RPM_BUILD_ROOT%{_libdir}/%{name} 
@@ -1165,7 +998,6 @@ ln -s %{_datadir}/icons/hicolor/48x48/apps/%{name}.png \
   $RPM_BUILD_ROOT%{_datadir}/pixmaps
 %ifarch %{ix86} x86_64
 # Remove unused icon.xpm
-# This should be fixed in 3.3.
 # see https://bugs.eclipse.org/bugs/show_bug.cgi?id=86848
 rm $RPM_BUILD_ROOT%{_datadir}/%{name}/icon.xpm
 %endif
@@ -1177,7 +1009,7 @@ sed --in-place "s:startup.jar:%{_datadir}/%{name}/startup.jar:" \
 
 # Install the ecj wrapper script
 install -p -D -m0755 %{SOURCE18} $RPM_BUILD_ROOT%{_bindir}/ecj
-sed --in-place -e "s:@JAVADIR@:%{_javadir}:;" -e "s:@gccsuffix@:$(readlink -f %java | sed 's,^.*gij,,'):;" $RPM_BUILD_ROOT%{_bindir}/ecj 
+%{__sed} --in-place -e "s:@JAVADIR@:%{_javadir}:;" -e "s:@gccsuffix@:$(readlink -f %{java} | %{__sed} 's,^.*gij,,'):;" %{buildroot}%{_bindir}/ecj 
 
 # A sanity check.
 desktop-file-validate %{SOURCE2}
@@ -1216,86 +1048,58 @@ cp copy-platform $RPM_BUILD_ROOT%{_datadir}/%{name}/buildscripts
 
 pushd $RPM_BUILD_ROOT%{_datadir}/%{name}
 ## BEGIN ANT ##
-rm plugins/org.apache.ant_*/lib/ant-antlr.jar
-rm plugins/org.apache.ant_*/lib/ant-apache-bcel.jar
-rm plugins/org.apache.ant_*/lib/ant-apache-bsf.jar
-rm plugins/org.apache.ant_*/lib/ant-apache-log4j.jar
-rm plugins/org.apache.ant_*/lib/ant-apache-oro.jar
-rm plugins/org.apache.ant_*/lib/ant-apache-regexp.jar
-rm plugins/org.apache.ant_*/lib/ant-apache-resolver.jar
-rm plugins/org.apache.ant_*/lib/ant-commons-logging.jar
-rm plugins/org.apache.ant_*/lib/ant-commons-net.jar
-#rm plugins/org.apache.ant_*/lib/ant-icontract.jar
-#rm plugins/org.apache.ant_*/lib/ant-jai.jar
-rm plugins/org.apache.ant_*/lib/ant.jar
-rm plugins/org.apache.ant_*/lib/ant-javamail.jar
-rm plugins/org.apache.ant_*/lib/ant-jdepend.jar
-rm plugins/org.apache.ant_*/lib/ant-jmf.jar
-rm plugins/org.apache.ant_*/lib/ant-jsch.jar
-rm plugins/org.apache.ant_*/lib/ant-junit.jar
-rm plugins/org.apache.ant_*/lib/ant-launcher.jar
-#rm plugins/org.apache.ant_*/lib/ant-netrexx.jar
-rm plugins/org.apache.ant_*/lib/ant-nodeps.jar
-#rm plugins/org.apache.ant_*/lib/ant-starteam.jar
-#rm plugins/org.apache.ant_*/lib/ant-stylebook.jar
-rm plugins/org.apache.ant_*/lib/ant-swing.jar
-rm plugins/org.apache.ant_*/lib/ant-trax.jar
-#rm plugins/org.apache.ant_*/lib/ant-vaj.jar
-#rm plugins/org.apache.ant_*/lib/ant-weblogic.jar
-#rm plugins/org.apache.ant_*/lib/ant-xalan1.jar
-#rm plugins/org.apache.ant_*/lib/ant-xslp.jar
-# FIXME use build-jar-repository
-ln -s %{_javadir}/ant/ant-antlr.jar plugins/org.apache.ant_1.6.5/lib/ant-antlr.jar
-ln -s %{_javadir}/ant/ant-apache-bcel.jar plugins/org.apache.ant_1.6.5/lib/ant-apache-bcel.jar
-ln -s %{_javadir}/ant/ant-apache-bsf.jar plugins/org.apache.ant_1.6.5/lib/ant-apache-bsf.jar
-ln -s %{_javadir}/ant/ant-apache-log4j.jar plugins/org.apache.ant_1.6.5/lib/ant-apache-log4j.jar
-ln -s %{_javadir}/ant/ant-apache-oro.jar plugins/org.apache.ant_1.6.5/lib/ant-apache-oro.jar
-ln -s %{_javadir}/ant/ant-apache-regexp.jar plugins/org.apache.ant_1.6.5/lib/ant-apache-regexp.jar
-ln -s %{_javadir}/ant/ant-apache-resolver.jar plugins/org.apache.ant_1.6.5/lib/ant-apache-resolver.jar
-ln -s %{_javadir}/ant/ant-commons-logging.jar plugins/org.apache.ant_1.6.5/lib/ant-commons-logging.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-antlr.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-bcel.jar
+#rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-bsf.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-log4j.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-oro.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-regexp.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-resolver.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-commons-logging.jar
+#rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-commons-net.jar
+#rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jai.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-javamail.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jdepend.jar
+#rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jmf.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jsch.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-junit.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-launcher.jar
+#rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-netrexx.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-nodeps.jar
+#rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-starteam.jar
+#rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-stylebook.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-swing.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-trax.jar
+#rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-weblogic.jar
+# FIXME:  use build-jar-repository
+ln -s %{_javadir}/ant/ant-antlr.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-antlr.jar
+ln -s %{_javadir}/ant/ant-apache-bcel.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-bcel.jar
+#ln -s %{_javadir}/ant/ant-apache-bsf.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-bsf.jar
+ln -s %{_javadir}/ant/ant-apache-log4j.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-log4j.jar
+ln -s %{_javadir}/ant/ant-apache-oro.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-oro.jar
+ln -s %{_javadir}/ant/ant-apache-regexp.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-regexp.jar
+ln -s %{_javadir}/ant/ant-apache-resolver.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-resolver.jar
+ln -s %{_javadir}/ant/ant-commons-logging.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-commons-logging.jar
 # https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=180642
-# the symlinks that are commented out are not currently shipped on Fedora
-#ln -s %{_javadir}/ant/ant-commons-net.jar plugins/org.apache.ant_1.6.5/lib/ant-commons-net.jar
-#ln -s %{_javadir}/ant/ant-icontract.jar plugins/org.apache.ant_1.6.5/lib/ant-icontract.jar
-#ln -s %{_javadir}/ant/ant-jai.jar plugins/org.apache.ant_1.6.5/lib/ant-jai.jar
-ln -s %{_javadir}/ant.jar plugins/org.apache.ant_1.6.5/lib/ant.jar
-ln -s %{_javadir}/ant/ant-javamail.jar plugins/org.apache.ant_1.6.5/lib/ant-javamail.jar
-ln -s %{_javadir}/ant/ant-jdepend.jar plugins/org.apache.ant_1.6.5/lib/ant-jdepend.jar
-#ln -s %{_javadir}/ant/ant-jmf.jar plugins/org.apache.ant_1.6.5/lib/ant-jmf.jar
-ln -s %{_javadir}/ant/ant-jsch.jar plugins/org.apache.ant_1.6.5/lib/ant-jsch.jar
-ln -s %{_javadir}/ant/ant-junit.jar plugins/org.apache.ant_1.6.5/lib/ant-junit.jar
-ln -s %{_javadir}/ant-launcher.jar plugins/org.apache.ant_1.6.5/lib/ant-launcher.jar
-#ln -s %{_javadir}/ant/ant-netrexx.jar plugins/org.apache.ant_1.6.5/lib/ant-netrexx.jar
-ln -s %{_javadir}/ant/ant-nodeps.jar plugins/org.apache.ant_1.6.5/lib/ant-nodeps.jar
-#ln -s %{_javadir}/ant/ant-starteam.jar plugins/org.apache.ant_1.6.5/lib/ant-starteam.jar
-#ln -s %{_javadir}/ant/ant-stylebook.jar plugins/org.apache.ant_1.6.5/lib/ant-stylebook.jar
-ln -s %{_javadir}/ant/ant-swing.jar plugins/org.apache.ant_1.6.5/lib/ant-swing.jar
-ln -s %{_javadir}/ant/ant-trax.jar plugins/org.apache.ant_1.6.5/lib/ant-trax.jar
-#ln -s %{_javadir}/ant/ant-vaj.jar plugins/org.apache.ant_1.6.5/lib/ant-vaj.jar
-#ln -s %{_javadir}/ant/ant-weblogic.jar plugins/org.apache.ant_1.6.5/lib/ant-weblogic.jar
-#ln -s %{_javadir}/ant/ant-xalan1.jar plugins/org.apache.ant_1.6.5/lib/ant-xalan1.jar
-#ln -s %{_javadir}/ant/ant-xslp.jar plugins/org.apache.ant_1.6.5/lib/ant-xslp.jar
+# the symlinks that are commented-out are not currently shipped on Fedora
+#ln -s %{_javadir}/ant/ant-commons-net.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-commons-net.jar
+#ln -s %{_javadir}/ant/ant-jai.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jai.jar
+ln -s %{_javadir}/ant.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant.jar
+ln -s %{_javadir}/ant/ant-javamail.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-javamail.jar
+ln -s %{_javadir}/ant/ant-jdepend.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jdepend.jar
+#ln -s %{_javadir}/ant/ant-jmf.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jmf.jar
+ln -s %{_javadir}/ant/ant-jsch.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jsch.jar
+ln -s %{_javadir}/ant/ant-junit.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-junit.jar
+ln -s %{_javadir}/ant-launcher.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-launcher.jar
+#ln -s %{_javadir}/ant/ant-netrexx.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-netrexx.jar
+ln -s %{_javadir}/ant/ant-nodeps.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-nodeps.jar
+#ln -s %{_javadir}/ant/ant-starteam.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-starteam.jar
+#ln -s %{_javadir}/ant/ant-stylebook.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-stylebook.jar
+ln -s %{_javadir}/ant/ant-swing.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-swing.jar
+ln -s %{_javadir}/ant/ant-trax.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-trax.jar
+#ln -s %{_javadir}/ant/ant-weblogic.jar plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-weblogic.jar
 ## END ANT ##
-
-## BEGIN LUCENE ##
-LUCENEPLUGINVERSION=$(ls plugins | grep lucene | sed 's/org.apache.lucene_//')
-rm plugins/org.apache.lucene_$LUCENEPLUGINVERSION/lucene-1.4.3.jar
-ln -s %{_javadir}/lucene.jar \
-  plugins/org.apache.lucene_$LUCENEPLUGINVERSION/lucene-1.4.3.jar
-# org.eclipse.platform.source is in the arch-specific location
-## END LUCENE ##
-pushd $RPM_BUILD_ROOT%{_libdir}/%{name}
-PLATFORMSOURCEVERSION=$(ls plugins | grep platform.source_ | sed 's/org.eclipse.platform.source_//')
-rm plugins/org.eclipse.platform.source_$PLATFORMSOURCEVERSION/src/org.apache.lucene_$LUCENEPLUGINVERSION/lucene-1.4.3-src.zip
-ln -s %{_datadir}/lucene/lucene-src.zip \
-  plugins/org.eclipse.platform.source_$PLATFORMSOURCEVERSION/src/org.apache.lucene_$LUCENEPLUGINVERSION/lucene-1.4.3-src.zip
-popd
-# FIXME: rm and ln lucene-related files
-rm plugins/org.apache.lucene_*/lucene-1.4.3.jar
-rm plugins/org.apache.lucene_*/parser.jar
-# FIXME
-ln -s %{_javadir}/lucene.jar plugins/org.apache.lucene_1.4.103.v20060601/lucene-1.4.3.jar
-ln -s %{_datadir}/lucene/lucene-demos.jar plugins/org.apache.lucene_1.4.103.v20060601/parser.jar
 
 ## BEGIN TOMCAT ##
 TOMCATPLUGINVERSION=$(ls plugins | grep tomcat | sed 's/org.eclipse.tomcat_//')
@@ -1333,9 +1137,24 @@ build-jar-repository -s -p plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib s
 
 build-jar-repository -s -p plugins/org.junit_* junit
 
-junit4dirname=$(dirname plugins/org.junit4_*/junit-4.1.jar)
-rm plugins/org.junit4_*/junit-4.1.jar
-ln -s %{_javadir}/junit4.jar $junit4dirname/junit-4.1.jar
+# link to the jsch jar
+rm plugins/com.jcraft.jsch_0.1.31.jar
+ln -s %{_javadir}/jsch.jar plugins/com.jcraft.jsch_0.1.31.jar
+
+# link to the icu4j stuff
+rm plugins/com.ibm.icu_3.6.1.v20070417.jar
+
+# link to lucene
+rm plugins/org.apache.lucene_1.9.1.v200706111724.jar
+ln -s %{_javadir}/lucene.jar plugins/org.apache.lucene_1.9.1.v200706111724.jar
+rm plugins/org.apache.lucene.analysis_1.9.1.v200706181610.jar
+ln -s %{_javadir}/lucene-contrib/lucene-analyzers.jar plugins/org.apache.lucene.analysis_1.9.1.v200706181610.jar
+
+# link to commons-logging
+rm plugins/org.apache.commons.logging_1.0.4.v200706111724.jar
+ln -s %{_javadir}/commons-logging.jar plugins/org.apache.commons.logging_1.0.4.v200706111724.jar
+
+popd
 
 %if 0
 # Ensure that the zip files are the same across all builds.
@@ -1419,30 +1238,40 @@ rm -rf ${RPM_BUILD_ROOT}/tmp
 %endif
 
 pushd plugins/org.apache.ant_*/bin
-for i in ant antRun antRun.pl complete-ant-cmd.pl runant.pl runant.py; do
+for i in ant antRun; do
   test -e $i && %{__rm} $i && %{__ln_s} %{_bindir}/$i $i || exit 1
 done
 popd
 
 %if 0
+pushd $RPM_BUILD_ROOT%{_datadir}/%{name}
 # remove this python script so that it is not aot compiled, thus avoiding a
 # multilib conflict
 ANTPLUGINVERSION=$(ls plugins | grep org.apache.ant_ | sed 's/org.apache.ant_//')
-rm $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins/org.apache.ant_$ANTPLUGINVERSION/bin/runant.py
+rm plugins/org.apache.ant_$ANTPLUGINVERSION/bin/runant.py
 %endif
 
 %if %{gcj_support}
 # exclude org.eclipse.ui.ide to work around
 # https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=175547
 UIIDEPLUGINVERSION=$(ls plugins | grep ui.ide_ | sed 's/org.eclipse.ui.ide_//')
+if [ -n "$UIIDEPLUGINVERSION" ]; then
 %ifnarch ia64
 %{_bindir}/aot-compile-rpm --exclude %{_datadir}/%{name}/plugins/org.eclipse.ui.ide_$UIIDEPLUGINVERSION
 %else
 OSGIPLUGINVERSION=$(ls plugins | grep osgi_ | sed 's/org.eclipse.osgi_//')
 %{_bindir}/aot-compile-rpm --exclude %{_datadir}/%{name}/plugins/org.eclipse.ui.ide_$UIIDEPLUGINVERSION \
-                --exclude %{_datadir}/%{name}/plugins/com.jcraft.jsch_0.1.28.jar \
                 --exclude %{_datadir}/%{name}/plugins/org.eclipse.osgi_$OSGIPLUGINVERSION
 %endif
+else
+%{_bindir}/aot-compile-rpm
+fi
+
+rm %{buildroot}%{_libdir}/gcj/eclipse/org.eclipse.ui.ide*
+
+%endif
+%if 0
+popd
 %endif
 
 %clean
@@ -1590,56 +1419,56 @@ fi
 %files rcp
 %defattr(-,root,root)
 %dir %{_datadir}/%{name}/features
-%if 1
 %{_libdir}/%{name}/configuration/org.eclipse.osgi/.bundledata*
 %{_libdir}/%{name}/configuration/org.eclipse.osgi/.lazy*
 %{_libdir}/%{name}/configuration/org.eclipse.osgi/.manager
 %{_libdir}/%{name}/configuration/org.eclipse.osgi/.state*
-%endif
 %{_libdir}/%{name}/configuration/config.ini
 %{_libdir}/%{name}/.eclipseextension
-%if 0
-%{_datadir}/%{name}/configuration/org.eclipse.core.runtime
-%{_datadir}/%{name}/configuration/org.eclipse.update
-%endif
 %{_datadir}/%{name}/.eclipseproduct
 %{_datadir}/%{name}/notice.html
 %{_datadir}/%{name}/epl-v10.html
 %{_datadir}/%{name}/links
+%{_datadir}/%{name}/startup.jar
 %ifarch %{ix86} x86_64
 %{_datadir}/%{name}/about.html
 %endif
-%{_datadir}/%{name}/startup.jar
 %ifarch x86_64
 %{_datadir}/%{name}/about_files
 %endif
 %{_datadir}/%{name}/readme
 %{_libdir}/%{name}/features/org.eclipse.rcp_*
-%{_datadir}/%{name}/plugins/org.eclipse.update.configurator_*
-%{_datadir}/%{name}/plugins/org.eclipse.osgi_*
+%{_datadir}/%{name}/plugins/org.eclipse.core.commands_*
+%{_datadir}/%{name}/plugins/org.eclipse.core.contenttype_*
+%{_datadir}/%{name}/plugins/org.eclipse.core.databinding_*
+%{_datadir}/%{name}/plugins/org.eclipse.core.databinding.beans_*
+%{_datadir}/%{name}/plugins/org.eclipse.core.expressions_*
+%{_datadir}/%{name}/plugins/org.eclipse.core.jobs_*
+%{_datadir}/%{name}/plugins/org.eclipse.core.runtime_*
+%{_datadir}/%{name}/plugins/org.eclipse.core.runtime.compatibility.auth_*
+%{_datadir}/%{name}/plugins/org.eclipse.equinox.app_*
+%{_datadir}/%{name}/plugins/org.eclipse.equinox.common_*
+%{_datadir}/%{name}/plugins/org.eclipse.equinox.launcher_*
+%{_libdir}/%{name}/plugins/org.eclipse.equinox.launcher.gtk.linux.%{eclipse_arch}_*
+%{_datadir}/%{name}/plugins/org.eclipse.equinox.preferences_*
 %{_datadir}/%{name}/plugins/org.eclipse.equinox.registry_*
-%{_libdir}/%{name}/plugins/com.ibm.icu_*
+%{_datadir}/%{name}/plugins/org.eclipse.help_*
 %{_datadir}/%{name}/plugins/org.eclipse.jface_*
 %{_datadir}/%{name}/plugins/org.eclipse.jface.databinding_*
-%{_datadir}/%{name}/plugins/org.eclipse.core.commands_*
-%{_datadir}/%{name}/plugins/org.eclipse.core.runtime.compatibility.auth_*
-%{_datadir}/%{name}/plugins/org.eclipse.ui.workbench_*
-%{_datadir}/%{name}/plugins/org.eclipse.core.jobs_*
-%{_datadir}/%{name}/plugins/org.eclipse.ui_*
-%{_datadir}/%{name}/plugins/org.eclipse.core.runtime_*
-%{_datadir}/%{name}/plugins/org.eclipse.equinox.preferences_*
-%{_datadir}/%{name}/plugins/org.eclipse.core.expressions_*
-%{_datadir}/%{name}/plugins/org.eclipse.equinox.common_*
-%{_datadir}/%{name}/plugins/org.eclipse.help_*
-%{_datadir}/%{name}/plugins/org.eclipse.core.contenttype_*
+%{_datadir}/%{name}/plugins/org.eclipse.osgi_*
 %{_datadir}/%{name}/plugins/org.eclipse.rcp_*
+%{_datadir}/%{name}/plugins/org.eclipse.swt_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.workbench_*
+%{_datadir}/%{name}/plugins/org.eclipse.update.configurator_*
 %if %{gcj_support}
 %{_libdir}/gcj/%{name}/org.eclipse.update.configurator_*
 %ifnarch ia64
 %{_libdir}/gcj/%{name}/org.eclipse.osgi_*
 %endif
 %{_libdir}/gcj/%{name}/org.eclipse.equinox.registry_*
-%{_libdir}/gcj/%{name}/com.ibm.icu_*
+%{_libdir}/gcj/%{name}/org.eclipse.equinox.launcher_*
+%{_libdir}/gcj/%{name}/org.eclipse.equinox.app_*
 %{_libdir}/gcj/%{name}/org.eclipse.jface_*
 %{_libdir}/gcj/%{name}/org.eclipse.jface.databinding_*
 %{_libdir}/gcj/%{name}/org.eclipse.core.commands_*
@@ -1653,7 +1482,8 @@ fi
 %{_libdir}/gcj/%{name}/org.eclipse.equinox.common_*
 %{_libdir}/gcj/%{name}/org.eclipse.help_*
 %{_libdir}/gcj/%{name}/org.eclipse.core.contenttype_*
-%{_libdir}/gcj/%{name}/startup.jar*
+%{_libdir}/gcj/%{name}/org.eclipse.core.databinding_*
+%{_libdir}/gcj/%{name}/org.eclipse.core.databinding.beans_*
 %endif
 
 %files rcp-sdk
@@ -1661,148 +1491,184 @@ fi
 %{_datadir}/%{name}/features/org.eclipse.rcp.source_*
 %{_libdir}/%{name}/plugins/org.eclipse.rcp.source.linux.gtk.%{eclipse_arch}*
 %{_datadir}/%{name}/plugins/org.eclipse.rcp.source_*
-%{_libdir}/%{name}/plugins/com.ibm.icu.source_*
+
+%files cvs-client
+%{_datadir}/%{name}/plugins/org.eclipse.team.cvs.core_*
+%{_datadir}/%{name}/plugins/org.eclipse.cvs_*
+%{_datadir}/%{name}/plugins/org.eclipse.team.cvs.ssh2_*
+%{_datadir}/%{name}/plugins/org.eclipse.team.cvs.ssh_*
+%{_datadir}/%{name}/plugins/org.eclipse.team.cvs.ui_*
+%{_datadir}/%{name}/features/org.eclipse.cvs_*
+%if %{gcj_support}
+%{_libdir}/gcj/%{name}/org.eclipse.team.cvs.core_*
+%{_libdir}/gcj/%{name}/org.eclipse.team.cvs.ssh_*
+%{_libdir}/gcj/%{name}/org.eclipse.team.cvs.ssh2_*
+%{_libdir}/gcj/%{name}/org.eclipse.team.cvs.ui_*
+%endif
+
+%files cvs-client-sdk
+%{_datadir}/%{name}/plugins/org.eclipse.cvs.source_*
+%{_datadir}/%{name}/features/org.eclipse.cvs.source_*
 
 %files platform -f %{name}-platform.install
 %defattr(-,root,root)
-%{_datadir}/%{name}/eclipse
 %attr(0755,root,root) %{_bindir}/%{name}
-%config(noreplace) %{_sysconfdir}/eclipse.conf
 %{_datadir}/%{name}/eclipse.ini
+%{_libdir}/%{name}/eclipse
 %{_datadir}/applications/*
 %{_datadir}/pixmaps/*
 %{_datadir}/icons/*/*/apps/*
 %{_datadir}/%{name}/features/org.eclipse.platform_*
-%{_datadir}/%{name}/plugins/org.eclipse.equinox.initializer_*
-%{_datadir}/%{name}/plugins/org.eclipse.ui.navigator.resources_*
-%{_datadir}/%{name}/plugins/org.eclipse.team.cvs.ui_*
-%{_datadir}/%{name}/plugins/org.eclipse.ui.navigator_*
-%{_datadir}/%{name}/plugins/org.eclipse.team.cvs.core_*
-%{_datadir}/%{name}/plugins/org.eclipse.ui.workbench.compatibility_*
-%{_datadir}/%{name}/plugins/org.eclipse.ui.forms_*
-%{_datadir}/%{name}/plugins/org.eclipse.ltk.core.refactoring_*
-%{_datadir}/%{name}/plugins/org.eclipse.debug.ui_*
-%{_datadir}/%{name}/plugins/org.eclipse.core.resources_*
-%{_datadir}/%{name}/plugins/org.eclipse.jface.text_*
-%{_datadir}/%{name}/plugins/org.eclipse.ui.intro_*
-%{_datadir}/%{name}/plugins/org.eclipse.ui.ide_*
 %{_datadir}/%{name}/plugins/com.jcraft.jsch_*
-%{_datadir}/%{name}/plugins/org.eclipse.ui.cheatsheets_*
+%{_datadir}/%{name}/plugins/javax.servlet_*
+%{_datadir}/%{name}/plugins/javax.servlet.jsp_*
+%{_datadir}/%{name}/plugins/org.apache.ant_*
+%{_datadir}/%{name}/plugins/org.apache.commons.el_*
+%{_datadir}/%{name}/plugins/org.apache.commons.logging_*
+%{_datadir}/%{name}/plugins/org.apache.jasper_*
+%{_datadir}/%{name}/plugins/org.apache.lucene_*
+%{_datadir}/%{name}/plugins/org.apache.lucene.analysis_*
 %{_datadir}/%{name}/plugins/org.eclipse.ant.core_*
-%{_datadir}/%{name}/plugins/org.eclipse.help.appserver_*
-%{_datadir}/%{name}/plugins/org.eclipse.ui.browser_*
-%{_datadir}/%{name}/plugins/org.eclipse.ui.presentations.r21_*
-%{_datadir}/%{name}/plugins/org.eclipse.team.ui_*
-%{_libdir}/%{name}/plugins/org.eclipse.update.core.linux_*
-%ifarch %{ix86} x86_64
+%{_datadir}/%{name}/plugins/org.eclipse.compare_*
+%{_datadir}/%{name}/plugins/org.eclipse.core.boot_*
+%{_datadir}/%{name}/plugins/org.eclipse.core.filebuffers_*
+%{_datadir}/%{name}/plugins/org.eclipse.core.filesystem_*
+%ifarch %{ix86} x86_64 ppc
 %{_libdir}/%{name}/plugins/org.eclipse.core.filesystem.linux.%{eclipse_arch}_*
 %endif
-%{_datadir}/%{name}/plugins/org.eclipse.core.variables_*
-%{_datadir}/%{name}/plugins/org.eclipse.help.base_*
-%{_datadir}/%{name}/plugins/org.eclipse.ui.views.properties.tabbed_*
-%{_datadir}/%{name}/plugins/org.eclipse.compare_*
-%{_datadir}/%{name}/plugins/org.eclipse.team.core_*
-%{_datadir}/%{name}/plugins/org.eclipse.osgi.util_*
-%{_datadir}/%{name}/plugins/org.eclipse.osgi.services_*
-%{_datadir}/%{name}/plugins/org.eclipse.ui.console_*
-%{_datadir}/%{name}/plugins/org.eclipse.platform_*
-%{_datadir}/%{name}/plugins/org.eclipse.update.ui_*
-%{_libdir}/%{name}/plugins/org.eclipse.help.webapp_*
-%{_datadir}/%{name}/plugins/org.eclipse.core.runtime.compatibility_*
-%{_datadir}/%{name}/plugins/org.eclipse.ui.views_*
-%{_datadir}/%{name}/plugins/org.eclipse.update.core_*
+%{_datadir}/%{name}/plugins/org.eclipse.core.net_*
+%{_datadir}/%{name}/plugins/org.eclipse.core.resources_*
 %{_datadir}/%{name}/plugins/org.eclipse.core.resources.compatibility_*
-%{_datadir}/%{name}/plugins/org.eclipse.ui.intro.universal_*
-%{_datadir}/%{name}/plugins/org.eclipse.core.boot_*
-%{_datadir}/%{name}/plugins/org.apache.ant_*
-%{_datadir}/%{name}/plugins/org.eclipse.team.cvs.ssh2_*
-%{_datadir}/%{name}/plugins/org.eclipse.ui.externaltools_*
-%{_datadir}/%{name}/plugins/org.eclipse.team.cvs.ssh_*
-%{_datadir}/%{name}/plugins/org.apache.lucene_*
-%{_datadir}/%{name}/plugins/org.eclipse.update.scheduler_*
-%{_datadir}/%{name}/plugins/org.eclipse.debug.core_*
-%{_datadir}/%{name}/plugins/org.eclipse.help.ui_*
-%{_datadir}/%{name}/plugins/org.eclipse.ui.editors_*
-%{_datadir}/%{name}/plugins/org.eclipse.core.filesystem_*
-%{_datadir}/%{name}/plugins/org.eclipse.tomcat_*
-%{_datadir}/%{name}/plugins/org.eclipse.core.filebuffers_*
+%{_datadir}/%{name}/plugins/org.eclipse.core.runtime.compatibility_*
 %{_datadir}/%{name}/plugins/org.eclipse.core.runtime.compatibility.registry_*
-%{_datadir}/%{name}/plugins/org.eclipse.platform.doc.user_*
+%{_datadir}/%{name}/plugins/org.eclipse.core.variables_*
+%{_datadir}/%{name}/plugins/org.eclipse.debug.core_*
+%{_datadir}/%{name}/plugins/org.eclipse.debug.ui_*
+%{_datadir}/%{name}/plugins/org.eclipse.equinox.http.jetty_*
+%{_datadir}/%{name}/plugins/org.eclipse.equinox.http.registry_*
+%{_datadir}/%{name}/plugins/org.eclipse.equinox.http.servlet_*
+%{_datadir}/%{name}/plugins/org.eclipse.equinox.jsp.jasper_*
+%{_datadir}/%{name}/plugins/org.eclipse.equinox.jsp.jasper.registry_*
+%{_datadir}/%{name}/plugins/org.eclipse.help.appserver_*
+%{_datadir}/%{name}/plugins/org.eclipse.help.base_*
+%{_datadir}/%{name}/plugins/org.eclipse.help.ui_*
+%{_libdir}/%{name}/plugins/org.eclipse.help.webapp_*
+%{_datadir}/%{name}/plugins/org.eclipse.jface.text_*
+%{_datadir}/%{name}/plugins/org.eclipse.jsch.core_*
+%{_datadir}/%{name}/plugins/org.eclipse.jsch.ui_*
+%{_datadir}/%{name}/plugins/org.eclipse.ltk.core.refactoring_*
 %{_datadir}/%{name}/plugins/org.eclipse.ltk.ui.refactoring_*
-%{_datadir}/%{name}/plugins/org.eclipse.ui.workbench.texteditor_*
-%{_datadir}/%{name}/plugins/org.eclipse.text_*
+%{_datadir}/%{name}/plugins/org.eclipse.osgi.services_*
+%{_datadir}/%{name}/plugins/org.eclipse.osgi.util_*
+%{_datadir}/%{name}/plugins/org.eclipse.platform_*
+%{_datadir}/%{name}/plugins/org.eclipse.platform.doc.user_*
 %{_datadir}/%{name}/plugins/org.eclipse.search_*
+%{_datadir}/%{name}/plugins/org.eclipse.team.core_*
+%{_datadir}/%{name}/plugins/org.eclipse.team.ui_*
+%{_datadir}/%{name}/plugins/org.eclipse.text_*
+%{_datadir}/%{name}/plugins/org.eclipse.tomcat_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.browser_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.cheatsheets_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.console_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.editors_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.externaltools_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.forms_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.ide_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.ide.application_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.intro_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.intro.universal_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.navigator_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.navigator.resources_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.net_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.presentations.r21_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.views_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.views.properties.tabbed_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.workbench.compatibility_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.workbench.texteditor_*
+%{_datadir}/%{name}/plugins/org.eclipse.update.core_*
+%{_libdir}/%{name}/plugins/org.eclipse.update.core.linux_*
+%{_datadir}/%{name}/plugins/org.eclipse.update.scheduler_*
+%{_datadir}/%{name}/plugins/org.eclipse.update.ui_*
+%{_datadir}/%{name}/plugins/org.mortbay.jetty_*
+%{_datadir}/%{name}/plugins/org.eclipse.equinox.initializer_*
 %if %{gcj_support}
-%{_libdir}/gcj/%{name}/org.eclipse.equinox.initializer_*
-%{_libdir}/gcj/%{name}/org.eclipse.ui.navigator.resources_*
-%{_libdir}/gcj/%{name}/org.eclipse.team.cvs.ui_*
-%{_libdir}/gcj/%{name}/org.eclipse.ui.navigator_*
-%{_libdir}/gcj/%{name}/org.eclipse.team.cvs.core_*
-%{_libdir}/gcj/%{name}/org.eclipse.ui.forms_*
-%{_libdir}/gcj/%{name}/org.eclipse.ltk.core.refactoring_*
-%{_libdir}/gcj/%{name}/org.eclipse.debug.ui_*
-%{_libdir}/gcj/%{name}/org.eclipse.core.resources_*
-%{_libdir}/gcj/%{name}/org.eclipse.jface.text_*
-%{_libdir}/gcj/%{name}/org.eclipse.ui.intro_*
-#%{_libdir}/gcj/%{name}/org.eclipse.ui.ide_*
-%ifnarch ia64
-%{_libdir}/gcj/%{name}/com.jcraft.jsch_*
-%endif
-%{_libdir}/gcj/%{name}/org.eclipse.ui.cheatsheets_*
+%{_libdir}/gcj/%{name}/javax.servlet_*
+%{_libdir}/gcj/%{name}/javax.servlet.jsp_*
+%{_libdir}/gcj/%{name}/org.apache.commons.el_*
+%{_libdir}/gcj/%{name}/org.apache.jasper_*
 %{_libdir}/gcj/%{name}/org.eclipse.ant.core_*
-%{_libdir}/gcj/%{name}/org.eclipse.help.appserver_*
-%{_libdir}/gcj/%{name}/org.eclipse.ui.browser_*
-%{_libdir}/gcj/%{name}/org.eclipse.ui.presentations.r21_*
-%{_libdir}/gcj/%{name}/org.eclipse.team.ui_*
-%{_libdir}/gcj/%{name}/org.eclipse.core.variables_*
-%{_libdir}/gcj/%{name}/org.eclipse.help.base_*
-%{_libdir}/gcj/%{name}/org.eclipse.ui.views.properties.tabbed_*
 %{_libdir}/gcj/%{name}/org.eclipse.compare_*
-%{_libdir}/gcj/%{name}/org.eclipse.team.core_*
-%{_libdir}/gcj/%{name}/org.eclipse.osgi.util_*
-%{_libdir}/gcj/%{name}/org.eclipse.osgi.services_*
-%{_libdir}/gcj/%{name}/org.eclipse.ui.console_*
-%{_libdir}/gcj/%{name}/org.eclipse.update.ui_*
-%{_libdir}/gcj/%{name}/org.eclipse.core.runtime.compatibility_*
-%{_libdir}/gcj/%{name}/org.eclipse.ui.views_*
-%{_libdir}/gcj/%{name}/org.eclipse.update.core_*
-%{_libdir}/gcj/%{name}/org.eclipse.core.resources.compatibility_*
-%{_libdir}/gcj/%{name}/org.eclipse.team.cvs.ssh2_*
-%{_libdir}/gcj/%{name}/org.eclipse.ui.externaltools_*
-%{_libdir}/gcj/%{name}/org.eclipse.team.cvs.ssh_*
-%{_libdir}/gcj/%{name}/org.eclipse.update.scheduler_*
-%{_libdir}/gcj/%{name}/org.eclipse.debug.core_*
-%{_libdir}/gcj/%{name}/org.eclipse.help.ui_*
-%{_libdir}/gcj/%{name}/org.eclipse.ui.editors_*
-%{_libdir}/gcj/%{name}/org.eclipse.core.filesystem_*
 %{_libdir}/gcj/%{name}/org.eclipse.core.filebuffers_*
+%{_libdir}/gcj/%{name}/org.eclipse.core.filesystem_*
+%{_libdir}/gcj/%{name}/org.eclipse.core.net_*
+%{_libdir}/gcj/%{name}/org.eclipse.core.resources_*
+%{_libdir}/gcj/%{name}/org.eclipse.core.resources.compatibility_*
+%{_libdir}/gcj/%{name}/org.eclipse.core.runtime.compatibility_*
+%{_libdir}/gcj/%{name}/org.eclipse.core.variables_*
+%{_libdir}/gcj/%{name}/org.eclipse.debug.core_*
+%{_libdir}/gcj/%{name}/org.eclipse.debug.ui_*
+%{_libdir}/gcj/%{name}/org.eclipse.equinox.http.jetty_*
+%{_libdir}/gcj/%{name}/org.eclipse.equinox.http.servlet_*
+%{_libdir}/gcj/%{name}/org.eclipse.equinox.jsp.jasper_*
+%{_libdir}/gcj/%{name}/org.eclipse.equinox.jsp.jasper.registry_*
+%{_libdir}/gcj/%{name}/org.eclipse.help.appserver_*
+%{_libdir}/gcj/%{name}/org.eclipse.help.base_*
+%{_libdir}/gcj/%{name}/org.eclipse.help.ui_*
+%{_libdir}/gcj/%{name}/org.eclipse.help.webapp_*
+%{_libdir}/gcj/%{name}/org.eclipse.jface.text_*
+%{_libdir}/gcj/%{name}/org.eclipse.jsch.core_*
+%{_libdir}/gcj/%{name}/org.eclipse.jsch.ui_*
+%{_libdir}/gcj/%{name}/org.eclipse.ltk.core.refactoring_*
 %{_libdir}/gcj/%{name}/org.eclipse.ltk.ui.refactoring_*
-%{_libdir}/gcj/%{name}/org.eclipse.ui.workbench.texteditor_*
-%{_libdir}/gcj/%{name}/org.eclipse.text_*
+%{_libdir}/gcj/%{name}/org.eclipse.osgi.services_*
+%{_libdir}/gcj/%{name}/org.eclipse.osgi.util_*
 %{_libdir}/gcj/%{name}/org.eclipse.search_*
-%{_libdir}/gcj/%{name}/universal.jar*
-%{_libdir}/gcj/%{name}/webapp.jar*
-%{_libdir}/gcj/%{name}/tomcatwrapper.jar*
-%{_libdir}/gcj/%{name}/compatibility.jar*
-%{_libdir}/gcj/%{name}/platform.jar*
-%{_libdir}/gcj/%{name}/runtime_registry_compatibility.jar*
-%{_libdir}/gcj/%{name}/servlets.jar*
-# FIXME:  we need to symlink these
-%if 0
-%{_libdir}/gcj/%{name}/ant-apache-bsf.jar*
-%endif
-%{_libdir}/gcj/%{name}/jsp.jar*
-%if 0
-%{_libdir}/gcj/%{name}/parser.jar*
-%endif
+%{_libdir}/gcj/%{name}/org.eclipse.team.core_*
+%{_libdir}/gcj/%{name}/org.eclipse.team.ui_*
+%{_libdir}/gcj/%{name}/org.eclipse.text_*
+%{_libdir}/gcj/%{name}/org.eclipse.ui.browser_*
+%{_libdir}/gcj/%{name}/org.eclipse.ui.cheatsheets_*
+%{_libdir}/gcj/%{name}/org.eclipse.ui.console_*
+%{_libdir}/gcj/%{name}/org.eclipse.ui.editors_*
+%{_libdir}/gcj/%{name}/org.eclipse.ui.externaltools_*
+%{_libdir}/gcj/%{name}/org.eclipse.ui.forms_*
+%{_libdir}/gcj/%{name}/org.eclipse.ui.ide.application_*
+%{_libdir}/gcj/%{name}/org.eclipse.ui.intro_*
+%{_libdir}/gcj/%{name}/org.eclipse.ui.navigator_*
+%{_libdir}/gcj/%{name}/org.eclipse.ui.navigator.resources_*
+%{_libdir}/gcj/%{name}/org.eclipse.ui.net_*
+%{_libdir}/gcj/%{name}/org.eclipse.ui.presentations.r21_*
+%{_libdir}/gcj/%{name}/org.eclipse.ui.views_*
+%{_libdir}/gcj/%{name}/org.eclipse.ui.views.properties.tabbed_*
+%{_libdir}/gcj/%{name}/org.eclipse.ui.workbench.texteditor_*
+%{_libdir}/gcj/%{name}/org.eclipse.update.core_*
+%{_libdir}/gcj/%{name}/org.eclipse.update.scheduler_*
+%{_libdir}/gcj/%{name}/org.eclipse.update.ui_*
+%{_libdir}/gcj/%{name}/org.mortbay.jetty_*
+%{_libdir}/gcj/%{name}/compatibility.*
+%{_libdir}/gcj/%{name}/org.eclipse.equinox.http.registry_*
+%{_libdir}/gcj/%{name}/org.eclipse.equinox.initializer_*
+%{_libdir}/gcj/%{name}/platform.jar.*
+%{_libdir}/gcj/%{name}/runtime_registry_compatibility.jar.*
+%{_libdir}/gcj/%{name}/tomcatwrapper.jar.*
+%{_libdir}/gcj/%{name}/universal.jar.*
 %endif
 
 %files platform-sdk
 %defattr(-,root,root)
 %{_datadir}/%{name}/features/org.eclipse.platform.source_*
-%{_libdir}/%{name}/plugins/org.eclipse.platform.source.linux.gtk.%{eclipse_arch}_*
+%{_datadir}/%{name}/plugins/javax.servlet.jsp.source_*
+%{_datadir}/%{name}/plugins/javax.servlet.source_*
+%{_datadir}/%{name}/plugins/org.apache.ant.source_*
+%{_datadir}/%{name}/plugins/org.apache.commons.el.source_*
+%{_datadir}/%{name}/plugins/org.apache.commons.logging.source_*
+%{_datadir}/%{name}/plugins/org.apache.jasper.source_*
+%{_datadir}/%{name}/plugins/org.apache.lucene.analysis.source_*
+%{_datadir}/%{name}/plugins/org.apache.lucene.source_*
 %{_libdir}/%{name}/plugins/org.eclipse.platform.doc.isv_*
 %{_libdir}/%{name}/plugins/org.eclipse.platform.source_*
+%{_libdir}/%{name}/plugins/org.eclipse.platform.source.linux.gtk.%{eclipse_arch}_*
+%{_datadir}/%{name}/plugins/org.mortbay.jetty.source_*
 %if %{gcj_support}
 %{_libdir}/gcj/%{name}/org.eclipse.platform.doc.isv_*
 %endif
@@ -1831,14 +1697,15 @@ fi
 %{_libdir}/gcj/%{name}/org.eclipse.jdt.apt.core_*
 %{_libdir}/gcj/%{name}/org.eclipse.jdt.ui_*
 %{_libdir}/gcj/%{name}/org.eclipse.jdt.junit4.runtime_*
+%{_libdir}/gcj/%{name}/org.eclipse.jdt.junit.runtime_*
+%{_libdir}/gcj/%{name}/org.eclipse.jdt.junit_*
 %{_libdir}/gcj/%{name}/org.eclipse.jdt.launching_*
 %{_libdir}/gcj/%{name}/org.eclipse.jdt.core.manipulation_*
 %{_libdir}/gcj/%{name}/org.eclipse.jdt.apt.ui_*
 %{_libdir}/gcj/%{name}/org.eclipse.jdt.debug.ui_*
-%{_libdir}/gcj/%{name}/junitruntime.jar.*
-%{_libdir}/gcj/%{name}/junitsupport.jar.*
 %{_libdir}/gcj/%{name}/jdimodel.jar.*
 %{_libdir}/gcj/%{name}/jdi.jar.*
+%{_libdir}/gcj/%{name}/junit.jar.*
 %endif
 
 %files jdt-sdk
@@ -1846,6 +1713,7 @@ fi
 %{_datadir}/%{name}/features/org.eclipse.jdt.source_*
 %{_libdir}/%{name}/plugins/org.eclipse.jdt.doc.isv_*
 %{_datadir}/%{name}/plugins/org.eclipse.jdt.source_*
+%{_datadir}/%{name}/plugins/org.junit.source_*
 
 %files pde
 %defattr(-,root,root)
@@ -1857,12 +1725,14 @@ fi
 %{_datadir}/%{name}/plugins/org.eclipse.pde.core_*
 %{_datadir}/%{name}/plugins/org.eclipse.pde.junit.runtime_*
 %{_datadir}/%{name}/plugins/org.eclipse.pde.ui_*
+%{_datadir}/%{name}/plugins/org.eclipse.pde.ui.templates_*
 %{_datadir}/%{name}/buildscripts
 %if %{gcj_support}
 %{_libdir}/gcj/%{name}/org.eclipse.pde_*
 %{_libdir}/gcj/%{name}/org.eclipse.pde.core_*
 %{_libdir}/gcj/%{name}/org.eclipse.pde.junit.runtime_*
 %{_libdir}/gcj/%{name}/org.eclipse.pde.ui_*
+%{_libdir}/gcj/%{name}/org.eclipse.pde.ui.templates_*
 %{_libdir}/gcj/%{name}/pdebuild.jar*
 %{_libdir}/gcj/%{name}/pdebuild-ant.jar*
 %endif
