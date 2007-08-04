@@ -23,7 +23,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.3.1
+Release:        %mkrel 0.5.1
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -71,6 +71,8 @@ Patch7:         %{name}-tomcat55-build.patch
 # Use ecj for gcj
 Patch17:        %{name}-ecj-gcj.patch
 Patch24:        %{name}-add-ppc64-sparc64-s390-s390x.patch
+#https://bugs.eclipse.org/bugs/show_bug.cgi?id=198840
+Patch25:        %{name}-launcher-double-free-bug.patch
 Patch100:       %{name}-libswt-model.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires:  ant
@@ -406,6 +408,7 @@ popd
 rm plugins/org.eclipse.platform/launchersrc.zip
 pushd features/org.eclipse.equinox.executable
 %patch12 -p0
+%patch25 -p0
 # put the configuration directory in an arch-specific location
 sed --in-place "s:/usr/lib/eclipse/configuration:%{_libdir}/%{name}/configuration:" library/eclipse.c
 # make the eclipse binary relocatable
@@ -413,6 +416,7 @@ sed --in-place "s:/usr/share/eclipse:%{_datadir}/%{name}:" library/eclipse.c
 zip -q -9 -r ../../plugins/org.eclipse.platform/launchersrc.zip library
 popd
 
+# (walluck) Fedora has a bug here wrt the macros being used
 # use our system-installed javadocs
 sed --in-place "s|http://java.sun.com/j2se/1.4.2/docs/api|%{_javadocdir}/java|" \
    plugins/org.eclipse.platform.doc.isv/platformOptions.txt
@@ -558,12 +562,14 @@ build-jar-repository -s -p plugins/org.eclipse.tomcat/lib servletapi5
 
 JUNITVERSION=$(ls plugins | grep org.junit_3 | sed 's/org.junit_//')
 build-jar-repository -s -p plugins/org.junit_$JUNITVERSION junit
+# (walluck) Fedora has a bug here, forgetting to link this in
 rm plugins/org.junit4/junit.jar
 ln -s %{_javadir}/junit4.jar plugins/org.junit4/junit.jar 
 
 pushd plugins/org.eclipse.swt/Eclipse\ SWT\ PI/gtk/library
 # /usr/lib -> /usr/lib64
 sed --in-place "s:/usr/lib/:%{_libdir}/:g" build.sh
+# (walluck) Fedora has a bug here, we should use java_home, not jvmdir
 sed --in-place "s:-L\$(AWT_LIB_PATH):-L%{java_home}/jre/lib/%{_arch}:" make_linux.mak
 popd
 
@@ -581,10 +587,14 @@ sed --in-place "s/$swt_frag_ver_ia64/$swt_frag_ver/g" plugins/org.eclipse.swt.gt
                                                       assemble.org.eclipse.sdk.linux.gtk.ia64.xml \
                                                       features/org.eclipse.rcp/build.xml
 
+# (walluck) I am not sure if this is a bug or not, but Fedora's
+# (walluck) `uname -p' behaves differently from Mandriva's, so we
+# (walluck) always use `uname -m' instead
 pushd './plugins/org.eclipse.swt/Eclipse SWT PI/gtk/library'
 %patch100 -p0
 popd
 
+# (walluck) Fedora has a bug here, we need to use the correct JAVA_HOME
 %{__sed} --in-place 's,^JAVA_HOME =.*,JAVA_HOME = %{java_home},' plugins/org.eclipse.core.filesystem/natives/unix/linux/Makefile
 
 # (anssi) JNIGenerator fails to run with
@@ -594,12 +604,6 @@ popd
 # jvm in fork mode.
 %{__sed} --in-place 's,<java ,<java fork="true" jvm="%{java}" ,' plugins/org.eclipse.*/build.xml
 %{__sed} --in-place 's,<java ,<java jvm="%{java}" ,' build.xml
-
-# we don't have ant 1.7 right now
-sed --in-place "s|\(initialValue = request.getDefaultValue\)|// \1|" \
-  plugins/org.eclipse.ant.ui/Ant\ Runner\ Support/org/eclipse/ant/internal/ui/antsupport/inputhandler/AntInputHandler.java
-sed --in-place "s|\(value = fRequest.getDefaultValue\)|// \1|" \
-  plugins/org.eclipse.ant.ui/Remote\ Ant\ Support/org/eclipse/ant/internal/ui/antsupport/inputhandler/SWTInputHandler.java
 
 ## Nasty hack to get suppport for ppc64, s390{,x}, sparc{,64} and alpha
 %patch24 -p1
@@ -656,19 +660,23 @@ ln -s %{_javadir}/lucene-contrib/lucene-analyzers.jar plugins/org.apache.lucene.
 rm plugins/org.apache.commons.logging_1.0.4.v200706111724.jar
 ln -s %{_javadir}/commons-logging.jar plugins/org.apache.commons.logging_1.0.4.v200706111724.jar
 
-# FIXME
-%if 0
+# (walluck) Unlike Fedora, we need to link in everything and not
+# (walluck) ship any pre-built jars
 rm plugins/javax.servlet.jsp_2.0.0.v200706191603.jar
 ln -s %{_javadir}/jsp.jar plugins/javax.servlet.jsp_2.0.0.v200706191603.jar
+
 rm plugins/javax.servlet_2.4.0.v200706111738.jar
 ln -s %{_javadir}/servlet.jar plugins/javax.servlet_2.4.0.v200706111738.jar
+
+# link to commons-el
 rm plugins/org.apache.commons.el_1.0.0.v200706111724.jar
 ln -s %{_javadir}/commons-el.jar plugins/org.apache.commons.el_1.0.0.v200706111724.jar
+
 rm plugins/org.apache.jasper_5.5.17.v200706111724.jar
 ln -s %{_javadir}/jasper5-compiler.jar plugins/org.apache.jasper_5.5.17.v200706111724.jar
+
 rm plugins/org.mortbay.jetty_5.1.11.v200706111724.jar
 ln -s  %{_javadir}/jetty5/jetty5.jar plugins/org.mortbay.jetty_5.1.11.v200706111724.jar
-%endif
 
 # delete included jars
 # https://bugs.eclipse.org/bugs/show_bug.cgi?id=170662
@@ -688,8 +696,7 @@ for j in $(find -name \*.jar); do
 done
 if [ ! -z "$JARS" ]; then
     echo "These jars should be deleted and symlinked to system jars: $JARS"
-    sleep 10
-    #exit 1
+    exit 1
 fi
 
 tar jxf %{SOURCE20}
@@ -904,6 +911,8 @@ $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins/org.eclipse.equinox.launcher.gtk.linux
 # Install the Eclipse binary wrapper
 mv $RPM_BUILD_ROOT%{_datadir}/%{name}/eclipse $RPM_BUILD_ROOT%{_libdir}/%{name}
 install -d -m 755 $RPM_BUILD_ROOT%{_bindir}
+# (walluck) Fedora has a bug here, they want to use the binary
+# (walluck) only, but then we lose the ability to configure it
 %if 0
 cp %{SOURCE3} $RPM_BUILD_ROOT%{_bindir}/eclipse
 sed --in-place "s|@LIBDIR@|%{_libdir}|g" $RPM_BUILD_ROOT%{_bindir}/eclipse
@@ -932,6 +941,7 @@ done
 %endif
 
 # Create file listings for the extracted shared libraries
+# (walluck) Fedora has a bug here, they forget to create this file
 echo -n "" > %{_builddir}/%{buildsubdir}/%{libname}-gtk2.install;
 echo -n "" > %{_builddir}/%{buildsubdir}/%{name}-platform.install;
 for id in `ls configuration/org.eclipse.osgi/bundles`; do
@@ -973,6 +983,8 @@ JDTCORESUFFIX=$(ls $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins | grep jdt.core_ |
 install -d -m 755 $RPM_BUILD_ROOT%{_javadir}
 ln -s %{_datadir}/%{name}/plugins/org.eclipse.jdt.core_$JDTCORESUFFIX $RPM_BUILD_ROOT%{_javadir}/eclipse-ecj.jar
 ln -s %{_javadir}/eclipse-ecj.jar $RPM_BUILD_ROOT%{_javadir}/jdtcore.jar
+# (walluck) Fedora doesn't do this, but I think we need it for
+# (walluck) JPackage compatibility
 ln -s %{_javadir}/eclipse-ecj.jar $RPM_BUILD_ROOT%{_javadir}/ecj.jar
 
 # FIXME: get rid of this by putting logic in package build to know what version
@@ -1154,8 +1166,14 @@ ln -s %{_javadir}/lucene-contrib/lucene-analyzers.jar plugins/org.apache.lucene.
 rm plugins/org.apache.commons.logging_1.0.4.v200706111724.jar
 ln -s %{_javadir}/commons-logging.jar plugins/org.apache.commons.logging_1.0.4.v200706111724.jar
 
+# link to commons-el
+rm plugins/org.apache.commons.el_1.0.0.v200706111724.jar
+ln -s %{_javadir}/commons-el.jar plugins/org.apache.commons.el_1.0.0.v200706111724.jar
+
 popd
 
+# (walluck) I am not sure why this supposedly works on Fedora and
+# (walluck) fails on Mandriva before even one iteration.
 %if 0
 # Ensure that the zip files are the same across all builds.
 # This is needed to make these package multilib compatible.
@@ -1192,12 +1210,12 @@ for zip in `find ${RPM_BUILD_ROOT}%{_datadir}/%{name} -type f -name \*.zip -o -t
        # move the contents over to the a new directory in order and set the times. 
        for f in `find -type f | LC_ALL=C sort`; do
          cp $f $ZIPDIR2/$f
-         touch --date="1970-01-01 UTC" $ZIPDIR2/$f
+         touch --date="1980-01-01 UTC" $ZIPDIR2/$f
        done
        popd
 
        # Set the times of the directories.
-       touch --date="1970-01-01 UTC" `find $ZIPDIR2 -type d`
+       touch --date="1980-01-01 UTC" `find $ZIPDIR2 -type d`
 
        # make the new zip
        pushd $ZIPDIR2
@@ -1218,12 +1236,12 @@ for zip in `find ${RPM_BUILD_ROOT}%{_datadir}/%{name} -type f -name \*.zip -o -t
   # move the contents over to the a new directory in order and set the times. 
   for f in `find -type f | LC_ALL=C sort`; do 
     cp $f $ZIPDIR/$f
-    touch --date="1970-01-01 UTC" $ZIPDIR/$f
+    touch --date="1980-01-01 UTC" $ZIPDIR/$f
   done
   popd
 
   # Set the times of the directories.
-  touch --date="1970-01-01 UTC" `find $ZIPDIR -type d`
+  touch --date="1980-01-01 UTC" `find $ZIPDIR -type d`
 
   # make the new zip
   pushd $ZIPDIR
@@ -1237,12 +1255,18 @@ done
 rm -rf ${RPM_BUILD_ROOT}/tmp
 %endif
 
+# (walluck) Fedora doesn't do this, but we have to link in our
+# (walluck) own scripts
 pushd plugins/org.apache.ant_*/bin
 for i in ant antRun; do
   test -e $i && %{__rm} $i && %{__ln_s} %{_bindir}/$i $i || exit 1
 done
 popd
 
+# (walluck) Fedora has some problem here, but (1) Mandriva doesn't
+# (walluck) automatically compile .py files (they probably should)
+# (walluck) and (2) I don't understand why only this file would
+# (walluck) create the multilib conflict
 %if 0
 pushd $RPM_BUILD_ROOT%{_datadir}/%{name}
 # remove this python script so that it is not aot compiled, thus avoiding a
@@ -1251,6 +1275,8 @@ ANTPLUGINVERSION=$(ls plugins | grep org.apache.ant_ | sed 's/org.apache.ant_//'
 rm plugins/org.apache.ant_$ANTPLUGINVERSION/bin/runant.py
 %endif
 
+# FIXME: (walluck) Our ui.ide directory doesn't have a version
+# FIXME: (walluck) after it---so UIIDEPLUGINVERSION is empty
 %if %{gcj_support}
 # exclude org.eclipse.ui.ide to work around
 # https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=175547
@@ -1592,10 +1618,6 @@ fi
 %{_datadir}/%{name}/plugins/org.mortbay.jetty_*
 %{_datadir}/%{name}/plugins/org.eclipse.equinox.initializer_*
 %if %{gcj_support}
-%{_libdir}/gcj/%{name}/javax.servlet_*
-%{_libdir}/gcj/%{name}/javax.servlet.jsp_*
-%{_libdir}/gcj/%{name}/org.apache.commons.el_*
-%{_libdir}/gcj/%{name}/org.apache.jasper_*
 %{_libdir}/gcj/%{name}/org.eclipse.ant.core_*
 %{_libdir}/gcj/%{name}/org.eclipse.compare_*
 %{_libdir}/gcj/%{name}/org.eclipse.core.filebuffers_*
@@ -1644,7 +1666,6 @@ fi
 %{_libdir}/gcj/%{name}/org.eclipse.update.core_*
 %{_libdir}/gcj/%{name}/org.eclipse.update.scheduler_*
 %{_libdir}/gcj/%{name}/org.eclipse.update.ui_*
-%{_libdir}/gcj/%{name}/org.mortbay.jetty_*
 %{_libdir}/gcj/%{name}/compatibility.*
 %{_libdir}/gcj/%{name}/org.eclipse.equinox.http.registry_*
 %{_libdir}/gcj/%{name}/org.eclipse.equinox.initializer_*
