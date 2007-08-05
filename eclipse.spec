@@ -571,6 +571,9 @@ pushd plugins/org.eclipse.swt/Eclipse\ SWT\ PI/gtk/library
 sed --in-place "s:/usr/lib/:%{_libdir}/:g" build.sh
 # (walluck) Fedora has a bug here, we should use java_home, not jvmdir
 sed --in-place "s:-L\$(AWT_LIB_PATH):-L%{java_home}/jre/lib/%{_arch}:" make_linux.mak
+# (anssi) Both this and the above should be set by build.sh if the correct
+# JAVA_HOME is passed into it. It does not seem to work.
+sed --in-place "s:\$(JAVA_HOME):%{java_home}:" make_linux.mak
 popd
 
 # FIXME: figure out what's going on with build.index.
