@@ -92,7 +92,7 @@ BuildRequires:  mesaglu-devel
 BuildRequires:  cairo-devel >= 0:1.0
 BuildRequires:  unzip
 BuildRequires:  icu4j-eclipse >= 0:3.6.1
-BuildRequires:  java-javadoc
+BuildRequires:  java-1.5.0-gcj-javadoc
 BuildRequires:  desktop-file-utils
 %if %{gcj_support}
 BuildRequires:  java-gcj-compat-devel >= 0:1.0.64
