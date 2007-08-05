@@ -673,7 +673,7 @@ rm plugins/org.apache.commons.el_1.0.0.v200706111724.jar
 ln -s %{_javadir}/commons-el.jar plugins/org.apache.commons.el_1.0.0.v200706111724.jar
 
 rm plugins/org.apache.jasper_5.5.17.v200706111724.jar
-ln -s %{_javadir}/jasper5-compiler.jar plugins/org.apache.jasper_5.5.17.v200706111724.jar
+ln -s %{_javadir}/jasper5.jar plugins/org.apache.jasper_5.5.17.v200706111724.jar
 
 rm plugins/org.mortbay.jetty_5.1.11.v200706111724.jar
 ln -s  %{_javadir}/jetty5/jetty5.jar plugins/org.mortbay.jetty_5.1.11.v200706111724.jar
