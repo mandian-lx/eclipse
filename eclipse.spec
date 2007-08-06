@@ -1605,7 +1605,7 @@ fi
 %{_datadir}/%{name}/plugins/org.eclipse.ui.externaltools_*
 %{_datadir}/%{name}/plugins/org.eclipse.ui.forms_*
 %{_datadir}/%{name}/plugins/org.eclipse.ui.ide_*
-%{_datadir}/%{name}/plugins/org.eclipse.ui.ide.application_*
+#%{_datadir}/%{name}/plugins/org.eclipse.ui.ide.application_*
 %{_datadir}/%{name}/plugins/org.eclipse.ui.intro_*
 %{_datadir}/%{name}/plugins/org.eclipse.ui.intro.universal_*
 %{_datadir}/%{name}/plugins/org.eclipse.ui.navigator_*
@@ -1659,7 +1659,7 @@ fi
 %{_libdir}/gcj/%{name}/org.eclipse.ui.editors_*
 %{_libdir}/gcj/%{name}/org.eclipse.ui.externaltools_*
 %{_libdir}/gcj/%{name}/org.eclipse.ui.forms_*
-%{_libdir}/gcj/%{name}/org.eclipse.ui.ide.application_*
+#%{_libdir}/gcj/%{name}/org.eclipse.ui.ide.application_*
 %{_libdir}/gcj/%{name}/org.eclipse.ui.intro_*
 %{_libdir}/gcj/%{name}/org.eclipse.ui.navigator_*
 %{_libdir}/gcj/%{name}/org.eclipse.ui.navigator.resources_*
