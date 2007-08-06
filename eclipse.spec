@@ -413,6 +413,8 @@ pushd features/org.eclipse.equinox.executable
 sed --in-place "s:/usr/lib/eclipse/configuration:%{_libdir}/%{name}/configuration:" library/eclipse.c
 # make the eclipse binary relocatable
 sed --in-place "s:/usr/share/eclipse:%{_datadir}/%{name}:" library/eclipse.c
+# (walluck) fix JAVA_HOME
+sed --in-place 's:^javaHome=""$:javaHome="%{java_home}":' library/gtk/build.sh
 zip -q -9 -r ../../plugins/org.eclipse.platform/launchersrc.zip library
 popd
 
