@@ -1020,12 +1020,11 @@ rm $RPM_BUILD_ROOT%{_datadir}/%{name}/icon.xpm
 
 # Install the efj wrapper script 
 install -p -D -m0755 %{SOURCE17} $RPM_BUILD_ROOT%{_bindir}/efj
-sed --in-place "s:startup.jar:%{_datadir}/%{name}/startup.jar:;" -e "s:@gccsuffix@:$(readlink -f %{java} | %{__sed} 's,^.*gij,,'):;" \
-  $RPM_BUILD_ROOT%{_bindir}/efj 
+%{__sed} --in-place -e "s:startup.jar:%{_datadir}/%{name}/startup.jar:;" -e "s:@gccsuffix@:$(readlink -f %{java} | %{__sed} 's,^.*gij,,'):;" %{buildroot}%{_bindir}/efj
 
 # Install the ecj wrapper script
 install -p -D -m0755 %{SOURCE18} $RPM_BUILD_ROOT%{_bindir}/ecj
-%{__sed} --in-place -e "s:@JAVADIR@:%{_javadir}:;" -e "s:@gccsuffix@:$(readlink -f %{java} | %{__sed} 's,^.*gij,,'):;" %{buildroot}%{_bindir}/ecj 
+%{__sed} --in-place -e "s:@JAVADIR@:%{_javadir}:;" -e "s:@gccsuffix@:$(readlink -f %{java} | %{__sed} 's,^.*gij,,'):;" %{buildroot}%{_bindir}/ecj
 
 # A sanity check.
 desktop-file-validate %{SOURCE2}
@@ -1066,18 +1065,18 @@ pushd $RPM_BUILD_ROOT%{_datadir}/%{name}
 ## BEGIN ANT ##
 rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-antlr.jar
 rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-bcel.jar
-#rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-bsf.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-bsf.jar
 rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-log4j.jar
 rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-oro.jar
 rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-regexp.jar
 rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-apache-resolver.jar
 rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-commons-logging.jar
-#rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-commons-net.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-commons-net.jar
 #rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jai.jar
 rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant.jar
 rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-javamail.jar
 rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jdepend.jar
-#rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jmf.jar
+rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jmf.jar
 rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-jsch.jar
 rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-junit.jar
 rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-launcher.jar
