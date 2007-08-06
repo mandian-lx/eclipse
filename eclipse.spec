@@ -680,7 +680,7 @@ rm plugins/org.apache.jasper_5.5.17.v200706111724.jar
 ln -s %{_javadir}/jasper5.jar plugins/org.apache.jasper_5.5.17.v200706111724.jar
 
 rm plugins/org.mortbay.jetty_5.1.11.v200706111724.jar
-ln -s  %{_javadir}/jetty5/jetty5.jar plugins/org.mortbay.jetty_5.1.11.v200706111724.jar
+ln -s %{_javadir}/jetty5/jetty5.jar plugins/org.mortbay.jetty_5.1.11.v200706111724.jar
 
 # delete included jars
 # https://bugs.eclipse.org/bugs/show_bug.cgi?id=170662
