@@ -1020,7 +1020,7 @@ rm $RPM_BUILD_ROOT%{_datadir}/%{name}/icon.xpm
 
 # Install the efj wrapper script 
 install -p -D -m0755 %{SOURCE17} $RPM_BUILD_ROOT%{_bindir}/efj
-sed --in-place "s:startup.jar:%{_datadir}/%{name}/startup.jar:" \
+sed --in-place "s:startup.jar:%{_datadir}/%{name}/startup.jar:;" -e "s:@gccsuffix@:$(readlink -f %{java} | %{__sed} 's,^.*gij,,'):;" \
   $RPM_BUILD_ROOT%{_bindir}/efj 
 
 # Install the ecj wrapper script
