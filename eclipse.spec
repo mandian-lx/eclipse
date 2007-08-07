@@ -23,7 +23,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.5.1
+Release:        %mkrel 0.5.2
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -1785,6 +1785,3 @@ fi
 %defattr(-,root,root)
 %{_libdir}/%{name}/features/org.eclipse.sdk_*
 %{_libdir}/%{name}/plugins/org.eclipse.sdk_*
-
-
-
