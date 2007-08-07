@@ -381,6 +381,8 @@ to create Eclipse applications.
 %prep
 %setup -q -c
 
+# (walluck) try not forking the Jasper compiler
+%{__sed} --in-place 's/fork="true"/fork="false"/' plugins/org.eclipse.help.webapp/buildJSPs.xml
 sed --in-place "s/java5.home/java.home/" build.xml
 %patch3 -p0
 # FIXME:  investigate why we are pushd'ing here
