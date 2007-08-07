@@ -1605,7 +1605,7 @@ fi
 %{_datadir}/%{name}/plugins/org.eclipse.ui.externaltools_*
 %{_datadir}/%{name}/plugins/org.eclipse.ui.forms_*
 %{_datadir}/%{name}/plugins/org.eclipse.ui.ide_*
-#%{_datadir}/%{name}/plugins/org.eclipse.ui.ide.application_*
+%{_datadir}/%{name}/plugins/org.eclipse.ui.ide.application_*
 %{_datadir}/%{name}/plugins/org.eclipse.ui.intro_*
 %{_datadir}/%{name}/plugins/org.eclipse.ui.intro.universal_*
 %{_datadir}/%{name}/plugins/org.eclipse.ui.navigator_*
@@ -1623,6 +1623,9 @@ fi
 %{_datadir}/%{name}/plugins/org.mortbay.jetty_*
 %{_datadir}/%{name}/plugins/org.eclipse.equinox.initializer_*
 %if %{gcj_support}
+%{_libdir}/gcj/%{name}/javax.servlet_*
+%{_libdir}/gcj/%{name}/javax.servlet.jsp_*
+%{_libdir}/gcj/%{name}/org.apache.jasper_*
 %{_libdir}/gcj/%{name}/org.eclipse.ant.core_*
 %{_libdir}/gcj/%{name}/org.eclipse.compare_*
 %{_libdir}/gcj/%{name}/org.eclipse.core.filebuffers_*
@@ -1671,6 +1674,7 @@ fi
 %{_libdir}/gcj/%{name}/org.eclipse.update.core_*
 %{_libdir}/gcj/%{name}/org.eclipse.update.scheduler_*
 %{_libdir}/gcj/%{name}/org.eclipse.update.ui_*
+%{_libdir}/gcj/%{name}/org.mortbay.jetty_*
 %{_libdir}/gcj/%{name}/compatibility.*
 %{_libdir}/gcj/%{name}/org.eclipse.equinox.http.registry_*
 %{_libdir}/gcj/%{name}/org.eclipse.equinox.initializer_*
