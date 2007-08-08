@@ -23,7 +23,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.5.2
+Release:        %mkrel 0.5.3
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -244,6 +244,7 @@ Requires: lucene lucene-demo lucene-contrib
 Requires: regexp
 Requires: jetty5
 Requires: junit junit4
+Requires: icu4j-eclipse
 Requires(post): desktop-file-utils
 Requires(postun): desktop-file-utils
 
