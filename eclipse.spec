@@ -650,9 +650,6 @@ for plugin in jdt.apt.pluggable.core jdt.compiler.tool jdt.compiler.apt; do
   sed --in-place -e "$(expr $linenum - 2),$(expr $linenum + 1)d" assemble.org.eclipse.sdk.linux.gtk.%{eclipse_arch}.xml
 done
 
-rm plugins/org.junit4_4.3.1/junit.jar
-ln -s %{_javadir}/junit4.jar plugins/org.junit4_4.3.1/junit.jar
-
 # link to the jsch jar
 rm plugins/com.jcraft.jsch_0.1.31.jar
 ln -s %{_javadir}/jsch.jar plugins/com.jcraft.jsch_0.1.31.jar
