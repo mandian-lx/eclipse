@@ -23,7 +23,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.5.4
+Release:        %mkrel 0.8.1
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -451,8 +451,9 @@ popd
 # https://bugs.eclipse.org/bugs/show_bug.cgi?id=144942
 find -type f -name \*.xml -exec sed --in-place -r "s/output=\".*(txt|log).*\"//g" "{}" \;
 
-# Remove existing .sos
+# Remove existing .sos and binary launcher
 find -name \*.so | xargs rm
+find features/org.eclipse.equinox.executable -type f -name eclipse | xargs rm
 
 # Symlinks
 
@@ -569,7 +570,7 @@ build-jar-repository -s -p plugins/org.eclipse.tomcat/lib servletapi5
 
 JUNITVERSION=$(ls plugins | grep org.junit_3 | sed 's/org.junit_//')
 build-jar-repository -s -p plugins/org.junit_$JUNITVERSION junit
-# (walluck) Fedora has a bug here, forgetting to link this in
+
 rm plugins/org.junit4/junit.jar
 ln -s %{_javadir}/junit4.jar plugins/org.junit4/junit.jar 
 
@@ -649,6 +650,9 @@ for plugin in jdt.apt.pluggable.core jdt.compiler.tool jdt.compiler.apt; do
   sed --in-place -e "$(expr $linenum - 2),$(expr $linenum + 1)d" assemble.org.eclipse.sdk.linux.gtk.%{eclipse_arch}.xml
 done
 
+rm plugins/org.junit4_4.3.1/junit.jar
+ln -s %{_javadir}/junit4.jar plugins/org.junit4_4.3.1/junit.jar
+
 # link to the jsch jar
 rm plugins/com.jcraft.jsch_0.1.31.jar
 ln -s %{_javadir}/jsch.jar plugins/com.jcraft.jsch_0.1.31.jar
@@ -667,8 +671,6 @@ ln -s %{_javadir}/lucene-contrib/lucene-analyzers.jar plugins/org.apache.lucene.
 rm plugins/org.apache.commons.logging_1.0.4.v200706111724.jar
 ln -s %{_javadir}/commons-logging.jar plugins/org.apache.commons.logging_1.0.4.v200706111724.jar
 
-# (walluck) Unlike Fedora, we need to link in everything and not
-# (walluck) ship any pre-built jars
 rm plugins/javax.servlet.jsp_2.0.0.v200706191603.jar
 ln -s %{_javadir}/jsp.jar plugins/javax.servlet.jsp_2.0.0.v200706191603.jar
 
@@ -804,8 +806,8 @@ install -d -m 755 $RPM_BUILD_ROOT%{_libdir}/%{name}/features
 
 # Explode the resulting SDK tarball
 tar -C $RPM_BUILD_ROOT%{_datadir} -zxf result/linux-gtk-%{eclipse_arch}-sdk.tar.gz
-%ifarch ppc64 s390 s390x sparc sparc64
 cp launchertmp/eclipse $RPM_BUILD_ROOT%{_datadir}/eclipse
+%ifarch ppc64 s390 s390x sparc sparc64 alpha
 cp features/org.eclipse.platform/gtk/eclipse.ini $RPM_BUILD_ROOT%{_datadir}/eclipse
 %endif
 
