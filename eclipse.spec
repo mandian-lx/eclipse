@@ -23,7 +23,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.8.1
+Release:        %mkrel 0.9.1
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -269,6 +269,7 @@ Source and docs for Eclipse Platform for use within Eclipse.
 Summary:        Eclipse Java Development Tools
 Group:          Development/Java
 Requires:       %{name}-platform = %{epoch}:%{version}-%{release}
+Requires:       %{name}-cvs-client = %{epoch}:%{version}-%{release}
 Requires:       %{name}-ecj = %{epoch}:%{version}-%{release}
 Requires(post):    %{name}-platform = %{epoch}:%{version}-%{release}
 Requires(postun):  %{name}-platform = %{epoch}:%{version}-%{release}
