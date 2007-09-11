@@ -1,9 +1,14 @@
 Epoch:  1
 
+%ifarch %{ix86} x86_64
+%define gcj_support     0
+%else
 %define gcj_support     1
+%endif
 %define tomcatepoch     0
 %define tomcatversion   5.5.23
 %define tomcatsharedir  %{_datadir}/tomcat5
+%define tomcatlibdir    %{_var}/lib/tomcat5
 %define firefox_version %(rpm -q mozilla-firefox --queryformat %{VERSION} 2>/dev/null)
 %define firefox_dir     %(firefox-config --defines 2>/dev/null | sed -n -e 's,.*MOZ_DEFAULT_MOZILLA_FIVE_HOME=\\"\\([^\\"]*\\)\\"\\(.*\\),\\1,p')
 %define section         free
@@ -23,16 +28,16 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.9.1
-License:        EPL
+Release:        %mkrel 0.18.1
+License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
 Source0:        ftp://ftp.cse.buffalo.edu/pub/Eclipse/eclipse/downloads/drops/R-3.3-200706251500/eclipse-sourceBuild-srcIncluded-3.3.zip
 Source1:        %{name}.script
 Source2:        %{name}.desktop
 Source3:        eclipse.in
+Source4:        org.fedoraproject.ide.platform-3.3.0.2.zip
 Source6:        %{name}.conf
-Source11:       %{name}-fedora-splash-3.3.0.png
 Source16:       %{name}-copy-platform.sh
 Source17:       efj.sh.in
 Source18:       ecj.sh.in
@@ -44,7 +49,7 @@ Source19:       %{name}-filenamepatterns.txt
 # (generated 2006-11-01 18:48 UTC)
 Source20:       %{name}-fileinitializerapp.tar.bz2
 
-# These two patches need to go upstream
+# This needs to go upstream
 Patch3:         %{name}-libupdatebuild2.patch
 # Build swttools.jar
 # https://bugs.eclipse.org/bugs/show_bug.cgi?id=90364
@@ -61,9 +66,7 @@ Patch14:        %{name}-ecj-rpmdebuginfo.patch
 # generic releng plugins that can be used to build plugins
 # see this thread for details: 
 # https://www.redhat.com/archives/fedora-devel-java-list/2006-April/msg00048.html
-# This needs to be submitted upstream
 Patch15:        %{name}-pde.build-add-package-build.patch
-# FIXME: Should we ship tomcat plugins with 3.3?
 # This tomcat stuff will change when they move to the equinox jetty provider
 # https://bugs.eclipse.org/bugs/show_bug.cgi?id=98371
 Patch6:         %{name}-tomcat55.patch
@@ -72,7 +75,9 @@ Patch7:         %{name}-tomcat55-build.patch
 Patch17:        %{name}-ecj-gcj.patch
 Patch24:        %{name}-add-ppc64-sparc64-s390-s390x.patch
 #https://bugs.eclipse.org/bugs/show_bug.cgi?id=198840
-Patch25:        %{name}-launcher-double-free-bug.patch
+Patch25:       %{name}-launcher-double-free-bug.patch
+#FIXME: file a bug upstream
+Patch26:        %{name}-launcher-fix-java-home.patch
 Patch100:       %{name}-libswt-model.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires:  ant
@@ -92,17 +97,19 @@ BuildRequires:  mesaglu-devel
 BuildRequires:  cairo-devel >= 0:1.0
 BuildRequires:  unzip
 BuildRequires:  icu4j-eclipse >= 0:3.6.1
-BuildRequires:  java-1.5.0-gcj-javadoc
 BuildRequires:  desktop-file-utils
 %if %{gcj_support}
+BuildRequires:  java-1.5.0-gcj-javadoc
 BuildRequires:  java-gcj-compat-devel >= 0:1.0.64
 %else
-BuildRequires:  java-gcj-compat-devel >= 0:1.5.0
+BuildRequires:  java-devel >= 1.6.0
+BuildRequires:  java-javadoc >= 1.6.0
+BuildRequires:  libxt-devel
 %endif
 
 # https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=180642
-BuildRequires: ant-antlr ant-apache-bcel ant-apache-bsf ant-apache-log4j ant-apache-oro ant-apache-regexp ant-apache-resolver ant-commons-logging
-BuildRequires: ant-commons-net ant-jmf
+BuildRequires: ant-antlr ant-apache-bcel ant-apache-log4j ant-apache-oro ant-apache-regexp ant-apache-resolver ant-commons-logging
+BuildRequires: ant-apache-bsf ant-commons-net ant-jmf
 BuildRequires: ant-javamail ant-jdepend ant-junit ant-nodeps ant-swing ant-trax ant-jsch
 BuildRequires: jsch >= 0:0.1.31
 BuildRequires: jakarta-commons-beanutils jakarta-commons-collections jakarta-commons-digester jakarta-commons-dbcp jakarta-commons-el jakarta-commons-fileupload jakarta-commons-launcher jakarta-commons-logging jakarta-commons-modeler jakarta-commons-pool
@@ -115,7 +122,8 @@ BuildRequires: lucene
 BuildRequires: lucene-demo
 BuildRequires: lucene-contrib
 BuildRequires: regexp 
-BuildRequires: junit junit4
+BuildRequires: junit
+BuildRequires: junit4
 BuildRequires: jetty5
 %if %{gcj_support}
 Requires(post):   java-gcj-compat >= 0:1.0.64
@@ -137,7 +145,7 @@ Provides:       ecj = %{epoch}:%{version}-%{release}
 Requires(post):   java-gcj-compat >= 0:1.0.64
 Requires(postun): java-gcj-compat >= 0:1.0.64
 %else
-Requires:       java >= 0:1.5.0
+Requires:       java >= 1.6.0
 %endif
 
 %description    ecj
@@ -161,7 +169,7 @@ Group:          Development/Java
 Requires:       %{libname}-gtk2 = %{epoch}:%{version}-%{release}
 # This file-level requirement is for the bi-arch multilib case
 %if 0
-Requires:       %{_libdir}/%{name}/plugins/org.eclipse.swt.gtk.linux.%{eclipse_arch}__3.3.0.v3346.jar
+Requires: %{_libdir}/%{name}/plugins/org.eclipse.swt.gtk.linux.%{eclipse_arch}_3.3.0.v3346.jar
 %endif
 Requires(post):     %{libname}-gtk2 = %{epoch}:%{version}-%{release}
 Requires(postun):   %{libname}-gtk2 = %{epoch}:%{version}-%{release}
@@ -169,21 +177,11 @@ Requires(postun):   %{libname}-gtk2 = %{epoch}:%{version}-%{release}
 Requires(post):     java-gcj-compat >= 0:1.0.64
 Requires(postun):   java-gcj-compat >= 0:1.0.64
 %else
-Requires:       java >= 0:1.5.0
+Requires:       java >= 1.6.0
 %endif
 
 %description    rcp
 Eclipse Rich Client Platform
-
-%package        rcp-sdk
-Summary:        Eclipse Rich Client Platform SDK
-Group:          Development/Java
-Requires:       %{name}-rcp = %{epoch}:%{version}-%{release}
-Requires(post):    %{name}-rcp = %{epoch}:%{version}-%{release}
-Requires(postun):  %{name}-rcp = %{epoch}:%{version}-%{release}
-
-%description    rcp-sdk
-Source for Eclipse Rich Client Platform for use within Eclipse.
 
 %package        cvs-client
 Summary:        Eclipse CVS Client
@@ -195,26 +193,15 @@ Requires(postun):  %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires(post):     java-gcj-compat >= 1.0.64
 Requires(postun):   java-gcj-compat >= 1.0.64
 %else
-Requires:       java >= 0:1.5.0
+Requires:       java >= 1.6.0
 %endif
 
 %description    cvs-client
 Eclipse CVS Client
 
-%package        cvs-client-sdk
-Summary:        Eclipse Rich Client Platform SDK
-Group:          Development/Java
-Requires:       %{name}-cvs-client = %{epoch}:%{version}-%{release}
-Requires(post):    %{name}-cvs-client = %{epoch}:%{version}-%{release}
-Requires(postun):  %{name}-cvs-client = %{epoch}:%{version}-%{release}
-
-%description    cvs-client-sdk
-Source for Eclipse CVS Client for use within Eclipse.
-
 %package        platform
 Summary:        Eclipse platform common files
 Group:          Development/Java
-Provides:       %{name} = %{epoch}:%{version}-%{release}
 Obsoletes:      %{name}-ui %{name}-gtk2 %{name}-scripts eclipse
 Provides:       %{name}-ui = %{epoch}:%{version}-%{release}
 Provides:       %{name}-scripts = %{epoch}:%{version}-%{release}
@@ -224,15 +211,15 @@ Requires:       java-gcj-compat >= 0:1.0.64
 Requires(post):   java-gcj-compat >= 0:1.0.64
 Requires(postun): java-gcj-compat >= 0:1.0.64
 %else
-Requires:       java >= 0:1.5.0
+Requires:       java >= 1.6.0
 %endif
 Requires:       %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires(post):   %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires(postun): %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires: %{libname}-gtk2 = %{epoch}:%{version}-%{release}
 Requires: %mklibname mozilla-firefox %{firefox_version}
-Requires: ant-antlr ant-apache-bcel ant-apache-bsf ant-apache-log4j ant-apache-oro ant-apache-regexp ant-apache-resolver ant-commons-logging
-Requires: ant-commons-net ant-jmf
+Requires: ant-antlr ant-apache-bcel ant-apache-log4j ant-apache-oro ant-apache-regexp ant-apache-resolver ant-commons-logging
+Requires: ant-apache-bsf ant-commons-net ant-jmf
 Requires: ant-javamail ant-jdepend ant-junit ant-nodeps ant-swing ant-trax ant-jsch
 Requires: jakarta-commons-beanutils jakarta-commons-collections jakarta-commons-digester jakarta-commons-dbcp jakarta-commons-el jakarta-commons-fileupload jakarta-commons-launcher jakarta-commons-logging jakarta-commons-modeler jakarta-commons-pool
 Requires: mx4j >= 0:2.1
@@ -240,34 +227,39 @@ Requires: tomcat5 >= %{tomcatepoch}:%{tomcatversion}
 Requires: tomcat5-jasper >= %{tomcatepoch}:%{tomcatversion}
 Requires: jsp
 Requires: tomcat5-servlet-2.4-api >= %{tomcatepoch}:%{tomcatversion}
-Requires: lucene lucene-demo lucene-contrib
-Requires: regexp
 Requires: jetty5
-Requires: junit junit4
+Requires: jsch >= 0:0.1.31
+Requires: lucene >= 0:1.9.1
+Requires: lucene-contrib >= 0:1.9.1
+Requires: lucene-demo
+Requires: regexp
+Requires: junit
+Requires: junit4
 Requires: icu4j-eclipse
+# (walluck) Fedora forgets to include these
 Requires(post): desktop-file-utils
 Requires(postun): desktop-file-utils
+Requires: eclipse-cvs-client
+Requires: eclipse-subclipse
+Requires: eclipse-changelog
+Requires: eclipse-rpm-editor
+# no xmlrpc3 -> no mylyn on ppc64 due to:
+# https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=239123
+%ifnarch ppc64 alpha
+Requires: eclipse-mylyn
+Requires: eclipse-mylyn-ide
+Requires: eclipse-mylyn-bugzilla
+Requires: eclipse-mylyn-trac
+%endif
 
 %description    platform
 The Eclipse Platform is the base of all IDE plugins.  This does not include the
 Java Development Tools or the Plugin Development Environment.
 
-%package        platform-sdk
-Summary:        Eclipse Platform SDK
-Group:          Development/Java
-Requires:       %{name}-platform = %{epoch}:%{version}-%{release}
-Requires:       %{name}-rcp-sdk = %{epoch}:%{version}-%{release}
-Requires(post):    %{name}-platform = %{epoch}:%{version}-%{release}
-Requires(postun):  %{name}-platform = %{epoch}:%{version}-%{release}
-Requires(post):    %{name}-rcp-sdk = %{epoch}:%{version}-%{release}
-Requires(postun):  %{name}-rcp-sdk = %{epoch}:%{version}-%{release}
-
-%description    platform-sdk
-Source and docs for Eclipse Platform for use within Eclipse.
-
 %package        jdt
 Summary:        Eclipse Java Development Tools
 Group:          Development/Java
+Provides:       eclipse = %{epoch}:%{version}-%{release}
 Requires:       %{name}-platform = %{epoch}:%{version}-%{release}
 Requires:       %{name}-cvs-client = %{epoch}:%{version}-%{release}
 Requires:       %{name}-ecj = %{epoch}:%{version}-%{release}
@@ -275,8 +267,19 @@ Requires(post):    %{name}-platform = %{epoch}:%{version}-%{release}
 Requires(postun):  %{name}-platform = %{epoch}:%{version}-%{release}
 Requires(post):    %{name}-ecj = %{epoch}:%{version}-%{release}
 Requires(postun):  %{name}-ecj = %{epoch}:%{version}-%{release}
-Requires:       junit junit4
-Requires:       java-javadoc
+Requires:       junit
+Requires:       junit4
+
+%if %{gcj_support}
+Requires:       java-1.5.0-gcj-javadoc
+%else
+Requires:       java-javadoc >= 1.6.0
+%endif
+# no xmlrpc3 -> no mylyn on ppc64 due to:
+# https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=239123
+%ifnarch ppc64 alpha
+Requires:       eclipse-mylyn-java
+%endif
 %if %{gcj_support}
 Requires(post):   java-gcj-compat >= 0:1.0.64
 Requires(postun): java-gcj-compat >= 0:1.0.64
@@ -286,25 +289,35 @@ Requires(postun): java-gcj-compat >= 0:1.0.64
 Eclipse Java Development Tools.  This package is required to use Eclipse for
 developing software written in the Java programming language.
 
-%package        jdt-sdk
-Summary:        Eclipse Java Development Tools SDK
-Group:          Development/Java
-Requires:       %{name}-jdt = %{epoch}:%{version}-%{release}
-Requires:       %{name}-platform-sdk = %{epoch}:%{version}-%{release}
-Requires(post):    %{name}-jdt = %{epoch}:%{version}-%{release}
-Requires(postun):  %{name}-jdt = %{epoch}:%{version}-%{release}
-Requires(post):    %{name}-platform-sdk = %{epoch}:%{version}-%{release}
-Requires(postun):  %{name}-platform-sdk = %{epoch}:%{version}-%{release}
-
-%description    jdt-sdk
-Source and docs for Eclipse Java Development Tools for use within Eclipse.
-
 %package        pde
 Summary:        Eclipse Plugin Development Environment
 Group:          Development/Java
+Provides:      eclipse-sdk
+# Can remove for mdv2008.1
+Obsoletes:     eclipse-sdk < 1:3.3.0-0.9.1
+Provides:       eclipse-pde-sdk
+Obsoletes:      eclipse-pde-sdk 1:3.3.0-0.9.1
+Provides:       eclipse-cvs-client-sdk
+Obsoletes:      eclipse-cvs-client-sdk < 1:3.3.0-0.9.1
+Provides:       eclipse-jdt-sdk
+Obsoletes:      eclipse-jdt-sdk < 1:3.3.0-0.9.1
+Provides:       eclipse-pde-sdk
+Obsoletes:      eclipse-pde-sdk < 1:3.3.0-0.9.1
+Provides:       eclipse-platform-sdk
+Obsoletes:      eclipse-platform-sdk < 1:3.3.0-0.9.1
+Provides:       eclipse-rcp-sdk
+Obsoletes:      eclipse-rcp-sdk < 1:3.3.0-0.9.1
+# end remove for mdv2008.1
+Requires:       %{name}-platform = %{epoch}:%{version}-%{release}
 Requires:       %{name}-jdt = %{epoch}:%{version}-%{release}
 Requires:       %{name}-pde-runtime = %{epoch}:%{version}-%{release}
-Requires:       %{name}-platform-sdk = %{epoch}:%{version}-%{release}
+# no xmlrpc3 -> no mylyn on ppc64 due to:
+# https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=239123
+%ifnarch ppc64 alpha
+Requires:       eclipse-mylyn-pde
+%endif
+Requires(post):    %{name}-platform = %{epoch}:%{version}-%{release}
+Requires(postun):  %{name}-platform = %{epoch}:%{version}-%{release}
 Requires(post):    %{name}-jdt = %{epoch}:%{version}-%{release}
 Requires(postun):  %{name}-jdt = %{epoch}:%{version}-%{release}
 Requires(post):    %{name}-pde-runtime = %{epoch}:%{version}-%{release}
@@ -336,50 +349,6 @@ Requires(postun): java-gcj-compat >= 0:1.0.64
 Eclipse Plug-in Development Environment runtime plugin
 (org.eclipse.pde.runtime).
 
-%package        pde-sdk
-Summary:        Eclipse Plugin Development Environment SDK
-Group:          Development/Java
-Requires:       %{name}-pde = %{epoch}:%{version}-%{release}
-Requires:       %{name}-jdt-sdk = %{epoch}:%{version}-%{release}
-Requires(post):    %{name}-pde = %{epoch}:%{version}-%{release}
-Requires(postun):  %{name}-pde = %{epoch}:%{version}-%{release}
-
-%description    pde-sdk
-Source and docs for Eclipse Plugin Development Environment for use within
-Eclipse.
-
-%package        sdk
-Summary:        Eclipse SDK
-Group:          Development/Java
-Requires:       %{name}-platform-sdk = %{epoch}:%{version}-%{release}
-Requires:       %{name}-jdt-sdk = %{epoch}:%{version}-%{release}
-Requires:       %{name}-pde-sdk = %{epoch}:%{version}-%{release}
-Requires(post):    %{name}-platform-sdk = %{epoch}:%{version}-%{release}
-Requires(postun):  %{name}-platform-sdk = %{epoch}:%{version}-%{release}
-Requires(post):    %{name}-pde-sdk = %{epoch}:%{version}-%{release}
-Requires(postun):  %{name}-pde-sdk = %{epoch}:%{version}-%{release}
-Requires(post):    %{name}-jdt-sdk = %{epoch}:%{version}-%{release}
-Requires(postun):  %{name}-jdt-sdk = %{epoch}:%{version}-%{release}
-%if 0
-# This file requirement is to deal with the biarch installation case
-Requires(post):    %{_libdir}/%{name}/configuration/config.ini
-Requires(postun):  %{_libdir}/%{name}/configuration/config.ini
-%else
-Requires(post):    eclipse-rcp
-Requires(postun):  eclipse-rcp
-%endif
-%if %{gcj_support}
-Requires(post):    java-gcj-compat >= 0:1.0.64
-Requires(postun):  java-gcj-compat >= 0:1.0.64
-%endif
-
-%description    sdk
-The Eclipse SDK.  This package is similar to a meta-package which brings in
-the Eclipse Platform SDK, the Eclipse Java Development Tools SDK, and the
-Eclipse Plugin Development Environment SDK.  It also contains the
-org.eclipse.sdk plugin and feature.  This package is only needed if you intend
-to create Eclipse applications.
-
 %prep
 %setup -q -c
 
@@ -408,11 +377,16 @@ pushd plugins/org.eclipse.jdt.core
 %patch17 -p0
 popd
 
+# liblocalfile fixes
+sed --in-place "s/JAVA_HOME =/#JAVA_HOME =/" plugins/org.eclipse.core.filesystem/natives/unix/linux/Makefile
+sed --in-place "s/OPT_FLAGS=-O/OPT_FLAGS=-O2 -g/" plugins/org.eclipse.core.filesystem/natives/unix/linux/Makefile
+
 # launcher patches
 rm plugins/org.eclipse.platform/launchersrc.zip
 pushd features/org.eclipse.equinox.executable
 %patch12 -p0
 %patch25 -p0
+%patch26 -p0
 # put the configuration directory in an arch-specific location
 sed --in-place "s:/usr/lib/eclipse/configuration:%{_libdir}/%{name}/configuration:" library/eclipse.c
 # make the eclipse binary relocatable
@@ -439,13 +413,6 @@ pushd plugins/org.eclipse.pde.build
 %patch15
 sed --in-place "s:/usr/share/eclipse:%{_datadir}/%{name}:" templates/package-build/build.properties
 popd
-
-# Splashscreen
-%if 0
-pushd plugins/org.eclipse.platform
-cp %{SOURCE11} plugins/org.eclipse.platform/splash.bmp
-popd
-%endif
 
 # FIXME this should be patched upstream with a flag to turn on and off 
 # all output should be directed to stdout
@@ -582,8 +549,9 @@ sed --in-place "s:/usr/lib/:%{_libdir}/:g" build.sh
 sed --in-place "s:-L\$(AWT_LIB_PATH):-L%{java_home}/jre/lib/%{_arch}:" make_linux.mak
 popd
 
-# FIXME: figure out what's going on with build.index.
+%if %{gcj_support}
 find plugins -type f -name \*.xml -exec sed --in-place "s/\(<antcall target=\"build.index\".*\/>\)/<\!-- \1 -->/" "{}" \;
+%endif
 
 # the swt version is set to HEAD on ia64 but shouldn't be
 # get swt version
@@ -614,7 +582,7 @@ popd
 %{__sed} --in-place 's,<java ,<java fork="true" jvm="%{java}" ,' plugins/org.eclipse.*/build.xml
 %{__sed} --in-place 's,<java ,<java jvm="%{java}" ,' build.xml
 
-## Nasty hack to get suppport for ppc64, s390{,x}, sparc{,64} and alpha
+## Nasty hack to get suppport for ppc64, sparc{,64} and alpha
 %patch24 -p1
 # there is only partial support for ppc64 so we have to remove this
 # partial support to get the replacemnt hack to work
@@ -626,9 +594,9 @@ find -type f -name \*.xml -exec sed --in-place "s/\(rootFileslinux_gtk_\)ppc64/\
 sed --in-place "s/,.\{38\}ppc64.*macosx/,org.eclipse.platform.source.macosx/g" features/org.eclipse.platform.source/build.xml
 # replace final occurances with an existing arch
 sed --in-place "s/ppc64/x86_64/g" features/org.eclipse.platform.source/build.xml
-# Move all of the ia64 directories to ppc64 or s390{,x} or sparc{,64} or alpha dirs and replace
-# the ia64 strings with ppc64 or s390(x)
-%ifarch ppc64 s390 s390x %{sunsparc} alpha
+# Move all of the ia64 directories to ppc64 or sparc{,64} or alpha dirs and replace
+# the ia64 strings with ppc64 etc.
+%ifarch ppc64 sparc sparc64 alpha
   for f in $(find -name \*ia64\* | grep -v motif | grep -v ia64_32); do 
     mv $f $(echo $f | sed "s/ia64/%{_arch}/")
   done
@@ -643,8 +611,14 @@ for plugin in jdt.apt.pluggable.core jdt.compiler.tool jdt.compiler.apt; do
   sed --in-place "s/org.eclipse.$plugin:0.0.0,$version,//" features/org.eclipse.jdt/build.xml
   linenum=$(grep -no $plugin features/org.eclipse.jdt/build.xml | cut -d : -f 1)
   sed --in-place -e "$linenum,$(expr $linenum + 4)d" features/org.eclipse.jdt/build.xml
+# If we're build with IcedTea then we don't want to remove the plugins from the
+# feature.xml because we will build these plugins after the main build. This
+# allows us to produce 1.5 bytecode for all of the SDK except for the parts that
+# explicitly use Java 1.6. This enables GCJ to work with Eclipse on all platforms. 
+%if ! %{gcj_support}
   linenum=$(grep -no $plugin features/org.eclipse.jdt/feature.xml | cut -d : -f 1)
   sed --in-place -e "$(expr $linenum - 1),$(expr $linenum + 5)d" features/org.eclipse.jdt/feature.xml
+%endif 
   linenum=$(grep -no "dir=\"plugins/org.eclipse.$plugin" assemble.org.eclipse.sdk.linux.gtk.%{eclipse_arch}.xml | cut -d : -f 1)
   sed --in-place -e "$linenum,$(expr $linenum + 2)d" assemble.org.eclipse.sdk.linux.gtk.%{eclipse_arch}.xml
   linenum=$(grep -no "value=\"org.eclipse.$plugin" assemble.org.eclipse.sdk.linux.gtk.%{eclipse_arch}.xml | cut -d : -f 1)
@@ -682,8 +656,9 @@ ln -s %{_javadir}/commons-el.jar plugins/org.apache.commons.el_1.0.0.v2007061117
 rm plugins/org.apache.jasper_5.5.17.v200706111724.jar
 ln -s %{_javadir}/jasper5.jar plugins/org.apache.jasper_5.5.17.v200706111724.jar
 
-rm plugins/org.mortbay.jetty_5.1.11.v200706111724.jar
-ln -s %{_javadir}/jetty5/jetty5.jar plugins/org.mortbay.jetty_5.1.11.v200706111724.jar
+JETTYPLUGINVERSION=$(ls plugins | grep org.mortbay.jetty_5 | sed 's/org.mortbay.jetty_//')
+rm plugins/org.mortbay.jetty_$JETTYPLUGINVERSION
+ln -s %{_javadir}/jetty/jetty.jar plugins/org.mortbay.jetty_$JETTYPLUGINVERSION
 
 # delete included jars
 # https://bugs.eclipse.org/bugs/show_bug.cgi?id=170662
@@ -754,19 +729,33 @@ export JAVA_HOME=%{java_home}
   -DinstallOs=linux -DinstallWs=gtk -DinstallArch=%{eclipse_arch} \
   -Dlibsconfig=true -DjavacSource=1.5 -DjavacTarget=1.5 -DcompilerArg="-encoding ISO-8859-1 -nowarn"
 
-## Build the FileInitializer application
+# build 1.6 when building with IcedTea
 SDK=$(cd eclipse && pwd)
+mkdir -p home
+homedir=$(cd home && pwd)
+LAUNCHERVERSION=$(ls $SDK/plugins | grep equinox.launcher_ | sed 's/org.eclipse.equinox.launcher_//')
+
+%if ! %{gcj_support}
+for plugin in jdt.compiler.tool jdt.compiler.apt jdt.apt.pluggable.core; do
+  pushd plugins/org.eclipse.$plugin
+  %{java} -cp $SDK/plugins/org.eclipse.equinox.launcher_$LAUNCHERVERSION \
+       org.eclipse.core.launcher.Main                    \
+       -application org.eclipse.ant.core.antRunner       \
+       build.update.jar                                  \
+       -vmargs -Duser.home=$homedir
+  popd
+done
+%endif
+
+## Build the FileInitializer application
 PDEPLUGINVERSION=$(ls $SDK/plugins | grep pde.build | sed 's/org.eclipse.pde.build_//')
 pushd equinox-incubator
 mkdir -p build
-mkdir -p home
-homedir=$(cd home && pwd)
 
 # This can go away when package build handles plugins (not just features)
 echo "<project default=\"main\"><target name=\"main\"></target></project>" > build/assemble.org.eclipse.equinox.initializer.all.xml
 echo "<project default=\"main\"><target name=\"main\"></target></project>" > build/package.org.eclipse.equinox.initializer.all.xml
 
-LAUNCHERVERSION=$(ls $SDK/plugins | grep equinox.launcher_ | sed 's/org.eclipse.equinox.launcher_//')
 %{java} -cp $SDK/plugins/org.eclipse.equinox.launcher_$LAUNCHERVERSION \
      -Duser.home=$homedir                              \
       org.eclipse.core.launcher.Main \
@@ -805,8 +794,15 @@ install -d -m 755 $RPM_BUILD_ROOT%{_libdir}/%{name}/features
 # Explode the resulting SDK tarball
 tar -C $RPM_BUILD_ROOT%{_datadir} -zxf result/linux-gtk-%{eclipse_arch}-sdk.tar.gz
 cp launchertmp/eclipse $RPM_BUILD_ROOT%{_datadir}/eclipse
-%ifarch ppc64 s390 s390x sparc sparc64 alpha
+%ifarch ppc64 sparc sparc64 alpha
 cp features/org.eclipse.platform/gtk/eclipse.ini $RPM_BUILD_ROOT%{_datadir}/eclipse
+%endif
+
+# Install 1.6 plugins when building with IcedTea
+%if ! %{gcj_support}
+for plugin in jdt.apt.pluggable.core jdt.compiler.tool jdt.compiler.apt; do
+  cp plugins/org.eclipse.$plugin/org.eclipse.$plugin_*.jar $RPM_BUILD_ROOT%{_datadir}/eclipse/plugins
+done
 %endif
 
 # Add a compatibility symlink to startup.jar
@@ -815,10 +811,12 @@ LAUNCHERNAME=$(ls plugins | grep equinox.launcher_)
 ln -s plugins/$LAUNCHERNAME startup.jar
 popd
 
-## The FileInitializer app isn't part of the SDK (yet?) but we want it to be
-## around for other RPMs
+# Install the file initializer app
 cp equinox-incubator/org.eclipse.equinox.initializer/org.eclipse.equinox.initializer_*.jar \
   $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins
+
+# Install the Fedora Eclipse product plugin
+unzip -qq -d $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins %{SOURCE4}
 
 # Set up an extension location and a link file for the arch-specific dir
 echo "path:$RPM_BUILD_ROOT%{_libdir}" > $RPM_BUILD_ROOT%{_datadir}/%{name}/links/fragments.link
@@ -859,21 +857,9 @@ PDEDOCUSERVERSION=$(ls $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins | grep pde.doc
 mv $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins/org.eclipse.pde.doc.user_$PDEDOCUSERVERSION \
   $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins
 
-# Adding support for ppc64, s390{x} and sparc{64} makes the rcp feature 
+# Adding support for ppc64 and sparc{64} makes the rcp feature 
 # have multilib conflicts
 mv $RPM_BUILD_ROOT%{_datadir}/%{name}/features/org.eclipse.rcp_* \
-  $RPM_BUILD_ROOT%{_libdir}/%{name}/features
-
-# To ensure that the product is org.eclipse.sdk.ide when eclipse-sdk is
-# installed, we must check for its presence at %%post{,un} time.  This does not
-# work in the biarch case, though, if it is not in an arch-specific location.
-# This results in complaints that the sdk plugin is found twice, but this is
-# better than always appearing in the about dialog as the Eclipse Platform with
-# the platform plugin version number instead of the actual SDK version number.
-# -- overholt, 2006-11-03
-mv $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins/org.eclipse.sdk_* \
-  $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins
-mv $RPM_BUILD_ROOT%{_datadir}/%{name}/features/org.eclipse.sdk_* \
   $RPM_BUILD_ROOT%{_libdir}/%{name}/features
 
 # FIXME: investigate why it doesn't work to set this -- configuration data is
@@ -906,8 +892,10 @@ rm -r $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/org.eclipse.update
 rm -r $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/org.eclipse.core.runtime
 rm -r $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/org.eclipse.equinox.app
 
-# Set config.ini for the platform; no benefit to having it be sdk
-sed --in-place "s/eclipse.product=org.eclipse.sdk.ide/eclipse.product=org.eclipse.platform.ide/" \
+# Set eclipse.product to org.fedoraproject.ide.platform 
+sed --in-place "s/plugins\/org.eclipse.platform/plugins\/org.fedoraproject.ide.platform/" \
+  $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/config.ini
+sed --in-place "s/eclipse.product=org.eclipse.sdk.ide/eclipse.product=org.fedoraproject.ide.platform.product/" \
   $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/config.ini
 
 # Install the launcher so
@@ -1002,19 +990,17 @@ ln -s org.eclipse.pde.build_* org.eclipse.pde.build
 popd
 
 # Icons
-PLATFORMSUFFIX=$(ls $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins | grep eclipse.platform_ | sed "s/org.eclipse.platform_//")
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/48x48/apps
-ln -s %{_datadir}/%{name}/plugins/org.eclipse.platform_$PLATFORMSUFFIX/eclipse48.png \
+ln -s %{_datadir}/%{name}/plugins/org.fedoraproject.ide.platform/eclipse48.png \
   $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/48x48/apps/%{name}.png
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps
-ln -s %{_datadir}/%{name}/plugins/org.eclipse.platform_$PLATFORMSUFFIX/eclipse32.png \
+ln -s %{_datadir}/%{name}/plugins/org.fedoraproject.ide.platform/eclipse32.png \
   $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/16x16/apps
-ln -s ../../../../%{name}/plugins/org.eclipse.platform_$PLATFORMSUFFIX/eclipse.png \
+ln -s ../../../../%{name}/plugins/org.fedoraproject.ide.platform/eclipse.png \
   $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/pixmaps
-ln -s %{_datadir}/icons/hicolor/48x48/apps/%{name}.png \
-  $RPM_BUILD_ROOT%{_datadir}/pixmaps
+ln -s %{_datadir}/icons/hicolor/48x48/apps/%{name}.png $RPM_BUILD_ROOT%{_datadir}/pixmaps
 %ifarch %{ix86} x86_64
 # Remove unused icon.xpm
 # see https://bugs.eclipse.org/bugs/show_bug.cgi?id=86848
@@ -1034,22 +1020,6 @@ desktop-file-validate %{SOURCE2}
 
 # freedesktop.org menu entry
 install -p -D -m 644 %{SOURCE2} $RPM_BUILD_ROOT%{_datadir}/applications/%{name}.desktop
-
-SDKPLUGINVERSION=$(ls $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins | grep eclipse.sdk_ | sed "s/org.eclipse.sdk_//")
-# Put Fedora Core version into about.mappings of org.eclipse.sdk and
-# org.eclipse.platform to show it in # Eclipse about dialog.  (courtesy Debian
-# Eclipse packagers)
-# FIXME use the third id
-pushd $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins/org.eclipse.sdk_$SDKPLUGINVERSION
-OS_VERSION=$(cat /etc/*-release | head -n 1)
-sed -e "s/\(0=.*\)/\1 ($OS_VERSION)/" < about.mappings > about.mappings.tmp
-mv about.mappings.tmp about.mappings
-popd
-PLATFORMPLUGINVERSION=$(ls $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins | grep eclipse.platform_ | sed "s/org.eclipse.platform_//")
-pushd $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins/org.eclipse.platform_$PLATFORMPLUGINVERSION
-sed -e "s/\(0=.*\)/\1 ($OS_VERSION)/" < about.mappings > about.mappings.tmp
-mv about.mappings.tmp about.mappings
-popd
 
 # Create a script that can be used to make a symlink tree of the
 # eclipse platform.
@@ -1154,6 +1124,10 @@ build-jar-repository -s -p plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib j
 build-jar-repository -s -p plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib regexp
 build-jar-repository -s -p plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib servletapi5
 ## END TOMCAT ##
+
+JETTYPLUGINVERSION=$(ls plugins | grep org.mortbay.jetty_5 | sed 's/org.mortbay.jetty_//')
+rm plugins/org.mortbay.jetty_$JETTYPLUGINVERSION
+ln -s %{_javadir}/jetty/jetty.jar plugins/org.mortbay.jetty_$JETTYPLUGINVERSION
 
 build-jar-repository -s -p plugins/org.junit_* junit
 
@@ -1325,32 +1299,6 @@ rm -rf $RPM_BUILD_ROOT
 %{update_desktop_database}
 %update_icon_cache hicolor
 
-%post sdk
-%if %{gcj_support}
-%{update_gcjdb}
-%endif
-if [ -f %{_libdir}/%{name}/configuration/config.ini ]; then
-  sed --in-place "s/[#]*eclipse.product=.*/eclipse.product=org.eclipse.sdk.ide/" \
-    %{_libdir}/%{name}/configuration/config.ini
-fi
-
-%postun sdk
-%if %{gcj_support}
-%{clean_gcjdb}
-%endif
-# Only set the product back to platform.ide if the sdk is actually removed for
-# this arch.  This SDKDIR check is to deal with the ordering of new %%post
-# before old %%postun
-if [ -d %{_libdir}/%{name}/features ]; then
-  SDKDIR=$(ls %{_libdir}/%{name}/features | grep "org\.eclipse\.sdk_")
-else
-  SDKDIR=""
-fi
-if [ -z "$SDKDIR" -a -f %{_libdir}/%{name}/configuration/config.ini ]; then
-  sed --in-place "s/[#]*eclipse.product=.*/eclipse.product=org.eclipse.platform.ide/" \
-    %{_libdir}/%{name}/configuration/config.ini
-fi
-
 %if %{gcj_support}
 %post ecj
 %{update_gcjdb}
@@ -1370,28 +1318,10 @@ fi
 %postun rcp
 %{clean_gcjdb}
 
-%post rcp-sdk
-%{update_gcjdb}
-
-%postun rcp-sdk
-%{clean_gcjdb}
-
-%post platform-sdk
-%{update_gcjdb}
-
-%postun platform-sdk
-%{clean_gcjdb}
-
 %post jdt
 %{update_gcjdb}
 
 %postun jdt
-%{clean_gcjdb}
-
-%post jdt-sdk
-%{update_gcjdb}
-
-%postun jdt-sdk
 %{clean_gcjdb}
 
 %post pde
@@ -1404,12 +1334,6 @@ fi
 %{update_gcjdb}
 
 %postun pde-runtime
-%{clean_gcjdb}
-
-%post pde-sdk
-%{update_gcjdb}
-
-%postun pde-sdk
 %{clean_gcjdb}
 %endif
 
@@ -1521,12 +1445,6 @@ fi
 %{_libdir}/gcj/%{name}/org.eclipse.core.databinding.beans_*
 %endif
 
-%files rcp-sdk
-%defattr(-,root,root)
-%{_datadir}/%{name}/features/org.eclipse.rcp.source_*
-%{_libdir}/%{name}/plugins/org.eclipse.rcp.source.linux.gtk.%{eclipse_arch}*
-%{_datadir}/%{name}/plugins/org.eclipse.rcp.source_*
-
 %files cvs-client
 %{_datadir}/%{name}/plugins/org.eclipse.team.cvs.core_*
 %{_datadir}/%{name}/plugins/org.eclipse.cvs_*
@@ -1540,10 +1458,6 @@ fi
 %{_libdir}/gcj/%{name}/org.eclipse.team.cvs.ssh2_*
 %{_libdir}/gcj/%{name}/org.eclipse.team.cvs.ui_*
 %endif
-
-%files cvs-client-sdk
-%{_datadir}/%{name}/plugins/org.eclipse.cvs.source_*
-%{_datadir}/%{name}/features/org.eclipse.cvs.source_*
 
 %files platform -f %{name}-platform.install
 %defattr(-,root,root)
@@ -1568,6 +1482,7 @@ fi
 %{_datadir}/%{name}/plugins/org.eclipse.core.boot_*
 %{_datadir}/%{name}/plugins/org.eclipse.core.filebuffers_*
 %{_datadir}/%{name}/plugins/org.eclipse.core.filesystem_*
+%{_datadir}/%{name}/plugins/org.fedoraproject.ide.platform
 %ifarch %{ix86} x86_64 ppc
 %{_libdir}/%{name}/plugins/org.eclipse.core.filesystem.linux.%{eclipse_arch}_*
 %endif
@@ -1666,6 +1581,7 @@ fi
 %{_libdir}/gcj/%{name}/org.eclipse.ui.editors_*
 %{_libdir}/gcj/%{name}/org.eclipse.ui.externaltools_*
 %{_libdir}/gcj/%{name}/org.eclipse.ui.forms_*
+# FIXME
 #%{_libdir}/gcj/%{name}/org.eclipse.ui.ide.application_*
 %{_libdir}/gcj/%{name}/org.eclipse.ui.intro_*
 %{_libdir}/gcj/%{name}/org.eclipse.ui.navigator_*
@@ -1678,7 +1594,6 @@ fi
 %{_libdir}/gcj/%{name}/org.eclipse.update.core_*
 %{_libdir}/gcj/%{name}/org.eclipse.update.scheduler_*
 %{_libdir}/gcj/%{name}/org.eclipse.update.ui_*
-%{_libdir}/gcj/%{name}/org.mortbay.jetty_*
 %{_libdir}/gcj/%{name}/compatibility.*
 %{_libdir}/gcj/%{name}/org.eclipse.equinox.http.registry_*
 %{_libdir}/gcj/%{name}/org.eclipse.equinox.initializer_*
@@ -1686,25 +1601,6 @@ fi
 %{_libdir}/gcj/%{name}/runtime_registry_compatibility.jar.*
 %{_libdir}/gcj/%{name}/tomcatwrapper.jar.*
 %{_libdir}/gcj/%{name}/universal.jar.*
-%endif
-
-%files platform-sdk
-%defattr(-,root,root)
-%{_datadir}/%{name}/features/org.eclipse.platform.source_*
-%{_datadir}/%{name}/plugins/javax.servlet.jsp.source_*
-%{_datadir}/%{name}/plugins/javax.servlet.source_*
-%{_datadir}/%{name}/plugins/org.apache.ant.source_*
-%{_datadir}/%{name}/plugins/org.apache.commons.el.source_*
-%{_datadir}/%{name}/plugins/org.apache.commons.logging.source_*
-%{_datadir}/%{name}/plugins/org.apache.jasper.source_*
-%{_datadir}/%{name}/plugins/org.apache.lucene.analysis.source_*
-%{_datadir}/%{name}/plugins/org.apache.lucene.source_*
-%{_libdir}/%{name}/plugins/org.eclipse.platform.doc.isv_*
-%{_libdir}/%{name}/plugins/org.eclipse.platform.source_*
-%{_libdir}/%{name}/plugins/org.eclipse.platform.source.linux.gtk.%{eclipse_arch}_*
-%{_datadir}/%{name}/plugins/org.mortbay.jetty.source_*
-%if %{gcj_support}
-%{_libdir}/gcj/%{name}/org.eclipse.platform.doc.isv_*
 %endif
 
 %files jdt
@@ -1739,19 +1635,17 @@ fi
 %{_libdir}/gcj/%{name}/org.eclipse.jdt.debug.ui_*
 %{_libdir}/gcj/%{name}/jdimodel.jar.*
 %{_libdir}/gcj/%{name}/jdi.jar.*
-%{_libdir}/gcj/%{name}/junit.jar.*
+%else
+%{_datadir}/%{name}/plugins/org.eclipse.jdt.apt.pluggable.core_*
+%{_datadir}/%{name}/plugins/org.eclipse.jdt.compiler.apt_*
+%{_datadir}/%{name}/plugins/org.eclipse.jdt.compiler.tool_*
 %endif
-
-%files jdt-sdk
-%defattr(-,root,root)
-%{_datadir}/%{name}/features/org.eclipse.jdt.source_*
-%{_libdir}/%{name}/plugins/org.eclipse.jdt.doc.isv_*
-%{_datadir}/%{name}/plugins/org.eclipse.jdt.source_*
-%{_datadir}/%{name}/plugins/org.junit.source_*
 
 %files pde
 %defattr(-,root,root)
+%{_datadir}/%{name}/features/org.eclipse.sdk_*
 %{_datadir}/%{name}/features/org.eclipse.pde_*
+%{_datadir}/%{name}/features/org.eclipse.pde.source_*
 %{_libdir}/%{name}/plugins/org.eclipse.pde.doc.user_*
 %{_datadir}/%{name}/plugins/org.eclipse.pde.build_*
 %{_datadir}/%{name}/plugins/org.eclipse.pde.build
@@ -1760,6 +1654,30 @@ fi
 %{_datadir}/%{name}/plugins/org.eclipse.pde.junit.runtime_*
 %{_datadir}/%{name}/plugins/org.eclipse.pde.ui_*
 %{_datadir}/%{name}/plugins/org.eclipse.pde.ui.templates_*
+%{_datadir}/%{name}/features/org.eclipse.rcp.source_*
+%{_libdir}/%{name}/plugins/org.eclipse.rcp.source.linux.gtk.%{eclipse_arch}*
+%{_datadir}/%{name}/plugins/org.eclipse.rcp.source_*
+%{_datadir}/%{name}/plugins/org.eclipse.pde.source_*
+%{_datadir}/%{name}/features/org.eclipse.cvs.source_*
+%{_datadir}/%{name}/plugins/org.eclipse.cvs.source_*
+%{_datadir}/%{name}/plugins/org.eclipse.sdk_*
+%{_datadir}/%{name}/features/org.eclipse.jdt.source_*
+%{_libdir}/%{name}/plugins/org.eclipse.jdt.doc.isv_*
+%{_datadir}/%{name}/plugins/org.eclipse.jdt.source_*
+%{_datadir}/%{name}/plugins/org.junit.source_*
+%{_datadir}/%{name}/features/org.eclipse.platform.source_*
+%{_datadir}/%{name}/plugins/javax.servlet.jsp.source_*
+%{_datadir}/%{name}/plugins/javax.servlet.source_*
+%{_datadir}/%{name}/plugins/org.apache.ant.source_*
+%{_datadir}/%{name}/plugins/org.apache.commons.el.source_*
+%{_datadir}/%{name}/plugins/org.apache.commons.logging.source_*
+%{_datadir}/%{name}/plugins/org.apache.jasper.source_*
+%{_datadir}/%{name}/plugins/org.apache.lucene.analysis.source_*
+%{_datadir}/%{name}/plugins/org.apache.lucene.source_*
+%{_libdir}/%{name}/plugins/org.eclipse.platform.doc.isv_*
+%{_libdir}/%{name}/plugins/org.eclipse.platform.source_*
+%{_libdir}/%{name}/plugins/org.eclipse.platform.source.linux.gtk.%{eclipse_arch}_*
+%{_datadir}/%{name}/plugins/org.mortbay.jetty.source_*
 %{_datadir}/%{name}/buildscripts
 %if %{gcj_support}
 %{_libdir}/gcj/%{name}/org.eclipse.pde_*
@@ -1767,6 +1685,7 @@ fi
 %{_libdir}/gcj/%{name}/org.eclipse.pde.junit.runtime_*
 %{_libdir}/gcj/%{name}/org.eclipse.pde.ui_*
 %{_libdir}/gcj/%{name}/org.eclipse.pde.ui.templates_*
+%{_libdir}/gcj/%{name}/org.eclipse.platform.doc.isv_*
 %{_libdir}/gcj/%{name}/pdebuild.jar*
 %{_libdir}/gcj/%{name}/pdebuild-ant.jar*
 %endif
@@ -1777,13 +1696,3 @@ fi
 %if %{gcj_support}
 %{_libdir}/gcj/%{name}/org.eclipse.pde.runtime_*
 %endif
-
-%files pde-sdk
-%defattr(-,root,root)
-%{_datadir}/%{name}/features/org.eclipse.pde.source_*
-%{_datadir}/%{name}/plugins/org.eclipse.pde.source_*
-
-%files sdk
-%defattr(-,root,root)
-%{_libdir}/%{name}/features/org.eclipse.sdk_*
-%{_libdir}/%{name}/plugins/org.eclipse.sdk_*
