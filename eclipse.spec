@@ -908,7 +908,7 @@ mv $RPM_BUILD_ROOT%{_datadir}/%{name}/eclipse $RPM_BUILD_ROOT%{_libdir}/%{name}
 install -d -m 755 $RPM_BUILD_ROOT%{_bindir}
 # (walluck) Fedora has a bug here, they want to use the binary
 # (walluck) only, but then we lose the ability to configure it
-%if 0
+%if 1
 cp %{SOURCE3} $RPM_BUILD_ROOT%{_bindir}/eclipse
 sed --in-place "s|@LIBDIR@|%{_libdir}|g" $RPM_BUILD_ROOT%{_bindir}/eclipse
 ECLIPSELIBSUFFIX=$(ls $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins/org.eclipse.equinox.launcher.gtk.linux*/*.so | sed "s/.*.launcher.gtk.linux.//")
