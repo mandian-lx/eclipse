@@ -1,7 +1,7 @@
 Epoch:  1
 
 %ifarch %{ix86} x86_64
-%define gcj_support     0
+%define gcj_support     1
 %else
 %define gcj_support     1
 %endif
