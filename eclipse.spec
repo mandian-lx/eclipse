@@ -626,7 +626,7 @@ ln -s %{_javadir}/jasper5.jar plugins/org.apache.jasper_5.5.17.v200706111724.jar
 
 JETTYPLUGINVERSION=$(ls plugins | grep org.mortbay.jetty_5 | sed 's/org.mortbay.jetty_//')
 rm plugins/org.mortbay.jetty_$JETTYPLUGINVERSION
-ln -s %{_javadir}/jetty/jetty.jar plugins/org.mortbay.jetty_$JETTYPLUGINVERSION
+ln -s %{_javadir}/jetty5/jetty5.jar plugins/org.mortbay.jetty_$JETTYPLUGINVERSION
 
 # delete included jars
 # https://bugs.eclipse.org/bugs/show_bug.cgi?id=170662
@@ -1095,7 +1095,7 @@ build-jar-repository -s -p plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/lib s
 
 JETTYPLUGINVERSION=$(ls plugins | grep org.mortbay.jetty_5 | sed 's/org.mortbay.jetty_//')
 rm plugins/org.mortbay.jetty_$JETTYPLUGINVERSION
-ln -s %{_javadir}/jetty/jetty.jar plugins/org.mortbay.jetty_$JETTYPLUGINVERSION
+ln -s %{_javadir}/jetty5/jetty5.jar plugins/org.mortbay.jetty_$JETTYPLUGINVERSION
 
 build-jar-repository -s -p plugins/org.junit_* junit
 
