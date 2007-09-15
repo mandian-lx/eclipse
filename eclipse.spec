@@ -28,7 +28,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.18.1
+Release:        %mkrel 0.18.2
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -125,10 +125,6 @@ BuildRequires: regexp
 BuildRequires: junit
 BuildRequires: junit4
 BuildRequires: jetty5
-%if %{gcj_support}
-Requires(post):   java-gcj-compat >= 0:1.0.64
-Requires(postun): java-gcj-compat >= 0:1.0.64
-%endif
 
 %description
 The Eclipse Platform is designed for building integrated development
@@ -142,8 +138,6 @@ Group:          Development/Java
 Obsoletes:      ecj < 3.2.0
 Provides:       ecj = %{epoch}:%{version}-%{release}
 %if %{gcj_support}
-Requires(post):   java-gcj-compat >= 0:1.0.64
-Requires(postun): java-gcj-compat >= 0:1.0.64
 %else
 Requires:       java >= 1.6.0
 %endif
@@ -154,10 +148,6 @@ Eclipse compiler for Java.
 %package     -n %{libname}-gtk2
 Summary:        SWT Library for GTK+-2.0
 Group:          Development/Java
-%if %{gcj_support}
-Requires(post):   java-gcj-compat >= 0:1.0.64
-Requires(postun): java-gcj-compat >= 0:1.0.64
-%endif
 Requires:       %mklibname mozilla-firefox %{firefox_version}
 
 %description -n %{libname}-gtk2
@@ -174,8 +164,6 @@ Requires: %{_libdir}/%{name}/plugins/org.eclipse.swt.gtk.linux.%{eclipse_arch}_3
 Requires(post):     %{libname}-gtk2 = %{epoch}:%{version}-%{release}
 Requires(postun):   %{libname}-gtk2 = %{epoch}:%{version}-%{release}
 %if %{gcj_support}
-Requires(post):     java-gcj-compat >= 0:1.0.64
-Requires(postun):   java-gcj-compat >= 0:1.0.64
 %else
 Requires:       java >= 1.6.0
 %endif
@@ -190,8 +178,6 @@ Requires:       %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires(post):    %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires(postun):  %{name}-rcp = %{epoch}:%{version}-%{release}
 %if %{gcj_support}
-Requires(post):     java-gcj-compat >= 1.0.64
-Requires(postun):   java-gcj-compat >= 1.0.64
 %else
 Requires:       java >= 1.6.0
 %endif
@@ -206,13 +192,7 @@ Obsoletes:      %{name}-ui %{name}-gtk2 %{name}-scripts eclipse
 Provides:       %{name}-ui = %{epoch}:%{version}-%{release}
 Provides:       %{name}-scripts = %{epoch}:%{version}-%{release}
 Provides:       %{name}-gtk2 = %{epoch}:%{version}-%{release}
-%if %{gcj_support}
-Requires:       java-gcj-compat >= 0:1.0.64
-Requires(post):   java-gcj-compat >= 0:1.0.64
-Requires(postun): java-gcj-compat >= 0:1.0.64
-%else
 Requires:       java >= 1.6.0
-%endif
 Requires:       %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires(post):   %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires(postun): %{name}-rcp = %{epoch}:%{version}-%{release}
@@ -280,10 +260,6 @@ Requires:       java-javadoc >= 1.6.0
 %ifnarch ppc64 alpha
 Requires:       eclipse-mylyn-java
 %endif
-%if %{gcj_support}
-Requires(post):   java-gcj-compat >= 0:1.0.64
-Requires(postun): java-gcj-compat >= 0:1.0.64
-%endif
 
 %description    jdt
 Eclipse Java Development Tools.  This package is required to use Eclipse for
@@ -324,10 +300,6 @@ Requires(post):    %{name}-pde-runtime = %{epoch}:%{version}-%{release}
 Requires(postun):  %{name}-pde-runtime = %{epoch}:%{version}-%{release}
 Requires(post):    %{name}-platform-sdk = %{epoch}:%{version}-%{release}
 Requires(postun):  %{name}-platform-sdk = %{epoch}:%{version}-%{release}
-%if %{gcj_support}
-Requires(post):   java-gcj-compat >= 0:1.0.64
-Requires(postun): java-gcj-compat >= 0:1.0.64
-%endif
 
 %description    pde
 Eclipse Plugin Development Environment.  This package is required for
@@ -340,10 +312,6 @@ Requires:       %{name}-jdt = %{epoch}:%{version}-%{release}
 Requires:       %{name}-platform = %{epoch}:%{version}-%{release}
 Requires(post):    %{name}-platform = %{epoch}:%{version}-%{release}
 Requires(postun):  %{name}-platform = %{epoch}:%{version}-%{release}
-%if %{gcj_support}
-Requires(post):   java-gcj-compat >= 0:1.0.64
-Requires(postun): java-gcj-compat >= 0:1.0.64
-%endif
 
 %description    pde-runtime
 Eclipse Plug-in Development Environment runtime plugin
