@@ -28,7 +28,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.18.4
+Release:        %mkrel 0.19.1
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -220,12 +220,15 @@ Requires: icu4j-eclipse
 Requires(post): desktop-file-utils
 Requires(postun): desktop-file-utils
 Requires: eclipse-cvs-client
+# no xmlrpc3 -> no mylyn on ppc64 due to:
+# https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=239123
+# no CDT -> no changelog -> no rpm-editor
+# (upstream does not support ppc64)
+%if 0
+#%%ifnarch ppc64 alpha
 Requires: eclipse-subclipse
 Requires: eclipse-changelog
 Requires: eclipse-rpm-editor
-# no xmlrpc3 -> no mylyn on ppc64 due to:
-# https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=239123
-%ifnarch ppc64 alpha
 Requires: eclipse-mylyn
 Requires: eclipse-mylyn-ide
 Requires: eclipse-mylyn-bugzilla
