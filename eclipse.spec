@@ -28,7 +28,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.19.1
+Release:        %mkrel 0.19.2
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -138,6 +138,10 @@ Group:          Development/Java
 Obsoletes:      ecj < 3.2.0
 Provides:       ecj = %{epoch}:%{version}-%{release}
 %if %{gcj_support}
+# We require java-gcj instead of gcj4.3-tools directly in order for the
+# AOT object files to be used.
+# TODO: Check why ecj is hardcoded to use gcj...
+Requires:	java-gcj
 %else
 Requires:       java >= 1.6.0
 %endif
