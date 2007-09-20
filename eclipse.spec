@@ -28,7 +28,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.19.3
+Release:        %mkrel 0.20.1
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -224,20 +224,6 @@ Requires: icu4j-eclipse
 Requires(post): desktop-file-utils
 Requires(postun): desktop-file-utils
 Requires: eclipse-cvs-client
-# no xmlrpc3 -> no mylyn on ppc64 due to:
-# https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=239123
-# no CDT -> no changelog -> no rpm-editor
-# (upstream does not support ppc64)
-%if 0
-#%%ifnarch ppc64 alpha
-Requires: eclipse-subclipse
-Requires: eclipse-changelog
-Requires: eclipse-rpm-editor
-Requires: eclipse-mylyn
-Requires: eclipse-mylyn-ide
-Requires: eclipse-mylyn-bugzilla
-Requires: eclipse-mylyn-trac
-%endif
 
 %description    platform
 The Eclipse Platform is the base of all IDE plugins.  This does not include the
@@ -261,11 +247,6 @@ Requires:       junit4
 Requires:       java-1.5.0-gcj-javadoc
 %else
 Requires:       java-javadoc >= 1.6.0
-%endif
-# no xmlrpc3 -> no mylyn on ppc64 due to:
-# https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=239123
-%ifnarch ppc64 alpha
-Requires:       eclipse-mylyn-java
 %endif
 
 %description    jdt
@@ -294,11 +275,6 @@ Obsoletes:      eclipse-rcp-sdk < 1:3.3.0-0.9.1
 Requires:       %{name}-platform = %{epoch}:%{version}-%{release}
 Requires:       %{name}-jdt = %{epoch}:%{version}-%{release}
 Requires:       %{name}-pde-runtime = %{epoch}:%{version}-%{release}
-# no xmlrpc3 -> no mylyn on ppc64 due to:
-# https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=239123
-%ifnarch ppc64 alpha
-Requires:       eclipse-mylyn-pde
-%endif
 Requires(post):    %{name}-platform = %{epoch}:%{version}-%{release}
 Requires(postun):  %{name}-platform = %{epoch}:%{version}-%{release}
 Requires(post):    %{name}-jdt = %{epoch}:%{version}-%{release}
