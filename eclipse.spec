@@ -196,7 +196,9 @@ Obsoletes:      %{name}-ui %{name}-gtk2 %{name}-scripts eclipse
 Provides:       %{name}-ui = %{epoch}:%{version}-%{release}
 Provides:       %{name}-scripts = %{epoch}:%{version}-%{release}
 Provides:       %{name}-gtk2 = %{epoch}:%{version}-%{release}
+%if 0
 Requires:       java >= 1.6.0
+%endif
 Requires:       %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires(post):   %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires(postun): %{name}-rcp = %{epoch}:%{version}-%{release}
