@@ -28,7 +28,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.20.2
+Release:        %mkrel 0.20.3
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -125,6 +125,8 @@ BuildRequires: regexp
 BuildRequires: junit
 BuildRequires: junit4
 BuildRequires: jetty5
+
+BuildRequires: imagemagick
 
 %description
 The Eclipse Platform is designed for building integrated development
@@ -768,8 +770,10 @@ popd
 cp equinox-incubator/org.eclipse.equinox.initializer/org.eclipse.equinox.initializer_*.jar \
   $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins
 
+%if 0
 # Install the Fedora Eclipse product plugin
 unzip -qq -d $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins %{SOURCE4}
+%endif
 
 # Set up an extension location and a link file for the arch-specific dir
 echo "path:$RPM_BUILD_ROOT%{_libdir}" > $RPM_BUILD_ROOT%{_datadir}/%{name}/links/fragments.link
@@ -845,11 +849,13 @@ rm -r $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/org.eclipse.update
 rm -r $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/org.eclipse.core.runtime
 rm -r $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/org.eclipse.equinox.app
 
+%if 0
 # Set eclipse.product to org.fedoraproject.ide.platform 
 sed --in-place "s/plugins\/org.eclipse.platform/plugins\/org.fedoraproject.ide.platform/" \
   $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/config.ini
 sed --in-place "s/eclipse.product=org.eclipse.sdk.ide/eclipse.product=org.fedoraproject.ide.platform.product/" \
   $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/config.ini
+%endif
 
 # Install the launcher so
 LAUNCHERFRAGVERSION=$(ls $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins | grep equinox.launcher.gtk.linux.%{eclipse_arch}_ | sed "s/.*equinox.launcher.gtk.linux.*_//")
@@ -943,6 +949,7 @@ ln -s org.eclipse.pde.build_* org.eclipse.pde.build
 popd
 
 # Icons
+%if 0
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/48x48/apps
 ln -s %{_datadir}/%{name}/plugins/org.fedoraproject.ide.platform/eclipse48.png \
   $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/48x48/apps/%{name}.png
@@ -952,6 +959,17 @@ ln -s %{_datadir}/%{name}/plugins/org.fedoraproject.ide.platform/eclipse32.png \
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/16x16/apps
 ln -s ../../../../%{name}/plugins/org.fedoraproject.ide.platform/eclipse.png \
   $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
+%else
+install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/48x48/apps
+%{_bindir}/convert -resize 48x48 $RPM_BUILD_ROOT%{_datadir}/%{name}/icon.xpm \
+  $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/48x48/apps/%{name}.png
+install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps
+%{_bindir}/convert -resize 32x32 $RPM_BUILD_ROOT%{_datadir}/%{name}/icon.xpm \
+  $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
+install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/16x16/apps
+%{_bindir}/convert -resize 16x16 $RPM_BUILD_ROOT%{_datadir}/%{name}/icon.xpm \
+  $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
+%endif
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/pixmaps
 ln -s %{_datadir}/icons/hicolor/48x48/apps/%{name}.png $RPM_BUILD_ROOT%{_datadir}/pixmaps
 %ifarch %{ix86} x86_64
@@ -1438,7 +1456,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/%{name}/plugins/org.eclipse.core.boot_*
 %{_datadir}/%{name}/plugins/org.eclipse.core.filebuffers_*
 %{_datadir}/%{name}/plugins/org.eclipse.core.filesystem_*
+%if 0
 %{_datadir}/%{name}/plugins/org.fedoraproject.ide.platform
+%endif
 %ifarch %{ix86} x86_64 ppc
 %{_libdir}/%{name}/plugins/org.eclipse.core.filesystem.linux.%{eclipse_arch}_*
 %endif
