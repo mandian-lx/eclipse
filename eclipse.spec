@@ -28,7 +28,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.20.3
+Release:        %mkrel 0.20.4
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -137,7 +137,8 @@ JavaBeans(tm).
 %package        ecj
 Summary:        Eclipse Compiler for Java
 Group:          Development/Java
-Obsoletes:      ecj < 3.2.0
+# (walluck): be specific here
+Obsoletes:      ecj < %{epoch}:%{version}-%{release}
 Provides:       ecj = %{epoch}:%{version}-%{release}
 %if %{gcj_support}
 # We require java-gcj instead of gcj4.3-tools directly in order for the
@@ -154,7 +155,7 @@ Eclipse compiler for Java.
 %package     -n %{libname}-gtk2
 Summary:        SWT Library for GTK+-2.0
 Group:          Development/Java
-Requires:       %mklibname mozilla-firefox %{firefox_version}
+Requires:       %{mklibname mozilla-firefox %{firefox_version}}
 
 %description -n %{libname}-gtk2
 SWT Library for GTK+-2.0.
@@ -205,7 +206,8 @@ Requires:       %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires(post):   %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires(postun): %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires: %{libname}-gtk2 = %{epoch}:%{version}-%{release}
-Requires: %mklibname mozilla-firefox %{firefox_version}
+Requires: %{mklibname mozilla-firefox %{firefox_version}}
+Requires: %{mklibname mozilla-firefox %{firefox_version} -d}
 Requires: ant-antlr ant-apache-bcel ant-apache-log4j ant-apache-oro ant-apache-regexp ant-apache-resolver ant-commons-logging
 Requires: ant-apache-bsf ant-commons-net ant-jmf
 Requires: ant-javamail ant-jdepend ant-junit ant-nodeps ant-swing ant-trax ant-jsch
@@ -260,22 +262,20 @@ developing software written in the Java programming language.
 %package        pde
 Summary:        Eclipse Plugin Development Environment
 Group:          Development/Java
-Provides:      eclipse-sdk
-# Can remove for mdv2008.1
-Obsoletes:     eclipse-sdk < 1:3.3.0-0.9.1
-Provides:       eclipse-pde-sdk
-Obsoletes:      eclipse-pde-sdk 1:3.3.0-0.9.1
-Provides:       eclipse-cvs-client-sdk
-Obsoletes:      eclipse-cvs-client-sdk < 1:3.3.0-0.9.1
-Provides:       eclipse-jdt-sdk
-Obsoletes:      eclipse-jdt-sdk < 1:3.3.0-0.9.1
-Provides:       eclipse-pde-sdk
-Obsoletes:      eclipse-pde-sdk < 1:3.3.0-0.9.1
-Provides:       eclipse-platform-sdk
-Obsoletes:      eclipse-platform-sdk < 1:3.3.0-0.9.1
-Provides:       eclipse-rcp-sdk
-Obsoletes:      eclipse-rcp-sdk < 1:3.3.0-0.9.1
-# end remove for mdv2008.1
+Obsoletes:      eclipse-sdk < %{epoch}:%{version}-%{release}
+Provides:       eclipse-sdk = %{epoch}:%{version}-%{release}
+Obsoletes:      eclipse-pde-sdk < %{epoch}:%{version}-%{release}
+Provides:       eclipse-pde-sdk = %{epoch}:%{version}-%{release}
+Obsoletes:      eclipse-cvs-client-sdk < %{epoch}:%{version}-%{release}
+Provides:       eclipse-cvs-client-sdk = %{epoch}:%{version}-%{release}
+Obsoletes:      eclipse-jdt-sdk < %{epoch}:%{version}-%{release}
+Provides:       eclipse-jdt-sdk = %{epoch}:%{version}-%{release}
+Obsoletes:      eclipse-pde-sdk < %{epoch}:%{version}-%{release}
+Provides:       eclipse-pde-sdk = %{epoch}:%{version}-%{release}
+Obsoletes:      eclipse-platform-sdk < %{epoch}:%{version}-%{release}
+Provides:       eclipse-platform-sdk = %{epoch}:%{version}-%{release}
+Obsoletes:      eclipse-rcp-sdk < %{epoch}:%{version}-%{release}
+Provides:       eclipse-rcp-sdk = %{epoch}:%{version}-%{release}
 Requires:       %{name}-platform = %{epoch}:%{version}-%{release}
 Requires:       %{name}-jdt = %{epoch}:%{version}-%{release}
 Requires:       %{name}-pde-runtime = %{epoch}:%{version}-%{release}
@@ -1260,6 +1260,12 @@ popd
 rm -rf $RPM_BUILD_ROOT
 
 %post platform
+# (walluck): always use this product which replaces the sdk and fedora products
+if [ -r %{_libdir}/%{name}/configuration/config.ini ]; then
+  %{__grep} -q "^eclipse\.product=org\.eclipse\.sdk\.ide$" %{_libdir}/%{name}/configuration/config.ini || \
+    %{__sed} --in-place "s/[#]*eclipse.product=.*/eclipse.product=org.eclipse.platform.ide/" \
+      %{_libdir}/%{name}/configuration/config.ini
+fi
 %if %{gcj_support}
 %{update_gcjdb}
 %endif
