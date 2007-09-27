@@ -28,7 +28,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.20.4
+Release:        %mkrel 0.20.5
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -207,7 +207,6 @@ Requires(post):   %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires(postun): %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires: %{libname}-gtk2 = %{epoch}:%{version}-%{release}
 Requires: %{mklibname mozilla-firefox %{firefox_version}}
-Requires: %{mklibname mozilla-firefox %{firefox_version} -d}
 Requires: ant-antlr ant-apache-bcel ant-apache-log4j ant-apache-oro ant-apache-regexp ant-apache-resolver ant-commons-logging
 Requires: ant-apache-bsf ant-commons-net ant-jmf
 Requires: ant-javamail ant-jdepend ant-junit ant-nodeps ant-swing ant-trax ant-jsch
@@ -870,6 +869,7 @@ install -d -m 755 $RPM_BUILD_ROOT%{_bindir}
 %if 1
 cp %{SOURCE3} $RPM_BUILD_ROOT%{_bindir}/eclipse
 sed --in-place "s|@LIBDIR@|%{_libdir}|g" $RPM_BUILD_ROOT%{_bindir}/eclipse
+sed --in-place "s|@FIREFOXVERSION@|%{firefox_version}|g" $RPM_BUILD_ROOT%{_bindir}/eclipse
 ECLIPSELIBSUFFIX=$(ls $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins/org.eclipse.equinox.launcher.gtk.linux*/*.so | sed "s/.*.launcher.gtk.linux.//")
 sed --in-place "s|@ECLIPSELIBSUFFIX@|$ECLIPSELIBSUFFIX|" $RPM_BUILD_ROOT%{_bindir}/eclipse
 %else
