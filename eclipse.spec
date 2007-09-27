@@ -28,7 +28,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.20.5
+Release:        %mkrel 0.20.6
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -866,22 +866,13 @@ mv $RPM_BUILD_ROOT%{_datadir}/%{name}/eclipse $RPM_BUILD_ROOT%{_libdir}/%{name}
 install -d -m 755 $RPM_BUILD_ROOT%{_bindir}
 # (walluck) Fedora has a bug here, they want to use the binary
 # (walluck) only, but then we lose the ability to configure it
-%if 1
 cp %{SOURCE3} $RPM_BUILD_ROOT%{_bindir}/eclipse
 sed --in-place "s|@LIBDIR@|%{_libdir}|g" $RPM_BUILD_ROOT%{_bindir}/eclipse
 sed --in-place "s|@FIREFOXVERSION@|%{firefox_version}|g" $RPM_BUILD_ROOT%{_bindir}/eclipse
 ECLIPSELIBSUFFIX=$(ls $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins/org.eclipse.equinox.launcher.gtk.linux*/*.so | sed "s/.*.launcher.gtk.linux.//")
 sed --in-place "s|@ECLIPSELIBSUFFIX@|$ECLIPSELIBSUFFIX|" $RPM_BUILD_ROOT%{_bindir}/eclipse
-%else
-%{__perl} -pe \
-  's|/usr/lib/eclipse/|%{_libdir}/%{name}/|g ;
-   s|/etc/|%{_sysconfdir}/|g ;
-   s|/usr/bin/|%{_bindir}/|g ;
-   s|/usr/lib/|%{_libdir}/|g ;
-   s|\@FIREFOX_DIR\@|%{firefox_dir}|g' \
-  %{SOURCE1} > $RPM_BUILD_ROOT%{_bindir}/eclipse
-chmod a+x $RPM_BUILD_ROOT%{_bindir}/eclipse
-%endif
+%{__mkdir_p} %{buildroot}%{_sysconfdir}
+%{__cp} -a %{SOURCE6} %{buildroot}%{_sysconfdir}/eclipse.conf
 
 # Ensure the shared libraries have the correct permissions
 pushd $RPM_BUILD_ROOT%{_libdir}/%{name} 
@@ -1442,6 +1433,7 @@ fi
 %files platform -f %{name}-platform.install
 %defattr(-,root,root)
 %attr(0755,root,root) %{_bindir}/%{name}
+%config(noreplace) %{_sysconfdir}/eclipse.conf
 %{_datadir}/%{name}/eclipse.ini
 %{_libdir}/%{name}/eclipse
 %{_datadir}/applications/*
