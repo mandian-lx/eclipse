@@ -28,7 +28,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.20.7
+Release:        %mkrel 0.20.8
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -866,7 +866,7 @@ mv $RPM_BUILD_ROOT%{_datadir}/%{name}/eclipse $RPM_BUILD_ROOT%{_libdir}/%{name}
 install -d -m 755 $RPM_BUILD_ROOT%{_bindir}
 # (walluck) Fedora has a bug here, they want to use the binary
 # (walluck) only, but then we lose the ability to configure it
-cp %{SOURCE3} $RPM_BUILD_ROOT%{_bindir}/eclipse
+cp %{SOURCE1} $RPM_BUILD_ROOT%{_bindir}/eclipse
 sed --in-place "s|@LIBDIR@|%{_libdir}|g" $RPM_BUILD_ROOT%{_bindir}/eclipse
 sed --in-place "s|@FIREFOXVERSION@|%{firefox_version}|g" $RPM_BUILD_ROOT%{_bindir}/eclipse
 ECLIPSELIBSUFFIX=$(ls $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins/org.eclipse.equinox.launcher.gtk.linux*/*.so | sed "s/.*.launcher.gtk.linux.//")
