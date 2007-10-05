@@ -28,7 +28,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.20.8
+Release:        %mkrel 0.22.1
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -78,6 +78,9 @@ Patch24:        %{name}-add-ppc64-sparc64-s390-s390x.patch
 Patch25:       %{name}-launcher-double-free-bug.patch
 #FIXME: file a bug upstream
 Patch26:        %{name}-launcher-fix-java-home.patch
+# On a 1.7 VM, generate 1.6-level bytecode
+# https://bugzilla.redhat.com/show_bug.cgi?id=288991
+Patch27:        %{name}-17vmgenerate16bytecode.patch
 Patch100:       %{name}-libswt-model.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires:  ant
@@ -308,7 +311,7 @@ Eclipse Plug-in Development Environment runtime plugin
 
 # (walluck) try not forking the Jasper compiler
 %{__sed} --in-place 's/fork="true"/fork="false"/' plugins/org.eclipse.help.webapp/buildJSPs.xml
-sed --in-place "s/java5.home/java.home/" build.xml
+sed --in-place "s/java5\.home/java.home/" build.xml
 %patch3 -p0
 # FIXME:  investigate why we are pushd'ing here
 # Build swttools.jar
@@ -348,6 +351,10 @@ sed --in-place "s:/usr/share/eclipse:%{_datadir}/%{name}:" library/eclipse.c
 # (walluck) fix JAVA_HOME
 sed --in-place 's:^javaHome=""$:javaHome="%{java_home}":' library/gtk/build.sh
 zip -q -9 -r ../../plugins/org.eclipse.platform/launchersrc.zip library
+popd
+
+pushd plugins/org.eclipse.jdt.core
+%patch27
 popd
 
 # (walluck) Fedora has a bug here wrt the macros being used
@@ -854,6 +861,10 @@ sed --in-place "s/plugins\/org.eclipse.platform/plugins\/org.fedoraproject.ide.p
   $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/config.ini
 sed --in-place "s/eclipse.product=org.eclipse.sdk.ide/eclipse.product=org.fedoraproject.ide.platform.product/" \
   $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/config.ini
+%else
+# (walluck): Set eclipse.product to org.eclipse.platform.ide
+%{__sed} --in-place "s/^eclipse\.product=org\.eclipse\.sdk\.ide$/eclipse.product=org.eclipse.platform.ide/" \
+  %{buildroot}%{_libdir}/%{name}/configuration/config.ini
 %endif
 
 # Install the launcher so
@@ -1251,12 +1262,6 @@ popd
 rm -rf $RPM_BUILD_ROOT
 
 %post platform
-# (walluck): always use this product which replaces the sdk and fedora products
-if [ -r %{_libdir}/%{name}/configuration/config.ini ]; then
-  %{__grep} -q "^eclipse\.product=org\.eclipse\.sdk\.ide$" %{_libdir}/%{name}/configuration/config.ini || \
-    %{__sed} --in-place "s/[#]*eclipse.product=.*/eclipse.product=org.eclipse.platform.ide/" \
-      %{_libdir}/%{name}/configuration/config.ini
-fi
 %if %{gcj_support}
 %{update_gcjdb}
 %endif
