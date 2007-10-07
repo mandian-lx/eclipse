@@ -1,10 +1,6 @@
 Epoch:  1
 
-%ifarch %{ix86} x86_64
 %define gcj_support     1
-%else
-%define gcj_support     1
-%endif
 %define tomcatepoch     0
 %define tomcatversion   5.5.23
 %define tomcatsharedir  %{_datadir}/tomcat5
@@ -28,7 +24,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.22.1
+Release:        %mkrel 0.26.1
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -36,7 +32,18 @@ Source0:        ftp://ftp.cse.buffalo.edu/pub/Eclipse/eclipse/downloads/drops/R-
 Source1:        %{name}.script
 Source2:        %{name}.desktop
 Source3:        eclipse.in
-Source4:        org.fedoraproject.ide.platform-3.3.0.2.zip
+# cvs -d :pserver:anonymous@sources.redhat.com:/cvs/eclipse export \
+#   -r fedoraeclipse-3_3_0-4 branding/org.fedoraproject.ide.platform
+# cd branding
+# zip -r org.fedoraproject.ide.platform-3.3.0.4.zip \
+#   org.fedoraproject.ide.platform
+Source4:        org.fedoraproject.ide.platform-%{version}.4.zip
+# cvs -d :pserver:anonymous@sources.redhat.com:/cvs/eclipse export \
+#   -r fedoraeclipsefeature-1_0_0 branding/org.fedoraproject.ide-feature
+# cd branding
+# zip -r org.fedoraproject.ide.feature-1.0.0.zip \
+#   org.fedoraproject.ide-feature
+Source5:        org.fedoraproject.ide.feature-1.0.0.zip
 Source6:        %{name}.conf
 Source16:       %{name}-copy-platform.sh
 Source17:       efj.sh.in
@@ -779,6 +786,8 @@ cp equinox-incubator/org.eclipse.equinox.initializer/org.eclipse.equinox.initial
 %if 0
 # Install the Fedora Eclipse product plugin
 unzip -qq -d $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins %{SOURCE4}
+# Install the Fedora Eclipse product feature
+unzip -qq -d $RPM_BUILD_ROOT%{_datadir}/%{name}/features %{SOURCE5}
 %endif
 
 # Set up an extension location and a link file for the arch-specific dir
@@ -1461,6 +1470,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/%{name}/plugins/org.eclipse.core.filesystem_*
 %if 0
 %{_datadir}/%{name}/plugins/org.fedoraproject.ide.platform
+%{_datadir}/%{name}/features/org.fedoraproject.ide-feature
 %endif
 %ifarch %{ix86} x86_64 ppc
 %{_libdir}/%{name}/plugins/org.eclipse.core.filesystem.linux.%{eclipse_arch}_*
