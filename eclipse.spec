@@ -24,7 +24,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.26.1
+Release:        %mkrel 0.27.1
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -941,6 +941,9 @@ install -d -m755 $RPM_BUILD_ROOT%{_jnidir}
 pushd $RPM_BUILD_ROOT%{_jnidir}
 ln -s %{_libdir}/%{name}/plugins/org.eclipse.swt.gtk.linux.%{eclipse_arch}_$SWTJARVERSION.jar swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar
 ln -s swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar swt-gtk-%{eclipse_majmin}.jar
+ln -s swt-gtk-%{eclipse_majmin}.jar swt-gtk.jar
+ln -s swt-gtk-%{eclipse_majmin}.jar swt-%{eclipse_majmin}.jar
+ln -s swt-%{eclipse_majmin}.jar swt.jar
 popd
 
 # Install the eclipse-ecj.jar symlink for java-1.4.2-gcj-compat's "javac"
@@ -1353,7 +1356,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{name}/plugins/org.eclipse.swt.gtk.linux.%{eclipse_arch}_*
 # FIXME: do we need to build?
 #%{_libdir}/%{name}/libcairo-swt.so
-%{_jnidir}/swt-gtk*.jar
+%{_jnidir}/swt*.jar
 %if %{gcj_support}
 %dir %{_libdir}/gcj/%{name}
 %{_libdir}/gcj/%{name}/org.eclipse.swt.gtk.linux.%{eclipse_arch}_*
