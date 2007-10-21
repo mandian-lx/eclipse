@@ -5,8 +5,6 @@ Epoch:  1
 %define tomcatversion   5.5.23
 %define tomcatsharedir  %{_datadir}/tomcat5
 %define tomcatlibdir    %{_var}/lib/tomcat5
-%define firefox_version %(rpm -q mozilla-firefox --queryformat %{VERSION} 2>/dev/null)
-%define firefox_dir     %(firefox-config --defines 2>/dev/null | sed -n -e 's,.*MOZ_DEFAULT_MOZILLA_FIVE_HOME=\\"\\([^\\"]*\\)\\"\\(.*\\),\\1,p')
 %define section         free
 %define eclipse_major   3
 %define eclipse_minor   3
@@ -24,7 +22,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.27.2
+Release:        %mkrel 0.27.3
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -98,8 +96,7 @@ BuildRequires:  glib2-devel
 BuildRequires:  libgnome2-devel
 BuildRequires:  libgnomeui2-devel
 BuildRequires:  gcc-c++
-BuildRequires:  mozilla-firefox
-BuildRequires:  mozilla-firefox-devel
+BuildRequires:  firefox-devel
 BuildRequires:  nspr-devel
 BuildRequires:  libxtst-devel
 BuildRequires:  mesagl-devel
@@ -165,7 +162,7 @@ Eclipse compiler for Java.
 %package     -n %{libname}-gtk2
 Summary:        SWT Library for GTK+-2.0
 Group:          Development/Java
-Requires:       %{mklibname mozilla-firefox %{firefox_version}}
+Requires:       firefox
 
 %description -n %{libname}-gtk2
 SWT Library for GTK+-2.0.
@@ -216,7 +213,7 @@ Requires:       %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires(post):   %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires(postun): %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires: %{libname}-gtk2 = %{epoch}:%{version}-%{release}
-Requires: %{mklibname mozilla-firefox %{firefox_version}}
+Requires: firefox-devel
 Requires: ant-antlr ant-apache-bcel ant-apache-log4j ant-apache-oro ant-apache-regexp ant-apache-resolver ant-commons-logging
 Requires: ant-apache-bsf ant-commons-net ant-jmf
 Requires: ant-javamail ant-jdepend ant-junit ant-nodeps ant-swing ant-trax ant-jsch
@@ -888,7 +885,6 @@ install -d -m 755 $RPM_BUILD_ROOT%{_bindir}
 # (walluck) only, but then we lose the ability to configure it
 cp %{SOURCE1} $RPM_BUILD_ROOT%{_bindir}/eclipse
 sed --in-place "s|@LIBDIR@|%{_libdir}|g" $RPM_BUILD_ROOT%{_bindir}/eclipse
-sed --in-place "s|@FIREFOXVERSION@|%{firefox_version}|g" $RPM_BUILD_ROOT%{_bindir}/eclipse
 ECLIPSELIBSUFFIX=$(ls $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins/org.eclipse.equinox.launcher.gtk.linux*/*.so | sed "s/.*.launcher.gtk.linux.//")
 sed --in-place "s|@ECLIPSELIBSUFFIX@|$ECLIPSELIBSUFFIX|" $RPM_BUILD_ROOT%{_bindir}/eclipse
 %{__mkdir_p} %{buildroot}%{_sysconfdir}
