@@ -22,7 +22,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.27.3
+Release:        %mkrel 0.30.1
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -86,7 +86,10 @@ Patch26:        %{name}-launcher-fix-java-home.patch
 # On a 1.7 VM, generate 1.6-level bytecode
 # https://bugzilla.redhat.com/show_bug.cgi?id=288991
 Patch27:        %{name}-17vmgenerate16bytecode.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=352361
+Patch28:        %{name}-maxpermsize.patch
 Patch100:       %{name}-libswt-model.patch
+Patch101:       %{name}-jsch.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires:  ant
 BuildRequires:  jpackage-utils >= 0:1.5, make, gcc
@@ -501,6 +504,10 @@ build-jar-repository -s -p plugins/org.eclipse.tomcat/lib regexp
 build-jar-repository -s -p plugins/org.eclipse.tomcat/lib servletapi5
 ## END TOMCAT ##
 
+JETTYPLUGINVERSION=$(ls plugins | grep org.mortbay.jetty_5 | sed 's/org.mortbay.jetty_//')
+rm plugins/org.mortbay.jetty_$JETTYPLUGINVERSION
+ln -s %{_javadir}/jetty5/jetty5.jar plugins/org.mortbay.jetty_$JETTYPLUGINVERSION
+
 JUNITVERSION=$(ls plugins | grep org.junit_3 | sed 's/org.junit_//')
 build-jar-repository -s -p plugins/org.junit_$JUNITVERSION junit
 
@@ -528,6 +535,7 @@ swt_frag_ver_ia64=$(grep "version\.suffix\" value=" plugins/org.eclipse.swt.gtk.
 sed --in-place "s/$swt_frag_ver_ia64/$swt_frag_ver/g" plugins/org.eclipse.swt.gtk.linux.ia64/build.xml \
                                                       assemble.org.eclipse.sdk.linux.gtk.ia64.xml \
                                                       features/org.eclipse.rcp/build.xml
+%patch28
 
 # (walluck) I am not sure if this is a bug or not, but Fedora's
 # (walluck) `uname -p' behaves differently from Mandriva's, so we
@@ -535,6 +543,8 @@ sed --in-place "s/$swt_frag_ver_ia64/$swt_frag_ver/g" plugins/org.eclipse.swt.gt
 pushd './plugins/org.eclipse.swt/Eclipse SWT PI/gtk/library'
 %patch100 -p0
 popd
+
+%patch101 -p1
 
 # (walluck) Fedora has a bug here, we need to use the correct JAVA_HOME
 %{__sed} --in-place 's,^JAVA_HOME =.*,JAVA_HOME = %{java_home},' plugins/org.eclipse.core.filesystem/natives/unix/linux/Makefile
@@ -608,22 +618,22 @@ ln -s %{_javadir}/lucene-contrib/lucene-analyzers.jar plugins/org.apache.lucene.
 rm plugins/org.apache.commons.logging_1.0.4.v200706111724.jar
 ln -s %{_javadir}/commons-logging.jar plugins/org.apache.commons.logging_1.0.4.v200706111724.jar
 
-rm plugins/javax.servlet.jsp_2.0.0.v200706191603.jar
-ln -s %{_javadir}/jsp.jar plugins/javax.servlet.jsp_2.0.0.v200706191603.jar
-
-rm plugins/javax.servlet_2.4.0.v200706111738.jar
-ln -s %{_javadir}/servlet.jar plugins/javax.servlet_2.4.0.v200706111738.jar
-
 # link to commons-el
 rm plugins/org.apache.commons.el_1.0.0.v200706111724.jar
 ln -s %{_javadir}/commons-el.jar plugins/org.apache.commons.el_1.0.0.v200706111724.jar
 
+# link to jasper
 rm plugins/org.apache.jasper_5.5.17.v200706111724.jar
-ln -s %{_javadir}/jasper5.jar plugins/org.apache.jasper_5.5.17.v200706111724.jar
+ln -s %{_javadir}/jasper5.jar \
+   plugins/org.apache.jasper_5.5.17.v200706111724.jar
 
-JETTYPLUGINVERSION=$(ls plugins | grep org.mortbay.jetty_5 | sed 's/org.mortbay.jetty_//')
-rm plugins/org.mortbay.jetty_$JETTYPLUGINVERSION
-ln -s %{_javadir}/jetty5/jetty5.jar plugins/org.mortbay.jetty_$JETTYPLUGINVERSION
+# link to servlet-api
+rm plugins/javax.servlet_2.4.0.v200706111738.jar
+ln -s %{_javadir}/tomcat5-servlet-2.4-api.jar plugins/javax.servlet_2.4.0.v200706111738.jar
+
+# link to jsp-api
+rm plugins/javax.servlet.jsp_2.0.0.v200706191603.jar
+ln -s %{_javadir}/tomcat5-jsp-2.0-api.jar plugins/javax.servlet.jsp_2.0.0.v200706191603.jar
 
 # delete included jars
 # https://bugs.eclipse.org/bugs/show_bug.cgi?id=170662
@@ -1136,6 +1146,18 @@ ln -s %{_javadir}/commons-logging.jar plugins/org.apache.commons.logging_1.0.4.v
 rm plugins/org.apache.commons.el_1.0.0.v200706111724.jar
 ln -s %{_javadir}/commons-el.jar plugins/org.apache.commons.el_1.0.0.v200706111724.jar
 
+# link to jasper
+rm plugins/org.apache.jasper_5.5.17.v200706111724.jar
+ln -s %{_javadir}/jasper5.jar plugins/org.apache.jasper_5.5.17.v200706111724.jar
+
+# link to serlet-api
+rm plugins/javax.servlet_2.4.0.v200706111738.jar
+ln -s %{_javadir}/tomcat5-servlet-2.4-api.jar plugins/javax.servlet_2.4.0.v200706111738.jar
+
+# link to jsp-api
+rm plugins/javax.servlet.jsp_2.0.0.v200706191603.jar
+ln -s %{_javadir}/tomcat5-jsp-2.0-api.jar plugins/javax.servlet.jsp_2.0.0.v200706191603.jar
+
 popd
 
 # (walluck) I am not sure why this supposedly works on Fedora and
@@ -1239,6 +1261,7 @@ pushd $RPM_BUILD_ROOT%{_datadir}/%{name}
 # multilib conflict
 ANTPLUGINVERSION=$(ls plugins | grep org.apache.ant_ | sed 's/org.apache.ant_//')
 rm plugins/org.apache.ant_$ANTPLUGINVERSION/bin/runant.py
+popd
 %endif
 
 # FIXME: (walluck) Our ui.ide directory doesn't have a version
@@ -1530,9 +1553,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/%{name}/plugins/org.mortbay.jetty_*
 %{_datadir}/%{name}/plugins/org.eclipse.equinox.initializer_*
 %if %{gcj_support}
-%{_libdir}/gcj/%{name}/javax.servlet_*
-%{_libdir}/gcj/%{name}/javax.servlet.jsp_*
-%{_libdir}/gcj/%{name}/org.apache.jasper_*
 %{_libdir}/gcj/%{name}/org.eclipse.ant.core_*
 %{_libdir}/gcj/%{name}/org.eclipse.compare_*
 %{_libdir}/gcj/%{name}/org.eclipse.core.filebuffers_*
@@ -1569,7 +1589,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/gcj/%{name}/org.eclipse.ui.editors_*
 %{_libdir}/gcj/%{name}/org.eclipse.ui.externaltools_*
 %{_libdir}/gcj/%{name}/org.eclipse.ui.forms_*
-# FIXME
+# (walluck) Fedora has this, but we don't for some reason
 #%{_libdir}/gcj/%{name}/org.eclipse.ui.ide.application_*
 %{_libdir}/gcj/%{name}/org.eclipse.ui.intro_*
 %{_libdir}/gcj/%{name}/org.eclipse.ui.navigator_*
