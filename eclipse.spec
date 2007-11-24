@@ -141,6 +141,7 @@ BuildRequires: junit4
 BuildRequires: jetty5
 
 BuildRequires: imagemagick
+BuildRequires: zip
 
 %description
 The Eclipse Platform is designed for building integrated development
