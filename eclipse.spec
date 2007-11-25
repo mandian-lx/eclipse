@@ -1296,33 +1296,30 @@ popd
 # (walluck) automatically compile .py files (they probably should)
 # (walluck) and (2) I don't understand why only this file would
 # (walluck) create the multilib conflict
-%if 0
 pushd $RPM_BUILD_ROOT%{_datadir}/%{name}
 # remove this python script so that it is not aot compiled, thus avoiding a
 # multilib conflict
 ANTPLUGINVERSION=$(ls plugins | grep org.apache.ant_ | sed 's/org.apache.ant_//')
+%if 0
 rm plugins/org.apache.ant_$ANTPLUGINVERSION/bin/runant.py
+%endif
 UIIDEPLUGINVERSION=$(ls plugins | grep ui.ide_ | sed 's/org.eclipse.ui.ide_//')
 OSGIPLUGINVERSION=$(ls plugins | grep osgi_ | sed 's/org.eclipse.osgi_//')
 popd
-%endif
 
-# FIXME: (walluck) Our ui.ide directory doesn't have a version
-# FIXME: (walluck) after it---so UIIDEPLUGINVERSION is empty
 %if %{gcj_support}
 # exclude org.eclipse.ui.ide to work around
 # https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=175547
-UIIDEPLUGINVERSION=$(ls plugins | grep ui.ide_ | sed 's/org.eclipse.ui.ide_//')
 if [ -n "$UIIDEPLUGINVERSION" ]; then
 %ifnarch ia64
 %{_bindir}/aot-compile-rpm --exclude %{_datadir}/%{name}/plugins/org.eclipse.ui.ide_$UIIDEPLUGINVERSION
 %else
-OSGIPLUGINVERSION=$(ls plugins | grep osgi_ | sed 's/org.eclipse.osgi_//')
 %{_bindir}/aot-compile-rpm --exclude %{_datadir}/%{name}/plugins/org.eclipse.ui.ide_$UIIDEPLUGINVERSION \
                 --exclude %{_datadir}/%{name}/plugins/org.eclipse.osgi_$OSGIPLUGINVERSION
 %endif
 else
 %{_bindir}/aot-compile-rpm
+%{__rm} %{buildroot}%{_libdir}/gcj/org.eclipse.ui.ide_*
 fi
 %endif
 
@@ -1517,13 +1514,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/pixmaps/*
 %{_datadir}/icons/*/*/apps/*
 %{_datadir}/%{name}/features/org.eclipse.platform_*
+%{_datadir}/%{name}/plugins/com.ibm.icu_*
 %{_datadir}/%{name}/plugins/com.jcraft.jsch_*
 %{_datadir}/%{name}/plugins/javax.servlet_*
 %{_datadir}/%{name}/plugins/javax.servlet.jsp_*
 %{_datadir}/%{name}/plugins/org.apache.ant_*
 %{_datadir}/%{name}/plugins/org.apache.commons.el_*
 %{_datadir}/%{name}/plugins/org.apache.commons.logging_*
-##%{_datadir}/%{name}/plugins/org.apache.jasper_*
+%{_datadir}/%{name}/plugins/org.apache.jasper_*
 %{_datadir}/%{name}/plugins/org.apache.lucene_*
 %{_datadir}/%{name}/plugins/org.apache.lucene.analysis_*
 %{_datadir}/%{name}/plugins/org.eclipse.ant.core_*
