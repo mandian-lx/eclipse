@@ -22,7 +22,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.10.2
+Release:        %mkrel 0.10.3
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -95,7 +95,7 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 Patch100:       %{name}-libswt-model.patch
 Patch101:       %{name}-jsch.patch
 BuildRequires:  ant
-BuildRequires:  jpackage-utils >= 0:1.5, make, gcc
+BuildRequires:  java-rpmbuild >= 0:1.5, make, gcc
 BuildRequires:  gnome-vfs2-devel
 BuildRequires:  gtk2-devel
 BuildRequires:  glib2-devel
