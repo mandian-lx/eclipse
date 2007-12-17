@@ -91,7 +91,6 @@ Patch27:        %{name}-17vmgenerate16bytecode.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=352361
 Patch29:        %{name}-maxpermsize.patch
 
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 Patch100:       %{name}-libswt-model.patch
 Patch101:       %{name}-jsch.patch
 BuildRequires:  ant
