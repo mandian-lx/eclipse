@@ -22,7 +22,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.10.3
+Release:        %mkrel 0.14.1
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -31,11 +31,11 @@ Source1:        %{name}.script
 Source2:        %{name}.desktop
 Source3:        eclipse.in
 # cvs -d :pserver:anonymous@sources.redhat.com:/cvs/eclipse export \
-#   -r fedoraeclipse-3_3_1_1-1 branding/org.fedoraproject.ide.platform
+#   -r fedoraeclipse-3_3_1_1-3 branding/org.fedoraproject.ide.platform
 # cd branding
-# zip -r org.fedoraproject.ide.platform-3.3.1.1-1.zip \
+# zip -r org.fedoraproject.ide.platform-3.3.1.1-3.zip \
 #   org.fedoraproject.ide.platform
-Source4:        org.fedoraproject.ide.platform-%{version}-1.zip
+Source4:        org.fedoraproject.ide.platform-%{version}-3.zip
 # cvs -d :pserver:anonymous@sources.redhat.com:/cvs/eclipse export \
 #   -r fedoraeclipsefeature-1_0_0 branding/org.fedoraproject.ide-feature
 # cd branding
