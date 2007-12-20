@@ -526,7 +526,7 @@ pushd plugins/org.eclipse.swt/Eclipse\ SWT\ PI/gtk/library
 # /usr/lib -> /usr/lib64
 sed --in-place "s:/usr/lib/:%{_libdir}/:g" build.sh
 # (walluck) Fedora has a bug here, we should use java_home, not jvmdir
-sed --in-place "s:-L\$(AWT_LIB_PATH):-L%{java_home}/jre/lib/%{_arch}:" make_linux.mak
+sed --in-place "s:-L\$(AWT_LIB_PATH):-L%{java_home}/jre/lib/%{_arch} -L%{java_home}/jre/lib/amd64:" make_linux.mak
 popd
 
 %if %{gcj_support}
