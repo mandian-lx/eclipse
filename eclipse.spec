@@ -22,7 +22,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.14.1
+Release:        %mkrel 0.14.2
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -1034,11 +1034,11 @@ rm $RPM_BUILD_ROOT%{_datadir}/%{name}/icon.xpm
 
 # Install the efj wrapper script 
 install -p -D -m0755 %{SOURCE17} $RPM_BUILD_ROOT%{_bindir}/efj
-%{__sed} --in-place -e "s:startup.jar:%{_datadir}/%{name}/startup.jar:;" -e "s:@gccsuffix@:$(readlink -f %{java} | %{__sed} 's,^.*gij,,'):;" %{buildroot}%{_bindir}/efj
+%{__sed} --in-place -e "s:startup.jar:%{_datadir}/%{name}/startup.jar:;" -e "s:@gccsuffix@:$(readlink -f %{_jvmdir}/java-gcj/bin/java | %{__sed} 's,^.*gij,,'):;" %{buildroot}%{_bindir}/efj
 
 # Install the ecj wrapper script
 install -p -D -m0755 %{SOURCE18} $RPM_BUILD_ROOT%{_bindir}/ecj
-%{__sed} --in-place -e "s:@JAVADIR@:%{_javadir}:;" -e "s:@gccsuffix@:$(readlink -f %{java} | %{__sed} 's,^.*gij,,'):;" %{buildroot}%{_bindir}/ecj
+%{__sed} --in-place -e "s:@JAVADIR@:%{_javadir}:;" -e "s:@gccsuffix@:$(readlink -f %{_jvmdir}/java-gcj/bin/java | %{__sed} 's,^.*gij,,'):;" %{buildroot}%{_bindir}/ecj
 
 # A sanity check.
 desktop-file-validate %{SOURCE2}
