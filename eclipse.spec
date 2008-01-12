@@ -130,6 +130,7 @@ BuildRequires: jakarta-commons-beanutils jakarta-commons-collections jakarta-com
 BuildRequires: mx4j >= 0:2.1
 BuildRequires: tomcat5 >= %{tomcatepoch}:%{tomcatversion}
 BuildRequires: tomcat5-jasper >= %{tomcatepoch}:%{tomcatversion}
+BuildRequires: tomcat5-jasper-eclipse
 BuildRequires: jsp
 BuildRequires: tomcat5-servlet-2.4-api >= %{tomcatepoch}:%{tomcatversion}
 BuildRequires: lucene
@@ -656,7 +657,7 @@ ln -s %{_javadir}/commons-el.jar plugins/org.apache.commons.el_1.0.0.v2007061117
 
 # link to jasper
 rm plugins/org.apache.jasper_5.5.17.v200706111724.jar
-ln -s %{_javadir}/jasper5.jar \
+ln -s %{_datadir}/eclipse/plugins/org.apache.jasper_5.5.17.v200706111724.jar \
    plugins/org.apache.jasper_5.5.17.v200706111724.jar
 
 # link to servlet-api
