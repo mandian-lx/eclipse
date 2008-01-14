@@ -22,7 +22,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.14.2
+Release:        %mkrel 0.14.3
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -150,6 +150,8 @@ environments (IDEs) that can be used to create applications as diverse
 as web sites, embedded Java(tm) programs, C++ programs, and Enterprise
 JavaBeans(tm).
 
+%if 0
+# (anssi) Standalone 'ecj' in MDV
 %package        ecj
 Summary:        Eclipse Compiler for Java
 Group:          Development/Java
@@ -167,6 +169,7 @@ Requires:       java >= 1.6.0
 
 %description    ecj
 Eclipse compiler for Java.
+%endif #0
 
 %package     -n %{libname}-gtk2
 Summary:        SWT Library for GTK+-2.0
@@ -263,13 +266,16 @@ Group:          Development/Java
 Provides:       eclipse = %{epoch}:%{version}-%{release}
 Requires:       %{name}-platform = %{epoch}:%{version}-%{release}
 Requires:       %{name}-cvs-client = %{epoch}:%{version}-%{release}
-Requires:       %{name}-ecj = %{epoch}:%{version}-%{release}
+# (anssi) the compiler is part of JDT on MDV, no need for requires
+#Requires:       %{name}-ecj = %{epoch}:%{version}-%{release}
+#Requires(post):    %{name}-ecj = %{epoch}:%{version}-%{release}
+#Requires(postun):  %{name}-ecj = %{epoch}:%{version}-%{release}
 Requires(post):    %{name}-platform = %{epoch}:%{version}-%{release}
 Requires(postun):  %{name}-platform = %{epoch}:%{version}-%{release}
-Requires(post):    %{name}-ecj = %{epoch}:%{version}-%{release}
-Requires(postun):  %{name}-ecj = %{epoch}:%{version}-%{release}
 Requires:       junit
 Requires:       junit4
+# (anssi) conflicts with old eclipse-ecj:
+Conflicts:	eclipse-ecj < 1:3.3.0-0.14.3
 
 %if %{gcj_support}
 Requires:       java-1.5.0-gcj-javadoc
@@ -991,11 +997,17 @@ popd
 # Install the eclipse-ecj.jar symlink for java-1.4.2-gcj-compat's "javac"
 JDTCORESUFFIX=$(ls $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins | grep jdt.core_ | sed "s/org.eclipse.jdt.core_//")
 install -d -m 755 $RPM_BUILD_ROOT%{_javadir}
+%if 0
 ln -s %{_datadir}/%{name}/plugins/org.eclipse.jdt.core_$JDTCORESUFFIX $RPM_BUILD_ROOT%{_javadir}/eclipse-ecj.jar
 ln -s %{_javadir}/eclipse-ecj.jar $RPM_BUILD_ROOT%{_javadir}/jdtcore.jar
 # (walluck) Fedora doesn't do this, but I think we need it for
 # (walluck) JPackage compatibility
 ln -s %{_javadir}/eclipse-ecj.jar $RPM_BUILD_ROOT%{_javadir}/ecj.jar
+%else
+# (anssi) on MDV we install just jdtcore.jar, as ecj.jar is in standalone ecj
+# package for main/contrib splitting
+ln -s %{_datadir}/%{name}/plugins/org.eclipse.jdt.core_$JDTCORESUFFIX $RPM_BUILD_ROOT%{_javadir}/jdtcore.jar
+%endif
 
 # FIXME: get rid of this by putting logic in package build to know what version
 #        of pde.build it's using
@@ -1038,9 +1050,12 @@ rm $RPM_BUILD_ROOT%{_datadir}/%{name}/icon.xpm
 install -p -D -m0755 %{SOURCE17} $RPM_BUILD_ROOT%{_bindir}/efj
 %{__sed} --in-place -e "s:startup.jar:%{_datadir}/%{name}/startup.jar:;" -e "s:@gccsuffix@:$(readlink -f %{_jvmdir}/java-gcj/bin/java | %{__sed} 's,^.*gij,,'):;" %{buildroot}%{_bindir}/efj
 
+%if 0
+# (anssi) On mdv contained in standalone ecj pkg
 # Install the ecj wrapper script
 install -p -D -m0755 %{SOURCE18} $RPM_BUILD_ROOT%{_bindir}/ecj
 %{__sed} --in-place -e "s:@JAVADIR@:%{_javadir}:;" -e "s:@gccsuffix@:$(readlink -f %{_jvmdir}/java-gcj/bin/java | %{__sed} 's,^.*gij,,'):;" %{buildroot}%{_bindir}/ecj
+%endif
 
 # A sanity check.
 desktop-file-validate %{SOURCE2}
@@ -1345,11 +1360,13 @@ rm -rf $RPM_BUILD_ROOT
 %update_icon_cache hicolor
 
 %if %{gcj_support}
+%if 0
 %post ecj
 %{update_gcjdb}
 
 %postun ecj
 %{clean_gcjdb}
+%endif
 
 %post -n %{libname}-gtk2
 %{update_gcjdb}
@@ -1382,6 +1399,9 @@ rm -rf $RPM_BUILD_ROOT
 %{clean_gcjdb}
 %endif
 
+%if 0
+# (Anssi) not on MDV, jdt components in jdt subpackage, and ecj components
+# in ecj standalone package
 %files ecj
 %defattr(-,root,root)
 %dir %{_datadir}/%{name}
@@ -1394,6 +1414,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %{gcj_support}
 %dir %{_libdir}/gcj/%{name}
 %{_libdir}/gcj/%{name}/org.eclipse.jdt.core_*
+%endif
 %endif
 
 %files -n %{libname}-gtk2 -f %{libname}-gtk2.install
@@ -1651,6 +1672,7 @@ rm -rf $RPM_BUILD_ROOT
 %files jdt
 %defattr(-,root,root)
 %{_bindir}/efj
+%{_javadir}/jdtcore.jar
 %{_datadir}/%{name}/features/org.eclipse.jdt_*
 %{_datadir}/%{name}/plugins/org.eclipse.ant.ui_*
 %{_datadir}/%{name}/plugins/org.junit_*
@@ -1667,6 +1689,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/%{name}/plugins/org.eclipse.jdt.apt.ui_*
 %{_datadir}/%{name}/plugins/org.eclipse.jdt.junit.runtime_*
 %{_datadir}/%{name}/plugins/org.eclipse.jdt.debug.ui_*
+%{_datadir}/%{name}/plugins/org.eclipse.jdt.core_*
 %if %{gcj_support}
 %{_libdir}/gcj/%{name}/org.eclipse.ant.ui_*
 %{_libdir}/gcj/%{name}/org.eclipse.jdt.apt.core_*
@@ -1680,6 +1703,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/gcj/%{name}/org.eclipse.jdt.debug.ui_*
 %{_libdir}/gcj/%{name}/jdimodel.jar.*
 %{_libdir}/gcj/%{name}/jdi.jar.*
+%{_libdir}/gcj/%{name}/org.eclipse.jdt.core_*
 %else
 %{_datadir}/%{name}/plugins/org.eclipse.jdt.apt.pluggable.core_*
 %{_datadir}/%{name}/plugins/org.eclipse.jdt.compiler.apt_*
