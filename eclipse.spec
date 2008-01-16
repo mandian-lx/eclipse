@@ -1187,6 +1187,8 @@ ln -s %{_javadir}/jsch.jar plugins/com.jcraft.jsch_0.1.31.jar
 
 # link to the icu4j stuff
 rm plugins/com.ibm.icu_3.6.1.v20070906.jar
+# link to jasper
+rm plugins/org.apache.jasper_5.5.17.v200706111724.jar 
 
 # link to lucene
 rm plugins/org.apache.lucene_1.9.1.v200706111724.jar
@@ -1541,7 +1543,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/%{name}/plugins/org.apache.ant_*
 %{_datadir}/%{name}/plugins/org.apache.commons.el_*
 %{_datadir}/%{name}/plugins/org.apache.commons.logging_*
-%{_datadir}/%{name}/plugins/org.apache.jasper_*
+#%{_datadir}/%{name}/plugins/org.apache.jasper_*
 %{_datadir}/%{name}/plugins/org.apache.lucene_*
 %{_datadir}/%{name}/plugins/org.apache.lucene.analysis_*
 %{_datadir}/%{name}/plugins/org.eclipse.ant.core_*
