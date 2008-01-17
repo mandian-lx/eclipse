@@ -1,4 +1,4 @@
-Epoch:  1
+Epoch:  1	
 
 %define gcj_support     1
 %define tomcatepoch     0
@@ -1187,8 +1187,6 @@ ln -s %{_javadir}/jsch.jar plugins/com.jcraft.jsch_0.1.31.jar
 
 # link to the icu4j stuff
 rm plugins/com.ibm.icu_3.6.1.v20070906.jar
-# link to jasper
-rm plugins/org.apache.jasper_5.5.17.v200706111724.jar 
 
 # link to lucene
 rm plugins/org.apache.lucene_1.9.1.v200706111724.jar
@@ -1206,7 +1204,7 @@ ln -s %{_javadir}/commons-el.jar plugins/org.apache.commons.el_1.0.0.v2007061117
 
 # link to jasper
 rm plugins/org.apache.jasper_5.5.17.v200706111724.jar
-ln -s %{_javadir}/jasper5.jar plugins/org.apache.jasper_5.5.17.v200706111724.jar
+#ln -s %{_javadir}/jasper5.jar plugins/org.apache.jasper_5.5.17.v200706111724.jar
 
 # link to serlet-api
 rm plugins/javax.servlet_2.4.0.v200706111738.jar
