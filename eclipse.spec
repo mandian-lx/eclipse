@@ -22,7 +22,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.14.5
+Release:        %mkrel 0.14.6
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -112,7 +112,7 @@ BuildRequires:  unzip
 BuildRequires:  icu4j-eclipse >= 0:3.6.1
 BuildRequires:  desktop-file-utils
 %if %{gcj_support}
-BuildRequires:  java-1.5.0-gcj-javadoc
+BuildRequires:  java-javadoc
 BuildRequires:  java-gcj-compat-devel >= 0:1.0.64
 BuildRequires:  libxt-devel
 %else
@@ -278,7 +278,7 @@ Requires:       junit4
 Conflicts:	eclipse-ecj < 1:3.3.0-0.14.3
 
 %if %{gcj_support}
-Requires:       java-1.5.0-gcj-javadoc
+Requires:       java-javadoc
 %else
 Requires:       java-javadoc >= 1.6.0
 %endif
