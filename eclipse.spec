@@ -1,18 +1,18 @@
-Epoch:  1	
+Epoch:  1
 
 %define gcj_support     1
 %define tomcatepoch     0
 %define tomcatversion   5.5.23
 %define tomcatsharedir  %{_datadir}/tomcat5
 %define tomcatlibdir    %{_var}/lib/tomcat5
-%define section         free
 %define eclipse_major   3
 %define eclipse_minor   3
 %define eclipse_majmin  %{eclipse_major}.%{eclipse_minor}
-%define eclipse_micro   1.1
+%define eclipse_micro   2
 %define libname         libswt3
+%define swtver          3.3.2.v3349
 
-# All archs line up between Eclipse and Linux kernel names except i386 -> x86
+# All arches line up between Eclipse and Linux kernel names except i386 -> x86
 %ifarch %{ix86}
 %define eclipse_arch    x86
 %else
@@ -22,20 +22,20 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.14.7
+Release:        %mkrel 0.9.1
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
-Source0:        ftp://ftp.cse.buffalo.edu/pub/Eclipse/eclipse/downloads/drops/R-3.3.1.1-200710231652/eclipse-sourceBuild-srcIncluded-3.3.1.1.zip
+Source0:         http://download.eclipse.org/eclipse/downloads/drops/R-3.3.2-200802211800/eclipse-sourceBuild-srcIncluded-3.3.2.zip
 Source1:        %{name}.script
 Source2:        %{name}.desktop
 Source3:        eclipse.in
 # cvs -d :pserver:anonymous@sources.redhat.com:/cvs/eclipse export \
-#   -r fedoraeclipse-3_3_1_1-3 branding/org.fedoraproject.ide.platform
+#   -r fedoraeclipse-3_3_2 branding/org.fedoraproject.ide.platform
 # cd branding
-# zip -r org.fedoraproject.ide.platform-3.3.1.1-3.zip \
+# zip -r org.fedoraproject.ide.platform-3.3.2.zip \
 #   org.fedoraproject.ide.platform
-Source4:        org.fedoraproject.ide.platform-%{version}-3.zip
+Source4:        org.fedoraproject.ide.platform-%{version}.zip
 # cvs -d :pserver:anonymous@sources.redhat.com:/cvs/eclipse export \
 #   -r fedoraeclipsefeature-1_0_0 branding/org.fedoraproject.ide-feature
 # cd branding
@@ -50,9 +50,11 @@ Source18:       ecj.sh.in
 # when using the FileInitializer
 Source19:       %{name}-filenamepatterns.txt
 # cvs -d :pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse co equinox-incubator/org.eclipse.equinox.initializer
-# tar cjf eclipse-fileinitializerapp.tar.bz2 equinox-incubator/
+# tar cjf eclipse-fileinitializerapp.tar.bz2 equinox-incubator/ 
 # (generated 2006-11-01 18:48 UTC)
 Source20:       %{name}-fileinitializerapp.tar.bz2
+# Script to wrap PDE Build calls for bundle builds
+Source21:       %{name}-pdebuild.sh
 
 # This needs to go upstream
 Patch3:         %{name}-libupdatebuild2.patch
@@ -81,8 +83,6 @@ Patch17:        %{name}-ecj-gcj.patch
 Patch24:        %{name}-add-ppc64-sparc64-s390-s390x.patch
 Patch28:        %{name}-add-ppc64-sparc64-s390-s390x-2.patch
 Patch30:        %{name}-addfragmentsforotherplatforms.patch
-#https://bugs.eclipse.org/bugs/show_bug.cgi?id=198840
-Patch25:       %{name}-launcher-double-free-bug.patch
 #FIXME: file a bug upstream
 Patch26:        %{name}-launcher-fix-java-home.patch
 # On a 1.7 VM, generate 1.6-level bytecode
@@ -90,6 +90,10 @@ Patch26:        %{name}-launcher-fix-java-home.patch
 Patch27:        %{name}-17vmgenerate16bytecode.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=352361
 Patch29:        %{name}-maxpermsize.patch
+
+Patch31:	%{name}-ia64-packaging.patch
+# https://bugs.eclipse.org/226356
+Patch32:	%{name}-buildagainstxulrunner.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 Patch100:       %{name}-libswt-model.patch
@@ -110,6 +114,7 @@ BuildRequires:  mesaglu-devel
 BuildRequires:  cairo-devel >= 0:1.0
 BuildRequires:  unzip
 BuildRequires:  icu4j-eclipse >= 0:3.6.1
+BuildRequires:  tomcat5-jasper-eclipse >= 5.5.17
 BuildRequires:  desktop-file-utils
 %if %{gcj_support}
 BuildRequires:  java-javadoc
@@ -211,7 +216,7 @@ Requires(postun):  %{name}-rcp = %{epoch}:%{version}-%{release}
 Requires:       java >= 1.6.0
 %endif
 
-%description    cvs-client
+%description    cvs-client 
 Eclipse CVS Client
 
 %package        platform
@@ -327,7 +332,7 @@ Requires(post):    %{name}-platform = %{epoch}:%{version}-%{release}
 Requires(postun):  %{name}-platform = %{epoch}:%{version}-%{release}
 
 %description    pde-runtime
-Eclipse Plug-in Development Environment runtime plugin
+Eclipse Plugin Development Environment runtime plugin
 (org.eclipse.pde.runtime).
 
 %prep
@@ -348,7 +353,7 @@ pushd plugins/org.eclipse.tomcat
 %patch6 -p0
 %patch7 -p0
 popd
-sed --in-place "s/4.1.130/%{tomcatversion}/g"           \
+sed --in-place "s/4.1.230/%{tomcatversion}/g"           \
                 features/org.eclipse.platform/build.xml \
                 plugins/org.eclipse.tomcat/build.xml    \
                 plugins/org.eclipse.tomcat/META-INF/MANIFEST.MF   \
@@ -366,7 +371,6 @@ sed --in-place "s/OPT_FLAGS=-O/OPT_FLAGS=-O2 -g/" plugins/org.eclipse.core.files
 rm plugins/org.eclipse.platform/launchersrc.zip
 pushd features/org.eclipse.equinox.executable
 %patch12 -p0
-%patch25 -p0
 %patch26 -p0
 # put the configuration directory in an arch-specific location
 sed --in-place "s:/usr/lib/eclipse/configuration:%{_libdir}/%{name}/configuration:" library/eclipse.c
@@ -577,7 +581,9 @@ popd
 %patch24 -p1
 %patch28
 %patch30
-# there is only partial support for ppc64 so we have to remove this
+%patch31 -p1
+
+# there is only partial support for ppc64 so we have to remove this 
 # partial support to get the replacement hack to work
 find -name \*ppc64\* | xargs rm -r
 # remove ppc64 support from features/org.eclipse.platform.source/feature.xml
@@ -587,7 +593,7 @@ find -type f -name \*.xml -exec sed --in-place "s/\(rootFileslinux_gtk_\)ppc64/\
 sed -i "50,54d" features/org.eclipse.platform.source/build.xml
 # replace final occurances with an existing arch
 sed --in-place "s/ppc64/x86_64/g" features/org.eclipse.platform.source/build.xml
-# Move all of the ia64 directories and files to ppc64 or sparc{,64} or alpha dirs and replace
+# Move all of the ia64 directories and files to ppc64 or sparc{,64} or alpha dirs and replace 
 # the ia64 strings with ppc64 etc.
 %ifarch ppc64 sparc sparc64 alpha
   for f in $(find -name \*ia64\* | grep -v motif | grep -v ia64_32); do
@@ -663,7 +669,7 @@ ln -s %{_javadir}/commons-el.jar plugins/org.apache.commons.el_1.0.0.v2007061117
 
 # link to jasper
 rm plugins/org.apache.jasper_5.5.17.v200706111724.jar
-ln -s %{_datadir}/eclipse/plugins/org.apache.jasper_5.5.17.v200706111724.jar \
+ln -s  %{_datadir}/eclipse/plugins/org.apache.jasper_5.5.17.v200706111724.jar \
    plugins/org.apache.jasper_5.5.17.v200706111724.jar
 
 # link to servlet-api
@@ -758,7 +764,7 @@ for plugin in jdt.compiler.tool jdt.compiler.apt jdt.apt.pluggable.core; do
        org.eclipse.core.launcher.Main                    \
        -application org.eclipse.ant.core.antRunner       \
        build.update.jar                                  \
-       -vmargs -Duser.home=$homedir
+       -vmargs -Duser.home=$homedir 
   popd
 done
 %endif
@@ -806,11 +812,12 @@ install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/%{name}/links
 install -d -m 755 $RPM_BUILD_ROOT%{_libdir}/%{name}
 install -d -m 755 $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins
 install -d -m 755 $RPM_BUILD_ROOT%{_libdir}/%{name}/features
+install -d -m 755 $RPM_BUILD_ROOT%{_libdir}/java
 
 # Explode the resulting SDK tarball
 tar -C $RPM_BUILD_ROOT%{_datadir} -zxf result/linux-gtk-%{eclipse_arch}-sdk.tar.gz
 cp eclipse/eclipse $RPM_BUILD_ROOT%{_datadir}/eclipse
-%ifarch ppc64 sparc sparc64 alpha
+%ifarch ppc64 sparc sparc64 alpha ia64
 cp features/org.eclipse.platform/gtk/eclipse.ini $RPM_BUILD_ROOT%{_libdir}/eclipse
 %else
 mv $RPM_BUILD_ROOT%{_datadir}/eclipse/eclipse.ini \
@@ -856,7 +863,7 @@ mv $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins/org.eclipse.platform.source_$PLATF
   $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins
 
 # help.webapp generates web.xml with Apache Jakarta Tomcat JspC. This file is
-# generated differently for different archs. FIXME investigate this.
+# generated differently for different arches. FIXME investigate this.
 HELPWEBAPPVERSION=$(ls $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins | grep help.webapp_ | sed 's/org.eclipse.help.webapp_//')
 mv $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins/org.eclipse.help.webapp_$HELPWEBAPPVERSION \
   $RPM_BUILD_ROOT%{_libdir}/%{name}/plugins
@@ -1076,6 +1083,10 @@ sed -e's/^\(.*\)$/\1 \1/' -e's,^,ln -s $eclipse/,' >> copy-platform
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/%{name}/buildscripts
 cp copy-platform $RPM_BUILD_ROOT%{_datadir}/%{name}/buildscripts
 
+# Install the PDE Build wrapper script.
+install -p -D -m0755 %{SOURCE21} \
+  $RPM_BUILD_ROOT%{_datadir}/%{name}/buildscripts/pdebuild
+
 pushd $RPM_BUILD_ROOT%{_datadir}/%{name}
 ## BEGIN ANT ##
 rm plugins/org.apache.ant_1.7.0.v200706080842/lib/ant-antlr.jar
@@ -1137,9 +1148,9 @@ ln -s %{_javadir}/ant/ant-trax.jar plugins/org.apache.ant_1.7.0.v200706080842/li
 TOMCATPLUGINVERSION=$(ls plugins | grep tomcat | sed 's/org.eclipse.tomcat_//')
 for f in bootstrap catalina{,-optional} mx4j{,-impl,-jmx} \
          naming-{factory,resources} servlets-{default,invoker} \
-        tomcat-{coyote,http,util} \
-        commons-{beanutils,collections,dbcp,digester{,-rss},el,fileupload,launcher,logging-api,modeler,pool} \
-        jasper5-{compiler,runtime} jspapi regexp servletapi5;
+ 	tomcat-{coyote,http,util} \
+ 	commons-{beanutils,collections,dbcp,digester{,-rss},el,fileupload,launcher,logging-api,modeler,pool} \
+ 	jasper5-{compiler,runtime} jspapi regexp servletapi5;
 do rm plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/$f.jar; done
 ln -s %{tomcatsharedir}/bin/bootstrap.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/bootstrap.jar
 ln -s %{_javadir}/tomcat5/catalina.jar plugins/org.eclipse.tomcat_$TOMCATPLUGINVERSION/catalina.jar
@@ -1204,7 +1215,6 @@ ln -s %{_javadir}/commons-el.jar plugins/org.apache.commons.el_1.0.0.v2007061117
 
 # link to jasper
 rm plugins/org.apache.jasper_5.5.17.v200706111724.jar
-#ln -s %{_javadir}/jasper5.jar plugins/org.apache.jasper_5.5.17.v200706111724.jar
 
 # link to serlet-api
 rm plugins/javax.servlet_2.4.0.v200706111738.jar
@@ -1541,7 +1551,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/%{name}/plugins/org.apache.ant_*
 %{_datadir}/%{name}/plugins/org.apache.commons.el_*
 %{_datadir}/%{name}/plugins/org.apache.commons.logging_*
-#%{_datadir}/%{name}/plugins/org.apache.jasper_*
 %{_datadir}/%{name}/plugins/org.apache.lucene_*
 %{_datadir}/%{name}/plugins/org.apache.lucene.analysis_*
 %{_datadir}/%{name}/plugins/org.eclipse.ant.core_*
