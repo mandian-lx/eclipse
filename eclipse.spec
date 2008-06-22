@@ -1,6 +1,6 @@
 Epoch:  1
 
-%define gcj_support     1
+%define gcj_support     0
 %define tomcatepoch     0
 %define tomcatversion   5.5.23
 %define tomcatsharedir  %{_datadir}/tomcat5
@@ -22,7 +22,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.9.1
+Release:        %mkrel 0.9.2
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -245,6 +245,7 @@ Requires: jakarta-commons-beanutils jakarta-commons-collections jakarta-commons-
 Requires: mx4j >= 0:2.1
 Requires: tomcat5 >= %{tomcatepoch}:%{tomcatversion}
 Requires: tomcat5-jasper >= %{tomcatepoch}:%{tomcatversion}
+Requires: tomcat5-jasper-eclipse
 Requires: jsp
 Requires: tomcat5-servlet-2.4-api >= %{tomcatepoch}:%{tomcatversion}
 Requires: jetty5
