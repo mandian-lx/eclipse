@@ -22,7 +22,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.9.3
+Release:        %mkrel 0.9.4
 License:        Eclipse Public License
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -627,24 +627,24 @@ IFS='
 %endif 
 
 # remove jdt.apt.pluggable.core, jdt.compiler.tool and org.eclipse.jdt.compiler.apt as they require a JVM that supports Java 1.6
-for plugin in jdt.apt.pluggable.core jdt.compiler.tool jdt.compiler.apt; do
-  version=$(grep org.eclipse.$plugin plugins/org.eclipse.$plugin/build.xml | grep condition.property | cut -d _ -f 2-3 | cut -d \" -f 1)
-  sed --in-place "s/org.eclipse.$plugin:0.0.0,$version,//" features/org.eclipse.jdt/build.xml
-  linenum=$(grep -no "plugins/org.eclipse.$plugin" features/org.eclipse.jdt/build.xml | cut -d : -f 1)
-  sed --in-place -e "$linenum,$(expr $linenum + 4)d" features/org.eclipse.jdt/build.xml
+#for plugin in jdt.apt.pluggable.core jdt.compiler.tool jdt.compiler.apt; do
+#  version=$(grep org.eclipse.$plugin plugins/org.eclipse.$plugin/build.xml | grep condition.property | cut -d _ -f 2-3 | cut -d \" -f 1)
+#  sed --in-place "s/org.eclipse.$plugin:0.0.0,$version,//" features/org.eclipse.jdt/build.xml
+#  linenum=$(grep -no "plugins/org.eclipse.$plugin" features/org.eclipse.jdt/build.xml | cut -d : -f 1)
+#  sed --in-place -e "$linenum,$(expr $linenum + 4)d" features/org.eclipse.jdt/build.xml
 # If we're build with IcedTea then we don't want to remove the plugins from the
 # feature.xml because we will build these plugins after the main build. This
 # allows us to produce 1.5 bytecode for all of the SDK except for the parts that
 # explicitly use Java 1.6. This enables GCJ to work with Eclipse on all platforms. 
-%if ! %{gcj_support}
-  linenum=$(grep -no $plugin features/org.eclipse.jdt/feature.xml | cut -d : -f 1)
-  sed --in-place -e "$(expr $linenum - 1),$(expr $linenum + 5)d" features/org.eclipse.jdt/feature.xml
-%endif 
-  linenum=$(grep -no "dir=\"plugins/org.eclipse.$plugin" assemble.org.eclipse.sdk.linux.gtk.%{eclipse_arch}.xml | cut -d : -f 1)
-  sed --in-place -e "$linenum,$(expr $linenum + 2)d" assemble.org.eclipse.sdk.linux.gtk.%{eclipse_arch}.xml
-  linenum=$(grep -no "value=\"org.eclipse.$plugin" assemble.org.eclipse.sdk.linux.gtk.%{eclipse_arch}.xml | cut -d : -f 1)
-  sed --in-place -e "$(expr $linenum - 2),$(expr $linenum + 1)d" assemble.org.eclipse.sdk.linux.gtk.%{eclipse_arch}.xml
-done
+#%if ! %{gcj_support}
+#  linenum=$(grep -no $plugin features/org.eclipse.jdt/feature.xml | cut -d : -f 1)
+#  sed --in-place -e "$(expr $linenum - 1),$(expr $linenum + 5)d" features/org.eclipse.jdt/feature.xml
+#%endif 
+#  linenum=$(grep -no "dir=\"plugins/org.eclipse.$plugin" assemble.org.eclipse.sdk.linux.gtk.%{eclipse_arch}.xml | cut -d : -f 1)
+#  sed --in-place -e "$linenum,$(expr $linenum + 2)d" assemble.org.eclipse.sdk.linux.gtk.%{eclipse_arch}.xml
+#  linenum=$(grep -no "value=\"org.eclipse.$plugin" assemble.org.eclipse.sdk.linux.gtk.%{eclipse_arch}.xml | cut -d : -f 1)
+#  sed --in-place -e "$(expr $linenum - 2),$(expr $linenum + 1)d" assemble.org.eclipse.sdk.linux.gtk.%{eclipse_arch}.xml
+#done
 
 # link to the jsch jar
 rm plugins/com.jcraft.jsch_0.1.31.jar
@@ -749,7 +749,7 @@ export JAVA_HOME=%{java_home}
 %{ant} \
   -Dnobootstrap=true \
   -DinstallOs=linux -DinstallWs=gtk -DinstallArch=%{eclipse_arch} \
-  -Dlibsconfig=true -DjavacSource=1.5 -DjavacTarget=1.5 -DcompilerArg="-encoding ISO-8859-1 -nowarn"
+  -Dlibsconfig=true -DjavacSource=1.6 -DjavacTarget=1.6 -DcompilerArg="-encoding ISO-8859-1 -nowarn"
 
 
 # build 1.6 when building with IcedTea
@@ -759,13 +759,13 @@ homedir=$(cd home && pwd)
 LAUNCHERVERSION=$(ls $SDK/plugins | grep equinox.launcher_ | sed 's/org.eclipse.equinox.launcher_//')
 
 %if ! %{gcj_support}
-for plugin in jdt.compiler.tool jdt.compiler.apt jdt.apt.pluggable.core; do
+for plugin in jdt.apt.pluggable.core jdt.compiler.apt jdt.compiler.tool; do
   pushd plugins/org.eclipse.$plugin
   %{java} -cp $SDK/plugins/org.eclipse.equinox.launcher_$LAUNCHERVERSION \
        org.eclipse.core.launcher.Main                    \
        -application org.eclipse.ant.core.antRunner       \
        build.update.jar                                  \
-       -vmargs -Duser.home=$homedir 
+       -vmargs -Duser.home=$homedir -DjavacSource=1.6 -DjavacTarget=1.6
   popd
 done
 %endif
