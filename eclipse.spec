@@ -29,7 +29,7 @@ Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
 Release:        %mkrel 0.15.0.2
 License:        EPL
-Group:          Text Editors/Integrated Development Environments (IDE)
+Group:          Development/Java
 URL:            http://www.eclipse.org/
 Source0:        http://download.eclipse.org/eclipse/downloads/drops/R-3.4-200806172000/eclipse-sourceBuild-srcIncluded-3.4.zip
 Source2:        %{name}.desktop
@@ -183,7 +183,7 @@ everything in between.
 
 %package        ecj
 Summary:        Eclipse Compiler for Java
-Group:          Development/Languages
+Group:          Development/Java
 Obsoletes:      ecj < 2:%{version}-%{release}
 Obsoletes:      libecj-java < 2:%{version}-%{release}
 Provides:       ecj = %{version}-%{release}
@@ -195,7 +195,7 @@ Eclipse compiler for Java.
 
 %package     swt
 Summary:        SWT Library for GTK+-2.0
-Group:          Text Editors/Integrated Development Environments (IDE)
+Group:          Development/Java
 # %{_libdir}/java directory owned by jpackage-utils
 Requires:       jpackage-utils
 Requires:       gtk2
@@ -211,7 +211,7 @@ SWT Library for GTK+-2.0.
 
 %package        rcp
 Summary:        Eclipse Rich Client Platform
-Group:          Development/Languages
+Group:          Development/Java
 Requires:       %{name}-swt = %{epoch}:%{version}-%{release}
 # FIXME:  investigate.  Can we just add a %{arch} to the above?
 ## This file-level requirement is for the bi-arch multilib case
@@ -224,7 +224,7 @@ Eclipse Rich Client Platform
 
 %package        platform
 Summary:        Eclipse platform common files
-Group:          Text Editors/Integrated Development Environments (IDE)
+Group:          Development/Java
 Requires:   %{name}-rcp = %{epoch}:%{version}-%{release}
 # FIXME:  investigate.  Can we just add a %{arch} to the above?
 ## This file-level requirement is for the bi-arch multilib case
@@ -255,7 +255,7 @@ Java Development Tools or the Plugin Development Environment.
 
 %package        jdt
 Summary:        Eclipse Java Development Tools
-Group:          Text Editors/Integrated Development Environments (IDE)
+Group:          Development/Java
 Requires:       %{name}-platform = %{epoch}:%{version}-%{release}
 Requires:       %{name}-cvs-client = %{epoch}:%{version}-%{release}
 Requires:       %{name}-ecj = %{epoch}:%{version}-%{release}
@@ -269,7 +269,7 @@ developing software written in the Java programming language.
 
 %package        pde
 Summary:        Eclipse Plugin Development Environment
-Group:          Text Editors/Integrated Development Environments (IDE)
+Group:          Development/Java
 Provides:	eclipse-sdk
 Provides:	eclipse
 Requires:       %{name}-platform = %{epoch}:%{version}-%{release}
