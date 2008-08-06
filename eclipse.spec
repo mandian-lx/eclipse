@@ -27,7 +27,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.15.0.2
+Release:        %mkrel 0.15.1
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -148,6 +148,7 @@ BuildRequires:  mesagl-devel
 BuildRequires:  mesaglu-devel
 BuildRequires:  cairo >= 1.0
 BuildRequires:  unzip
+BuildRequires:  zip
 BuildRequires:  icu4j-eclipse >= 3.8.1
 BuildRequires:  tomcat5-jasper-eclipse >= 5.5.26-1.5
 BuildRequires:  tomcat5-jsp-2.0-api
