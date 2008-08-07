@@ -27,7 +27,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.15.1
+Release:        %mkrel 0.17.1
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -217,7 +217,7 @@ Requires:       %{name}-swt = %{epoch}:%{version}-%{release}
 # FIXME:  investigate.  Can we just add a %{arch} to the above?
 ## This file-level requirement is for the bi-arch multilib case
 #Requires: %{_libdir}/%{name}/plugins/org.eclipse.swt.gtk.linux.%{eclipse_arch}_%{swtver}.jar
-Requires:           icu4j-eclipse >= 3.6.1-1jpp.4
+Requires:       icu4j-eclipse >= 3.8.1
 Requires:       java >= 1.6.0
 
 %description    rcp
@@ -710,8 +710,16 @@ sdkDir=$RPM_BUILD_ROOT%{_libdir}/%{name}
 install -d -m 755 $sdkDir
 install -d -m 755 $sdkDir/plugins
 install -d -m 755 $sdkDir/features
+# FIXME:  We can probably get rid of the links directory (for the
+# datadir.link file) when we ensure all plugins are installing into
+# dropins (either in libdir or datadir).
 install -d -m 755 $RPM_BUILD_ROOT%{_libdir}/java
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/%{name}
+install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/%{name}/dropins
+
+# FIXME:  Please don't install stuff to these directories.  They're only
+# still here for legacy plugins (which probably won't function in 3.4).
+# We'll remove these later.
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/%{name}/features
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/%{name}/plugins
 
@@ -866,13 +874,13 @@ for f in about.html about_files \.eclipseproduct epl-v10.html notice.html readme
     fi
 done
 dropins=$provisionDir/dropins
-mkdir $dropins/jdt $dropins/sdk
-mv $jdtDir/features $dropins/jdt
-mv $jdtDir/plugins $dropins/jdt
+mkdir -p $dropins/jdt/eclipse $dropins/sdk/eclipse
+mv $jdtDir/features $dropins/jdt/eclipse
+mv $jdtDir/plugins $dropins/jdt/eclipse
 mv $jdtMetadata/content.xml $dropins/jdt
 
-mv $sdkDir/features $dropins/sdk
-mv $sdkDir/plugins $dropins/sdk
+mv $sdkDir/features $dropins/sdk/eclipse
+mv $sdkDir/plugins $dropins/sdk/eclipse
 mv $sdkMetadata/content.xml $dropins/sdk
 rm -rf $metadataDir $jdtDir $sdkDir $installDir
 mv $provisionDir $sdkDir
@@ -895,6 +903,8 @@ cp -p features/org.eclipse.platform/gtk/eclipse.ini $sdkDir
 
 cp -p features/org.eclipse.platform/gtk/eclipse.ini.patched \
   $sdkDir/eclipse.ini
+# We have /usr/share/eclipse/dropins in eclipse.ini
+sed -i "s|/usr/share|%{_datadir}|" $sdkDir/eclipse.ini
 
 # Add a compatibility symlink to startup.jar
 pushd $sdkDir
@@ -961,10 +971,11 @@ for lib in `find configuration -name \*.so`; do
 done
 
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/%{name}/links
-
+# FIXME:  We can probably get rid of the links file when we ensure all
+# plugins are installing into dropins (either in libdir or datadir).
 # Set up an extension location and a link file for the arch-independent dir
 echo "path:%{_datadir}" > \
-  $RPM_BUILD_ROOT%{_libdir}/%{name}/links/datadir.link
+  $sdkDir/links/datadir.link
 
 # Ensure the launcher binary has the correct permissions
 chmod 755 $RPM_BUILD_ROOT/%{_libdir}/%{name}/%{name}
@@ -997,9 +1008,10 @@ ln -s ../%{name}/swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar ../java/swt.jar
 popd
 
 # Install the eclipse-ecj.jar symlink for java-1.4.2-gcj-compat's "javac"
-JDTCORESUFFIX=$(ls $RPM_BUILD_ROOT%{_libdir}/%{name}/dropins/jdt/plugins | grep jdt.core_ | sed "s/org.eclipse.jdt.core_//")
+JDTCORESUFFIX=$(ls $RPM_BUILD_ROOT%{_libdir}/%{name}/dropins/jdt/eclipse/plugins \
+  | grep jdt.core_ | sed "s/org.eclipse.jdt.core_//")
 install -d -m 755 $RPM_BUILD_ROOT%{_javadir}
-ln -s %{_libdir}/%{name}/dropins/jdt/plugins/org.eclipse.jdt.core_$JDTCORESUFFIX \
+ln -s %{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.jdt.core_$JDTCORESUFFIX \
   $RPM_BUILD_ROOT%{_javadir}/eclipse-ecj-%{version}.jar
 ln -s %{_javadir}/eclipse-ecj-%{version}.jar \
   $RPM_BUILD_ROOT%{_javadir}/eclipse-ecj.jar
@@ -1014,13 +1026,13 @@ ln -s %{_javadir}/ecj-%{version}.jar \
 
 # Icons
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/48x48/apps
-ln -s %{_libdir}/%{name}/plugins/org.fedoraproject.ide.platform/eclipse48.png \
+ln -s %{_libdir}/%{name}/plugins/org.fedoraproject.ide.platform_3.4.0/eclipse48.png \
   $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/48x48/apps/%{name}.png
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps
-ln -s %{_libdir}/%{name}/plugins/org.fedoraproject.ide.platform/eclipse32.png \
+ln -s %{_libdir}/%{name}/plugins/org.fedoraproject.ide.platform_3.4.0/eclipse32.png \
   $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/16x16/apps
-ln -s %{_libdir}/%{name}/plugins/org.fedoraproject.ide.platform/eclipse.png \
+ln -s %{_libdir}/%{name}/plugins/org.fedoraproject.ide.platform_3.4.0/eclipse.png \
   $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/pixmaps
 ln -s %{_datadir}/icons/hicolor/48x48/apps/%{name}.png $RPM_BUILD_ROOT%{_datadir}/pixmaps
@@ -1053,11 +1065,11 @@ mkdir -p $RPM_BUILD_ROOT%{_libdir}/%{name}/buildscripts
 cp -p copy-platform $RPM_BUILD_ROOT%{_libdir}/%{name}/buildscripts
 copyPlatform=$RPM_BUILD_ROOT%{_libdir}/%{name}/buildscripts/copy-platform
 pushd $RPM_BUILD_ROOT%{_libdir}/%{name}
-for p in $(ls -d dropins/jdt/plugins/*); do
+for p in $(ls -d dropins/jdt/eclipse/plugins/*); do
     plugin=$(basename $p)
     echo $p | sed -e"s,^\(.*\),[ ! -e plugins/$plugin ] \&\& ln -s \$eclipse/\1 plugins/$plugin," >> $copyPlatform
 done
-for p in $(ls -d dropins/sdk/plugins/*); do
+for p in $(ls -d dropins/sdk/eclipse/plugins/*); do
     plugin=$(basename $p)
     echo $p | sed -e"s,^\(.*\),[ ! -e plugins/$plugin ] \&\& ln -s \$eclipse/\1 plugins/$plugin," >> $copyPlatform
 done
@@ -1066,7 +1078,7 @@ popd
 # Install the PDE Build wrapper script.
 install -p -D -m0755 %{SOURCE21} \
   $RPM_BUILD_ROOT%{_libdir}/%{name}/buildscripts/pdebuild
-PDEBUILDVERSION=$(ls $RPM_BUILD_ROOT%{_libdir}/%{name}/dropins/sdk/plugins \
+PDEBUILDVERSION=$(ls $RPM_BUILD_ROOT%{_libdir}/%{name}/dropins/sdk/eclipse/plugins \
   | grep org.eclipse.pde.build_ | \
   sed 's/org.eclipse.pde.build_//')
 sed -i "s/@PDEBUILDVERSION@/$PDEBUILDVERSION/g" \
@@ -1077,11 +1089,11 @@ rm plugins/org.sat4j*
 ln -s %{_javadir}/org.sat4j.core_* plugins/
 ln -s %{_javadir}/org.sat4j.pb_* plugins/
 
-ASMPLUGINVERSION=$(ls dropins/sdk/plugins | grep org.objectweb.asm_ | \
+ASMPLUGINVERSION=$(ls dropins/sdk/eclipse/plugins | grep org.objectweb.asm_ | \
   sed 's/org.objectweb.asm_//')
-rm dropins/sdk/plugins/org.objectweb.asm_$ASMPLUGINVERSION
+rm dropins/sdk/eclipse/plugins/org.objectweb.asm_$ASMPLUGINVERSION
 ln -s %{_javadir}/asm3/asm-all.jar \
-  dropins/sdk/plugins/org.objectweb.asm_$ASMPLUGINVERSION
+  dropins/sdk/eclipse/plugins/org.objectweb.asm_$ASMPLUGINVERSION
 
 ## BEGIN ANT ##
 ANTDIR=plugins/$(ls plugins | grep org.apache.ant_)
@@ -1119,7 +1131,7 @@ JETTYPLUGINVERSION=$(ls plugins | grep org.mortbay.jetty_5 | sed 's/org.mortbay.
 rm plugins/org.mortbay.jetty_$JETTYPLUGINVERSION
 ln -s %{_javadir}/jetty5/jetty5.jar plugins/org.mortbay.jetty_$JETTYPLUGINVERSION
 
-pushd dropins/jdt
+pushd dropins/jdt/eclipse
 build-jar-repository -s -p plugins/org.junit_* junit
 
 JUNIT4VERSION=$(ls plugins | grep org.junit4_ | sed 's/org.junit4_//')
@@ -1201,9 +1213,9 @@ fi
 %defattr(-,root,root)
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/dropins
-%dir %{_libdir}/%{name}/dropins/jdt
-%dir %{_libdir}/%{name}/dropins/jdt/plugins
-%{_libdir}/%{name}/dropins/jdt/plugins/org.eclipse.jdt.core_*
+%dir %{_libdir}/%{name}/dropins/jdt/eclipse
+%dir %{_libdir}/%{name}/dropins/jdt/eclipse/plugins
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.jdt.core_*
 %{_javadir}/eclipse-ecj*.jar
 %{_javadir}/jdtcore*.jar
 %{_javadir}/ecj*.jar
@@ -1284,6 +1296,7 @@ fi
 %{_datadir}/icons/*/*/apps/*
 %{_libdir}/%{name}/eclipse
 %dir %{_libdir}/%{name}/dropins
+%dir %{_datadir}/%{name}/dropins
 %{_libdir}/%{name}/features/org.eclipse.platform_*
 %{_libdir}/%{name}/plugins/com.jcraft.jsch_*
 %{_libdir}/%{name}/plugins/javax.servlet_*
@@ -1411,26 +1424,26 @@ fi
 %defattr(-,root,root)
 %{_bindir}/efj
 %{_libdir}/%{name}/dropins/jdt/content.xml
-%{_libdir}/%{name}/dropins/jdt/features
-%{_libdir}/%{name}/dropins/jdt/plugins/org.eclipse.jdt_*
-%{_libdir}/%{name}/dropins/jdt/plugins/org.eclipse.ant.ui_*
-%{_libdir}/%{name}/dropins/jdt/plugins/org.eclipse.jdt.apt.core_*
-%{_libdir}/%{name}/dropins/jdt/plugins/org.eclipse.jdt.apt.ui_*
-%{_libdir}/%{name}/dropins/jdt/plugins/org.eclipse.jdt.apt.pluggable.core_*
-%{_libdir}/%{name}/dropins/jdt/plugins/org.eclipse.jdt.compiler.apt_*
-%{_libdir}/%{name}/dropins/jdt/plugins/org.eclipse.jdt.compiler.tool_*
-%{_libdir}/%{name}/dropins/jdt/plugins/org.eclipse.jdt.core_*
-%{_libdir}/%{name}/dropins/jdt/plugins/org.eclipse.jdt.core.manipulation_*
-%{_libdir}/%{name}/dropins/jdt/plugins/org.eclipse.jdt.debug.ui_*
-%{_libdir}/%{name}/dropins/jdt/plugins/org.eclipse.jdt.debug_*
-%{_libdir}/%{name}/dropins/jdt/plugins/org.eclipse.jdt.junit_*
-%{_libdir}/%{name}/dropins/jdt/plugins/org.eclipse.jdt.junit.runtime_*
-%{_libdir}/%{name}/dropins/jdt/plugins/org.eclipse.jdt.junit4.runtime_*
-%{_libdir}/%{name}/dropins/jdt/plugins/org.eclipse.jdt.launching_*
-%{_libdir}/%{name}/dropins/jdt/plugins/org.eclipse.jdt.ui_*
-%{_libdir}/%{name}/dropins/jdt/plugins/org.junit_*
-%{_libdir}/%{name}/dropins/jdt/plugins/org.junit4_*
-%{_libdir}/%{name}/dropins/jdt/plugins/org.eclipse.jdt.doc.user_*
+%{_libdir}/%{name}/dropins/jdt/eclipse/features
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.jdt_*
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.ant.ui_*
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.jdt.apt.core_*
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.jdt.apt.ui_*
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.jdt.apt.pluggable.core_*
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.jdt.compiler.apt_*
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.jdt.compiler.tool_*
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.jdt.core_*
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.jdt.core.manipulation_*
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.jdt.debug.ui_*
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.jdt.debug_*
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.jdt.junit_*
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.jdt.junit.runtime_*
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.jdt.junit4.runtime_*
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.jdt.launching_*
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.jdt.ui_*
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.junit_*
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.junit4_*
+%{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.jdt.doc.user_*
 
 %files pde
 %defattr(-,root,root)
