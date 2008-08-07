@@ -625,6 +625,8 @@ pushd features/org.eclipse.ecf.filetransfer-feature
 cp -p %{SOURCE26} feature.xml
 cp -p %{SOURCE27} build.properties
 popd
+popd
+sed --in-place "s/uname \-p/uname \-n/"  plugins/org.eclipse.swt/Eclipse\ SWT\ PI/gtk/library/build.sh
 
 %build
 ORIGCLASSPATH=$CLASSPATH
