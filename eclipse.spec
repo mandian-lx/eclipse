@@ -27,7 +27,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.17.1
+Release:        %mkrel 0.18.1
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -1215,6 +1215,7 @@ fi
 %defattr(-,root,root)
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/dropins
+%dir %{_libdir}/%{name}/dropins/jdt
 %dir %{_libdir}/%{name}/dropins/jdt/eclipse
 %dir %{_libdir}/%{name}/dropins/jdt/eclipse/plugins
 %{_libdir}/%{name}/dropins/jdt/eclipse/plugins/org.eclipse.jdt.core_*
