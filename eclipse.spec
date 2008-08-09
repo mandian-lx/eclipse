@@ -27,7 +27,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.18.1
+Release:        %mkrel 0.18.2
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -1007,6 +1007,7 @@ ln -s plugins/org.eclipse.swt.gtk.linux.%{eclipse_arch}_$SWTJARVERSION.jar swt-g
 ln -s swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar swt-gtk-%{eclipse_majmin}.jar
 ln -s swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar swt.jar
 ln -s ../%{name}/swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar ../java/swt.jar
+ln -s ../java/swt.jar $RPM_BUILD_ROOT%{_jnidir}/swt.jar
 popd
 
 # Install the eclipse-ecj.jar symlink for java-1.4.2-gcj-compat's "javac"
@@ -1237,6 +1238,7 @@ fi
 %{_libdir}/%{name}/swt-gtk*.jar
 %{_libdir}/%{name}/swt.jar
 %{_libdir}/java/swt.jar
+%{_jnidir}/swt.jar
 
 %files rcp
 %defattr(-,root,root)
