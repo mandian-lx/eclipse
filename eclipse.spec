@@ -1006,6 +1006,7 @@ pushd $RPM_BUILD_ROOT%{_libdir}/%{name}
 ln -s plugins/org.eclipse.swt.gtk.linux.%{eclipse_arch}_$SWTJARVERSION.jar swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar
 ln -s swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar swt-gtk-%{eclipse_majmin}.jar
 ln -s swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar swt.jar
+mkdir $RPM_BUILD_ROOT/%{_jnidir}
 ln -s ../%{name}/swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar $RPM_BUILD_ROOT%{_jnidir}/swt.jar
 popd
 
