@@ -1009,7 +1009,7 @@ ln -s swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar swt-gtk-%{eclipse_majmin}.j
 ln -s swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar swt.jar
 ln -s ../%{name}/swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar ../java/swt.jar
 #TODO fix in correct way when jnidir allows multiarch
-ln -s ../%{name}/swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar ../../lib/java/swt.jar
+#ln -s ../%{name}/swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar ../../lib/java/swt.jar
 popd
 
 # Install the eclipse-ecj.jar symlink for java-1.4.2-gcj-compat's "javac"
