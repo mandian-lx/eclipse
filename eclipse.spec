@@ -13,9 +13,6 @@ Epoch:  1
 %define eclipse_micro   0
 %define swtver          3.4.0.v3448f
 
-# Prevent brp-java-repack-jars from being run.
-%define __jar_repack 0
-
 # All arches line up between Eclipse and Linux kernel names except i386 -> x86
 %ifarch %{ix86}
 %define eclipse_arch    x86
@@ -26,7 +23,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.19.2
+Release:        %mkrel 0.22.1
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -73,9 +70,21 @@ Source27:       ecf-filetransfer-build.properties
 Source28:       %{name}-mv-Platform.sh
 # Use ECJ for GCJ
 # cvs -d:pserver:anonymous@sourceware.org:/cvs/rhug \
-# export -r eclipse_r34 eclipse-gcj
+# export -r eclipse_r34_1 eclipse-gcj
 # tar cjf eclipse-ecj-gcj.tar.bz2 eclipse-gcj
 Source29:       %{name}-ecj-gcj.tar.bz2
+# Test feature and plugins
+# cvs -d :pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse co equinox-incubator/org.eclipse.equinox.initializer
+# mkdir %{name}-%{version}-testframework; cd %{name}-%{version}-testframework
+# cvs -d :pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse export -r R3_4 \
+#   org.eclipse.test \
+#   org.eclipse.test.performance \
+#   org.eclipse.test-feature \
+#   org.eclipse.ant.optional.junit
+# tar cjf %{name}-%{version}-testframework.tar.bz2 \
+#   %{name}-%{version}-testframework
+# (generated 2008-08-27)
+Source30:       %{name}-%{version}-testframework.tar.bz2
 
 # Build swttools.jar before generation on 64-bit platforms.
 # Build SWT native libraries
@@ -130,6 +139,18 @@ Patch36:	%{name}-dontpackicu4jsource.patch
 # Our dependent JARs have different signatures than the ones included
 # upstream so remove the signatures in the manifests
 Patch37:	%{name}-nojarsignatures.patch
+
+## Back-port patches from 3.4.x stream.  These will be in 3.4.1.
+## https://bugs.eclipse.org/bugs/show_bug.cgi?id=242632
+#Patch39:        %{name}-profilesync-e.o242632.patch
+#Patch40:        %{name}-profilesync-e.o242632-2.patch
+
+# Remove win32 fragment from test feature
+Patch41:        %{name}-nowin32testfragment.patch
+
+# Some fixes for library.xml
+# FIXME:  submit upstream
+Patch42:        %{name}-tests-libraryXml.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires:  ant
@@ -298,8 +319,8 @@ sed --in-place "s/java5.home/java.home/" build.xml
 tar jxf %{SOURCE29}
 mv eclipse-gcj/org/eclipse/jdt/internal/compiler/batch/GCCMain.java \
   plugins/org.eclipse.jdt.core/batch/org/eclipse/jdt/internal/compiler/batch/
-mv eclipse-gcj/gcc.properties \
-  plugins/org.eclipse.jdt.core/batch/org/eclipse/jdt/internal/compiler/batch/
+cat eclipse-gcj/gcc.properties >> \
+  plugins/org.eclipse.jdt.core/batch/org/eclipse/jdt/internal/compiler/batch/messages.properties
 rm -rf eclipse-gcj
 
 # liblocalfile fixes
@@ -359,6 +380,14 @@ popd
 
 %patch36
 %patch37
+
+#pushd plugins/org.eclipse.equinox.p2.reconciler.dropins
+#%patch39
+#popd
+#
+#pushd plugins/org.eclipse.equinox.p2.touchpoint.eclipse
+#%patch40
+#popd
 
 # Remove signatures for JARs
 find -iname \*.sf | xargs rm
@@ -627,6 +656,14 @@ popd
 popd
 sed --in-place "s/uname \-p/uname \-m/"  plugins/org.eclipse.swt/Eclipse\ SWT\ PI/gtk/library/build.sh
 
+# Test framework
+tar jxf %{SOURCE30}
+pushd %{name}-%{version}-testframework
+%patch41
+%patch42
+sed -i "s:/usr/lib/eclipse:%{_libdir}/%{name}:" org.eclipse.test/library.xml
+popd
+
 %build
 ORIGCLASSPATH=$CLASSPATH
 
@@ -698,6 +735,33 @@ mkdir -p build
 
 popd
 
+# Build the test framework
+pushd %{name}-%{version}-testframework
+mkdir -p build
+
+# The qualifier is what is in upstream's release:
+# http://download.eclipse.org/eclipse/downloads/drops/R-3.4-200806172000/eclipse-test-framework-3.4.zip
+%java -cp $SDK/plugins/org.eclipse.equinox.launcher_$LAUNCHERVERSION \
+     -Duser.home=$homedir                              \
+      org.eclipse.core.launcher.Main \
+     -application org.eclipse.ant.core.antRunner       \
+     -Dtype=feature                                    \
+     -Did=org.eclipse.test                   \
+     -DsourceDirectory=$(pwd)                          \
+     -DbaseLocation=$SDK \
+     -DforceContextQualifier=v20080507 \
+     -Dbuilder=$SDK/plugins/org.eclipse.pde.build_$PDEPLUGINVERSION/templates/package-build  \
+     -f $SDK/plugins/org.eclipse.pde.build_$PDEPLUGINVERSION/scripts/build.xml
+
+unzip build/rpmBuild/org.eclipse.test.zip
+# These are already in the SDK
+rm eclipse/epl-v10.html eclipse/notice.html
+rm -rf eclipse/plugins/org.junit*
+rm build/rpmBuild/org.eclipse.test.zip
+zip -r build/rpmBuild/org.eclipse.test.zip eclipse
+popd
+
+
 %install
 rm -rf $RPM_BUILD_ROOT
 
@@ -734,6 +798,11 @@ unzip -d $RPM_BUILD_ROOT%{_libdir} \
 # Remove the feature we used for building
 rm -rf \
   $sdkDir/features/org.eclipse.ecf.filetransfer_feature_*
+
+# Test framework
+unzip -d $RPM_BUILD_ROOT%{_libdir} \
+  %{name}-%{version}-testframework/build/rpmBuild/org.eclipse.test.zip
+mv $RPM_BUILD_ROOT%{_libdir}/eclipse/plugins/org.eclipse.test{_3.2.0,}
 
 LAUNCHERVERSION=$(ls $sdkDir/plugins | grep equinox.launcher_ | sed 's/org.eclipse.equinox.launcher_//')
 
