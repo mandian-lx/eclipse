@@ -23,7 +23,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.22.1
+Release:        %mkrel 0.22.2
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -1076,9 +1076,7 @@ pushd $RPM_BUILD_ROOT%{_libdir}/%{name}
 ln -s plugins/org.eclipse.swt.gtk.linux.%{eclipse_arch}_$SWTJARVERSION.jar swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar
 ln -s swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar swt-gtk-%{eclipse_majmin}.jar
 ln -s swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar swt.jar
-ln -s ../%{name}/swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar ../java/swt.jar
-#TODO fix in correct way when jnidir allows multiarch
-#ln -s ../%{name}/swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar ../../lib/java/swt.jar
+ln -s %{_libdir}/%{name}/swt-gtk-%{eclipse_majmin}.%{eclipse_micro}.jar %{buildroot}%{_jnidir}/swt.jar
 popd
 
 # Install the eclipse-ecj.jar symlink for java-1.4.2-gcj-compat's "javac"
@@ -1307,7 +1305,7 @@ fi
 %{_libdir}/%{name}/plugins/org.eclipse.swt.gtk.linux.%{eclipse_arch}_*
 %{_libdir}/%{name}/swt-gtk*.jar
 %{_libdir}/%{name}/swt.jar
-%{_libdir}/java/swt.jar
+%{_jnidir}/swt.jar
 
 %files rcp
 %defattr(-,root,root)
