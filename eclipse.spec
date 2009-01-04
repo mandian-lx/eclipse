@@ -10,7 +10,7 @@ Epoch:  1
 %define eclipse_major   3
 %define eclipse_minor   4
 %define eclipse_majmin  %{eclipse_major}.%{eclipse_minor}
-%define eclipse_micro   0
+%define eclipse_micro   1
 %define swtver          3.4.0.v3448f
 
 # All arches line up between Eclipse and Linux kernel names except i386 -> x86
@@ -49,7 +49,7 @@ Source18:       ecj.sh.in
 # when using the FileInitializer
 Source19:       %{name}-filenamepatterns.txt
 # cvs -d :pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse co equinox-incubator/org.eclipse.equinox.initializer
-# tar cjf eclipse-fileinitializerapp.tar.bz2 equinox-incubator/ 
+# tar cjf eclipse-fileinitializerapp.tar.bz2 equinox-incubator/
 # (generated 2006-11-01 18:48 UTC)
 Source20:       %{name}-fileinitializerapp.tar.bz2
 # Script to wrap PDE Build calls for bundle builds
@@ -105,7 +105,7 @@ Patch32:        %{name}-compilelibs.patch
 # FIXME:  update this patch to avoid fuzz
 #Patch14:        %{name}-ecj-rpmdebuginfo.patch
 # generic releng plugins that can be used to build plugins
-# see this thread for details: 
+# see this thread for details:
 # https://www.redhat.com/archives/fedora-devel-java-list/2006-April/msg00048.html
 Patch15:        %{name}-pde.build-add-package-build.patch
 Patch24:        %{name}-add-ppc64-sparc64-s390-s390x.patch
@@ -191,7 +191,7 @@ BuildRequires: mx4j >= 2.1
 BuildRequires: jetty5
 BuildRequires: lucene >= 1.9.1
 BuildRequires: lucene-contrib >= 1.9.1
-BuildRequires: regexp 
+BuildRequires: regexp
 BuildRequires: junit >= 3.8.1-3jpp
 BuildRequires: junit4
 BuildRequires: sat4j
@@ -336,7 +336,7 @@ pushd features/org.eclipse.equinox.executable
 # FIXME:  deal with this
 ## put the configuration directory in an arch-specific location
 #sed --in-place "s:/usr/lib/eclipse/configuration:%{_libdir}/%{name}/configuration:" library/eclipse.c
-## make the eclipse binary relocatable 
+## make the eclipse binary relocatable
 #sed --in-place "s:/usr/share/eclipse:%{_datadir}/%{name}:" library/eclipse.c
 zip -q -9 -r ../../plugins/org.eclipse.platform/launchersrc.zip library
 popd
@@ -429,7 +429,7 @@ sed --in-place "s/$swt_frag_ver_s390x/$swt_frag_ver/g" plugins/org.eclipse.swt.g
 sed -i "s/\(rootFileslinux_gtk_\)ppc64/\1ppc128/g" \
   features/org.eclipse.equinox.executable/target.build.xml
 
-# Copy all of the s390x directories and files to ppc64 or sparc{,64} or alpha dirs and replace 
+# Copy all of the s390x directories and files to ppc64 or sparc{,64} or alpha dirs and replace
 # the s390x strings with ppc64, etc.
 %ifnarch %{ix86} x86_64
   cp -rp features/org.eclipse.platform/about_files/linux.gtk.{x86,%{_arch}}
@@ -455,7 +455,7 @@ IFS='
 
 %ifarch ppc64 sparc sparcv9 sparc64 alpha ia64
 IFS='
-' 
+'
  # Fragments for these arches
   rm -rf plugins/org.eclipse.equinox.launcher.gtk.linux.%{_arch}
   mv plugins/org.eclipse.equinox.launcher.gtk.linux.{ppc,%{_arch}}
@@ -481,7 +481,7 @@ IFS='
   popd
   IFS=$OLDIFS
 
-%endif 
+%endif
 
 # Don't build for non-linux,gtk,%%{_arch} targets
 pushd features
@@ -685,7 +685,7 @@ export JAVA_HOME=%{java_home}
   -Dlibsconfig=true \
   -DJavaSE-1.6=%{_jvmdir}/java/jre/lib/rt.jar \
   -DcompilerArg="-encoding ISO-8859-1 -nowarn"
-  
+
 # Build the FileInitializer application
 SDK=$(cd eclipse && pwd)
 mkdir -p home
@@ -795,7 +795,7 @@ tar -C $RPM_BUILD_ROOT%{_libdir} -zxf result/linux-gtk-%{eclipse_arch}-sdk.tar.g
 # ECF filetransfer plugins we built
 rm $sdkDir/plugins/org.eclipse.ecf*.jar
 unzip -d $RPM_BUILD_ROOT%{_libdir} \
-  org.eclipse.ecf/build/rpmBuild/org.eclipse.ecf.filetransfer_feature.zip 
+  org.eclipse.ecf/build/rpmBuild/org.eclipse.ecf.filetransfer_feature.zip
 # Remove the feature we used for building
 rm -rf \
   $sdkDir/features/org.eclipse.ecf.filetransfer_feature_*
@@ -936,7 +936,7 @@ org.eclipse.equinox.p2.director.app.application \
 -metadataRepository file:$metadataDir \
 -artifactRepository file:$metadataDir \
 -destination $provisionDir \
--bundlepool $provisionDir 
+-bundlepool $provisionDir
 
 # Stuff in JDT, PDE, SDK
 for f in about.html about_files \.eclipseproduct epl-v10.html notice.html readme; do
@@ -990,7 +990,7 @@ popd
 #     -Dosgi.sharedConfiguration.area=$RPM_BUILD_ROOT%{_libdir}/%{name}/configuration
 # Note (2006-12-05):  upon looking at this again, we (bkonrath, overholt) don't
 # know what we're doing with $libdir_path :)  It requires some investigation.
-# 
+#
 # Extract .so files
 # https://bugs.eclipse.org/bugs/show_bug.cgi?id=90535
 pushd $RPM_BUILD_ROOT
@@ -1022,7 +1022,7 @@ pushd $profileDir
   sed -i "s|$RPM_BUILD_ROOT||g" *.profile/*
 popd
 
-# Set eclipse.product to org.fedoraproject.ide.platform 
+# Set eclipse.product to org.fedoraproject.ide.platform
 sed --in-place "s/plugins\/org.eclipse.platform/plugins\/org.fedoraproject.ide.platform/" \
   $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/config.ini
 sed --in-place "s/eclipse.product=org.eclipse.platform.ide/eclipse.product=org.fedoraproject.ide.platform.product/" \
@@ -1038,7 +1038,7 @@ ln -s %{_libdir}/%{name}/%{name} $RPM_BUILD_ROOT%{_bindir}/%{name}
 #sed --in-place "s|@ECLIPSELIBSUFFIX@|$ECLIPSELIBSUFFIX|" $RPM_BUILD_ROOT%{_bindir}/eclipse
 
 # Ensure the shared libraries have the correct permissions
-pushd $RPM_BUILD_ROOT%{_libdir}/%{name} 
+pushd $RPM_BUILD_ROOT%{_libdir}/%{name}
 for lib in `find configuration -name \*.so`; do
    chmod 755 $lib
 done
@@ -1061,12 +1061,12 @@ for id in `ls configuration/org.eclipse.osgi/bundles`; do
   else
     echo "%{_libdir}/%{name}/configuration/org.eclipse.osgi/bundles/$id" >> %{_builddir}/%{buildsubdir}/%{name}-platform.install;
   fi
-done 
+done
 popd
 
 # Install symlinks to the SWT JNI shared libraries in %%{_libdir}/eclipse
 pushd $RPM_BUILD_ROOT%{_libdir}/%{name}
-for lib in $(find configuration -name libswt\*.so); do  
+for lib in $(find configuration -name libswt\*.so); do
   ln -s $lib `basename $lib`
 done
 popd
@@ -1111,14 +1111,14 @@ ln -s %{_libdir}/%{name}/plugins/org.fedoraproject.ide.platform_3.4.0/eclipse.pn
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/pixmaps
 ln -s %{_datadir}/icons/hicolor/48x48/apps/%{name}.png $RPM_BUILD_ROOT%{_datadir}/pixmaps
 
-# Install the efj wrapper script 
+# Install the efj wrapper script
 install -p -D -m0755 %{SOURCE17} $RPM_BUILD_ROOT%{_bindir}/efj
 sed --in-place "s:startup.jar:%{_libdir}/%{name}/startup.jar:" \
-  $RPM_BUILD_ROOT%{_bindir}/efj 
+  $RPM_BUILD_ROOT%{_bindir}/efj
 
 # Install the ecj wrapper script
 install -p -D -m0755 %{SOURCE18} $RPM_BUILD_ROOT%{_bindir}/ecj
-sed --in-place "s:@JAVADIR@:%{_javadir}:" $RPM_BUILD_ROOT%{_bindir}/ecj 
+sed --in-place "s:@JAVADIR@:%{_javadir}:" $RPM_BUILD_ROOT%{_bindir}/ecj
 
 # A sanity check.
 desktop-file-validate %{SOURCE2}
