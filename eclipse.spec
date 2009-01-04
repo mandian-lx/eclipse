@@ -11,7 +11,7 @@ Epoch:  1
 %define eclipse_minor   4
 %define eclipse_majmin  %{eclipse_major}.%{eclipse_minor}
 %define eclipse_micro   1
-%define swtver          3.4.0.v3448f
+%define swtver          3.4.1.v3449c
 
 # All arches line up between Eclipse and Linux kernel names except i386 -> x86
 %ifarch %{ix86}
@@ -23,7 +23,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.22.3
+Release:        %mkrel 0.12.0
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -35,7 +35,7 @@ Source2:        %{name}.desktop
 # cd branding
 # zip -r org.fedoraproject.ide.platform-3.4.0-1.zip \
 #   org.fedoraproject.ide.platform
-Source4:        org.fedoraproject.ide.platform-%{version}-1.zip
+Source4:        org.fedoraproject.ide.platform-%{version}.zip
 # cvs -d :pserver:anonymous@sources.redhat.com:/cvs/eclipse export \
 #   -r fedoraeclipsefeature-1_0_0 branding/org.fedoraproject.ide-feature
 # cd branding
