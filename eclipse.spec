@@ -23,7 +23,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.12.0
+Release:        %mkrel 0.12.1
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -35,13 +35,13 @@ Source2:        %{name}.desktop
 # cd branding
 # zip -r org.fedoraproject.ide.platform-3.4.0-1.zip \
 #   org.fedoraproject.ide.platform
-Source4:        org.fedoraproject.ide.platform-%{version}.zip
+Source4:        org.mandriva.ide.platform-%{version}.zip
 # cvs -d :pserver:anonymous@sources.redhat.com:/cvs/eclipse export \
 #   -r fedoraeclipsefeature-1_0_0 branding/org.fedoraproject.ide-feature
 # cd branding
 # zip -r org.fedoraproject.ide.feature-1.0.0.zip \
 #   org.fedoraproject.ide-feature
-Source5:        org.fedoraproject.ide.feature-1.0.0.zip
+Source5:        org.mandriva.ide.feature-1.0.0.zip
 Source16:       %{name}-copy-platform.sh
 Source17:       efj.sh.in
 Source18:       ecj.sh.in
@@ -272,7 +272,7 @@ Provides: eclipse-cvs-client = 1:%{version}-%{release}
 Obsoletes: eclipse-cvs-client < 1:3.3.2-20
 
 %description    platform
-The Fedora Eclipse Platform is the base of all IDE plugins.  This does not include the
+The Mandriva Eclipse Platform is the base of all IDE plugins.  This does not include the
 Java Development Tools or the Plugin Development Environment.
 
 %package        jdt
@@ -811,9 +811,9 @@ LAUNCHERVERSION=$(ls $sdkDir/plugins | grep equinox.launcher_ | sed 's/org.eclip
 cp -p equinox-incubator/org.eclipse.equinox.initializer/org.eclipse.equinox.initializer_*.jar \
   $sdkDir/plugins
 
-# Install the Fedora Eclipse product plugin
+# Install the Mandriva Eclipse product plugin
 unzip -qq -d $sdkDir/plugins %{SOURCE4}
-# Install the Fedora Eclipse product feature
+# Install the Mandriva Eclipse product feature
 unzip -qq -d $sdkDir/features %{SOURCE5}
 
 installDir=$sdkDir-Platform
@@ -837,13 +837,13 @@ org.eclipse.equinox.p2.metadata.generator.EclipseGenerator \
 -metadataRepository file:$metadataDir \
 -artifactRepository file:$metadataDir \
 -source $installDir \
--root "Fedora Eclipse Platform" \
+-root "Mandriva Eclipse Platform" \
 -rootVersion %{version} \
 -flavor tooling \
 -publishArtifacts \
 -append \
--artifactRepositoryName "Fedora Eclipse" \
--metadataRepositoryName "Fedora Eclipse"
+-artifactRepositoryName "Mandriva Eclipse" \
+-metadataRepositoryName "Mandriva Eclipse"
 
 # JDT
 jdtDir=$sdkDir-JDT
@@ -885,12 +885,12 @@ org.eclipse.equinox.p2.metadata.generator.EclipseGenerator \
 -metadataRepository file:$jdtMetadata \
 -artifactRepository file:$jdtMetadata \
 -source $jdtDir \
--root "Fedora Eclipse JDT" \
+-root "Mandriva Eclipse JDT" \
 -rootVersion %{version} \
 -flavor tooling \
 -append \
--artifactRepositoryName "Fedora Eclipse" \
--metadataRepositoryName "Fedora Eclipse"
+-artifactRepositoryName "Mandriva Eclipse" \
+-metadataRepositoryName "Mandriva Eclipse"
 
 # SDK
 sdkMetadata=$sdkDir/metadata-SDK
@@ -904,13 +904,13 @@ org.eclipse.equinox.p2.metadata.generator.EclipseGenerator \
 -metadataRepository file:$sdkMetadata \
 -artifactRepository file:$sdkMetadata \
 -source $sdkDir \
--root "Fedora Eclipse SDK" \
+-root "Mandriva Eclipse SDK" \
 -rootVersion %{version} \
 -flavor tooling \
 -publishArtifacts \
 -append \
--artifactRepositoryName "Fedora Eclipse" \
--metadataRepositoryName "Fedora Eclipse"
+-artifactRepositoryName "Mandriva Eclipse" \
+-metadataRepositoryName "Mandriva Eclipse"
 
 # Director config.ini
 mv $installDir/configuration/config.ini{,.bak}
@@ -925,7 +925,7 @@ org.eclipse.core.launcher.Main \
 -application \
 org.eclipse.equinox.p2.director.app.application \
 -flavor tooling \
--installIU "Fedora Eclipse Platform" \
+-installIU "Mandriva Eclipse Platform" \
 -version %{version} \
 -p2.os linux \
 -p2.ws gtk \
@@ -961,7 +961,7 @@ mv $provisionDir $sdkDir
 # Fix paths in p2 data
 rm -rf $sdkDir/p2/org.eclipse.equinox.p2.core/cache
 rm -rf $sdkDir/p2/org.eclipse.equinox.p2.director/rollback/content.xml
-sed -i "s|file\:$provisionDir/\ -\ bundle\ pool|Fedora Eclipse|g" \
+sed -i "s|file\:$provisionDir/\ -\ bundle\ pool|Mandriva Eclipse|g" \
   $sdkDir/artifacts.xml
 profileDir=$sdkDir/p2/org.eclipse.equinox.p2.engine/profileRegistry
 pushd $profileDir
@@ -1023,9 +1023,9 @@ pushd $profileDir
 popd
 
 # Set eclipse.product to org.fedoraproject.ide.platform
-sed --in-place "s/plugins\/org.eclipse.platform/plugins\/org.fedoraproject.ide.platform/" \
+sed --in-place "s/plugins\/org.eclipse.platform/plugins\/org.mandriva.ide.platform/" \
   $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/config.ini
-sed --in-place "s/eclipse.product=org.eclipse.platform.ide/eclipse.product=org.fedoraproject.ide.platform.product/" \
+sed --in-place "s/eclipse.product=org.eclipse.platform.ide/eclipse.product=org.mandriva.ide.platform.product/" \
   $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/config.ini
 
 # Install the Eclipse binary wrapper
@@ -1100,13 +1100,13 @@ ln -s %{_javadir}/ecj-%{version}.jar \
 
 # Icons
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/48x48/apps
-ln -s %{_libdir}/%{name}/plugins/org.fedoraproject.ide.platform_3.4.0/eclipse48.png \
+ln -s %{_libdir}/%{name}/plugins/org.mandriva.ide.platform_3.4.1/eclipse48.png \
   $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/48x48/apps/%{name}.png
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps
-ln -s %{_libdir}/%{name}/plugins/org.fedoraproject.ide.platform_3.4.0/eclipse32.png \
+ln -s %{_libdir}/%{name}/plugins/org.mandriva.ide.platform_3.4.1/eclipse32.png \
   $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/16x16/apps
-ln -s %{_libdir}/%{name}/plugins/org.fedoraproject.ide.platform_3.4.0/eclipse.png \
+ln -s %{_libdir}/%{name}/plugins/org.mandriva.ide.platform_3.4.1/eclipse.png \
   $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/pixmaps
 ln -s %{_datadir}/icons/hicolor/48x48/apps/%{name}.png $RPM_BUILD_ROOT%{_datadir}/pixmaps
@@ -1385,8 +1385,8 @@ fi
 %{_libdir}/%{name}/plugins/org.eclipse.core.boot_*
 %{_libdir}/%{name}/plugins/org.eclipse.core.filebuffers_*
 %{_libdir}/%{name}/plugins/org.eclipse.core.filesystem_*
-%{_libdir}/%{name}/plugins/org.fedoraproject.ide.platform_*
-%{_libdir}/%{name}/features/org.fedoraproject.ide.feature_*
+%{_libdir}/%{name}/plugins/org.mandriva.ide.platform_*
+%{_libdir}/%{name}/features/org.mandriva.ide.feature_*
 %{_libdir}/%{name}/plugins/org.eclipse.core.filesystem.linux.%{eclipse_arch}_*
 %{_libdir}/%{name}/plugins/org.eclipse.core.net_*
 %ifarch %{ix86}
