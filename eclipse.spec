@@ -27,7 +27,7 @@ Release:        %mkrel 0.13.0
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
-Source0:        http://download.eclipse.org/eclipse/downloads/drops/R-3.4-200806172000/eclipse-sourceBuild-srcIncluded-3.4.zip
+Source0:        http://download.eclipse.org/eclipse/downloads/drops/R-3.4-200806172000/eclipse-sourceBuild-srcIncluded-%{version}.zip
 Source2:        %{name}.desktop
 #Source3:        eclipse.in
 # cvs -d :pserver:anonymous@sources.redhat.com:/cvs/eclipse export \
@@ -126,8 +126,8 @@ Patch31:	%{name}-ia64-packaging.patch
 
 # FIXME:  file these upstream
 # Upstream builds with a 1.4 (or lower) class library
-Patch33:	%{name}-pdeapicasting.patch
-Patch34:	%{name}-pdeapicasting-ui.patch
+# Patch33:	%{name}-pdeapicasting.patch
+# Patch34:	%{name}-pdeapicasting-ui.patch
 
 # Make ECF bundles have the same qualifier as they do upstream
 Patch35:	%{name}-ecf-qualifier.patch
@@ -382,12 +382,12 @@ mv gtk/eclipse.ini{,.patched}
 mv gtk/eclipse.ini{.orig,}
 popd
 
-pushd plugins/org.eclipse.pde.api.tools
-%patch33
-popd
-pushd plugins/org.eclipse.pde.api.tools.ui
-%patch34
-popd
+#pushd plugins/org.eclipse.pde.api.tools
+#%patch33
+#popd
+#pushd plugins/org.eclipse.pde.api.tools.ui
+#%patch34
+#popd
 
 %patch36
 %patch37
