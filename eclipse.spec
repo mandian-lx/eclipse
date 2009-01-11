@@ -23,7 +23,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.12.2
+Release:        %mkrel 0.13.0
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -103,7 +103,7 @@ Patch32:        %{name}-compilelibs.patch
 # Always generate debug info when building RPMs (Andrew Haley)
 # This needs to be investigated for getEnv changes
 # FIXME:  update this patch to avoid fuzz
-#Patch14:        %{name}-ecj-rpmdebuginfo.patch
+Patch14:        %{name}-ecj-rpmdebuginfo.patch
 # generic releng plugins that can be used to build plugins
 # see this thread for details:
 # https://www.redhat.com/archives/fedora-devel-java-list/2006-April/msg00048.html
@@ -151,6 +151,13 @@ Patch41:        %{name}-nowin32testfragment.patch
 # Some fixes for library.xml
 # FIXME:  submit upstream
 Patch42:        %{name}-tests-libraryXml.patch
+
+Patch43:		%{name}-osgi-classpath.patch
+Patch44:		%{name}-fix-javahome64.patch
+
+# Default to 1.5 source and bytecode
+# https://bugzilla.redhat.com/354721
+Patch45:		%{name}-ecj-defaultto1.5.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires:  ant
@@ -355,7 +362,10 @@ sed -i -e "s|http://java.sun.com/j2se/1.4/docs/api|%{_datadir}/javadoc/java|" \
    plugins/org.eclipse.pde.doc.user/pdeOptions.txt \
    plugins/org.eclipse.pde.doc.user/pdeOptions
 
-#%patch14 -p0
+pushd plugins/org.eclipse.jdt.core
+%patch14 -p0
+%patch15 -p0
+popd
 
 pushd plugins/org.eclipse.pde.build
 %patch15
@@ -526,7 +536,7 @@ rm $ANTDIR/lib/*
 ANTDIR=$ANTDIR/lib
 ln -s %{_javadir}/ant/ant-antlr.jar $ANTDIR/ant-antlr.jar
 ln -s %{_javadir}/ant/ant-apache-bcel.jar $ANTDIR/ant-apache-bcel.jar
-#ln -s %{_javadir}/ant/ant-apache-bsf.jar $ANTDIR/ant-apache-bsf.jar
+ln -s %{_javadir}/ant/ant-apache-bsf.jar $ANTDIR/ant-apache-bsf.jar
 ln -s %{_javadir}/ant/ant-apache-log4j.jar $ANTDIR/ant-apache-log4j.jar
 ln -s %{_javadir}/ant/ant-apache-oro.jar $ANTDIR/ant-apache-oro.jar
 ln -s %{_javadir}/ant/ant-apache-regexp.jar $ANTDIR/ant-apache-regexp.jar
@@ -534,7 +544,7 @@ ln -s %{_javadir}/ant/ant-apache-resolver.jar $ANTDIR/ant-apache-resolver.jar
 ln -s %{_javadir}/ant/ant-commons-logging.jar $ANTDIR/ant-commons-logging.jar
 # https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=180642
 # the symlinks that are commented-out are not currently shipped on Fedora
-#ln -s %{_javadir}/ant/ant-commons-net.jar $ANTDIR/ant-commons-net.jar
+ln -s %{_javadir}/ant/ant-commons-net.jar $ANTDIR/ant-commons-net.jar
 #ln -s %{_javadir}/ant/ant-jai.jar $ANTDIR/ant-jai.jar
 ln -s %{_javadir}/ant.jar $ANTDIR/ant.jar
 ln -s %{_javadir}/ant/ant-javamail.jar $ANTDIR/ant-javamail.jar
@@ -661,9 +671,13 @@ sed --in-place "s/uname \-p/uname \-m/"  plugins/org.eclipse.swt/Eclipse\ SWT\ P
 tar jxf %{SOURCE30}
 pushd %{name}-%{version}-testframework
 %patch41
+pushd org.eclipse.test
 %patch42
 sed -i "s:/usr/lib/eclipse:%{_libdir}/%{name}:" org.eclipse.test/library.xml
 popd
+
+%patch43
+%patch44
 
 %build
 ORIGCLASSPATH=$CLASSPATH
@@ -1022,7 +1036,26 @@ pushd $profileDir
   sed -i "s|$RPM_BUILD_ROOT||g" *.profile/*
 popd
 
-# Set eclipse.product to org.fedoraproject.ide.platform
+pushd $sdkDir
+# Create file listings for the extracted shared libraries
+echo -n "" > %{_builddir}/%{buildsubdir}/%{name}-platform.install;
+for id in `ls configuration/org.eclipse.osgi/bundles`; do
+  if [ "Xconfiguration" = $(echo X`find configuration/org.eclipse.osgi/bundles/$id -name libswt\*.so` | sed "s:/.*::") ]; then
+    echo "%{_libdir}/%{name}/configuration/org.eclipse.osgi/bundles/$id" > %{_builddir}/%{buildsubdir}/%{name}-swt.install;
+  else
+    echo "%{_libdir}/%{name}/configuration/org.eclipse.osgi/bundles/$id" >> %{_builddir}/%{buildsubdir}/%{name}-platform.install;
+  fi
+done
+popd
+
+# Install symlinks to the SWT JNI shared libraries in %%{_libdir}/eclipse
+pushd $RPM_BUILD_ROOT%{_libdir}/%{name}
+for lib in $(find configuration -name libswt\*.so); do
+  ln -s $lib `basename $lib`
+done
+popd
+
+# Set eclipse.product to org.mandriva.ide.platform
 sed --in-place "s/plugins\/org.eclipse.platform/plugins\/org.mandriva.ide.platform/" \
   $RPM_BUILD_ROOT%{_libdir}/%{name}/configuration/config.ini
 sed --in-place "s/eclipse.product=org.eclipse.platform.ide/eclipse.product=org.mandriva.ide.platform.product/" \
@@ -1175,7 +1208,7 @@ rm $ANTDIR/lib/*
 ANTDIR=$ANTDIR/lib
 ln -s %{_javadir}/ant/ant-antlr.jar $ANTDIR/ant-antlr.jar
 ln -s %{_javadir}/ant/ant-apache-bcel.jar $ANTDIR/ant-apache-bcel.jar
-#ln -s %{_javadir}/ant/ant-apache-bsf.jar $ANTDIR/ant-apache-bsf.jar
+ln -s %{_javadir}/ant/ant-apache-bsf.jar $ANTDIR/ant-apache-bsf.jar
 ln -s %{_javadir}/ant/ant-apache-log4j.jar $ANTDIR/ant-apache-log4j.jar
 ln -s %{_javadir}/ant/ant-apache-oro.jar $ANTDIR/ant-apache-oro.jar
 ln -s %{_javadir}/ant/ant-apache-regexp.jar $ANTDIR/ant-apache-regexp.jar
@@ -1183,7 +1216,7 @@ ln -s %{_javadir}/ant/ant-apache-resolver.jar $ANTDIR/ant-apache-resolver.jar
 ln -s %{_javadir}/ant/ant-commons-logging.jar $ANTDIR/ant-commons-logging.jar
 # https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=180642
 # the symlinks that are commented-out are not currently shipped on Fedora
-#ln -s %{_javadir}/ant/ant-commons-net.jar $ANTDIR/ant-commons-net.jar
+ln -s %{_javadir}/ant/ant-commons-net.jar $ANTDIR/ant-commons-net.jar
 #ln -s %{_javadir}/ant/ant-jai.jar $ANTDIR/ant-jai.jar
 ln -s %{_javadir}/ant.jar $ANTDIR/ant.jar
 ln -s %{_javadir}/ant/ant-javamail.jar $ANTDIR/ant-javamail.jar
@@ -1272,16 +1305,10 @@ popd
 rm -rf $RPM_BUILD_ROOT
 
 %post platform
-touch --no-create %{_datadir}/icons/hicolor
-if [ -x /usr/bin/gtk-update-icon-cache ]; then
-  gtk-update-icon-cache -q %{_datadir}/icons/hicolor
-fi
+%update_icon_cache
 
 %postun platform
-touch --no-create %{_datadir}/icons/hicolor
-if [ -x /usr/bin/gtk-update-icon-cache ]; then
-  gtk-update-icon-cache -q %{_datadir}/icons/hicolor
-fi
+%clean_icon_cache
 
 %files ecj
 %defattr(-,root,root)
