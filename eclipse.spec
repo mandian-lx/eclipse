@@ -668,11 +668,12 @@ popd
 sed --in-place "s/uname \-p/uname \-m/"  plugins/org.eclipse.swt/Eclipse\ SWT\ PI/gtk/library/build.sh
 
 # Test framework
-tar jxf %{SOURCE30}
+tar jxvf %{SOURCE30}
 pushd %{name}-%{version}-testframework
 %patch41
 pushd org.eclipse.test
 %patch42
+popd
 sed -i "s:/usr/lib/eclipse:%{_libdir}/%{name}:" org.eclipse.test/library.xml
 popd
 
