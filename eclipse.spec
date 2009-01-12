@@ -1102,7 +1102,8 @@ popd
 # Install symlinks to the SWT JNI shared libraries in %%{_libdir}/eclipse
 pushd $RPM_BUILD_ROOT%{_libdir}/%{name}
 for lib in $(find configuration -name libswt\*.so); do
-  ln -s $lib `basename $lib`
+  rm -f `basename $lib`
+  ln -sf $lib `basename $lib`
 done
 popd
 
