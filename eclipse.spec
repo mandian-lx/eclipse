@@ -10,8 +10,8 @@ Epoch:  1
 %define eclipse_major   3
 %define eclipse_minor   4
 %define eclipse_majmin  %{eclipse_major}.%{eclipse_minor}
-%define eclipse_micro   1
-%define swtver          3.4.1.v3449c
+%define eclipse_micro   2
+%define swtver          3.4.1.v3452b
 
 # All arches line up between Eclipse and Linux kernel names except i386 -> x86
 %ifarch %{ix86}
@@ -23,11 +23,11 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.14.0
+Release:        %mkrel 0.1.0
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
-Source0:        http://download.eclipse.org/eclipse/downloads/drops/R-3.4-200806172000/eclipse-sourceBuild-srcIncluded-%{version}.zip
+Source0:        http://download.eclipse.org/eclipse/downloads/drops/R-3.4.2-200902111700/eclipse-sourceBuild-srcIncluded-%{version}.zip
 Source2:        %{name}.desktop
 #Source3:        eclipse.in
 # cvs -d :pserver:anonymous@sources.redhat.com:/cvs/eclipse export \
@@ -521,8 +521,8 @@ popd
 
 # Symlinks
 rm plugins/org.sat4j*
-ln -s %{_javadir}/org.sat4j.core_* plugins/
-ln -s %{_javadir}/org.sat4j.pb_* plugins/
+ln -s %{_javadir}/org.sat4j.core* plugins/org.sat4j.core_2.0.3.v20081021.jar
+ln -s %{_javadir}/org.sat4j.pb* plugins/org.sat4j.pb_2.0.3.v20081021.jar
 
 ASMPLUGINVERSION=$(ls plugins | grep org.objectweb.asm_ | \
   sed 's/org.objectweb.asm_//')
@@ -1196,8 +1196,8 @@ sed -i "s/@PDEBUILDVERSION@/$PDEBUILDVERSION/g" \
 
 pushd $RPM_BUILD_ROOT%{_libdir}/%{name}
 rm plugins/org.sat4j*
-ln -s %{_javadir}/org.sat4j.core_* plugins/
-ln -s %{_javadir}/org.sat4j.pb_* plugins/
+ln -s %{_javadir}/org.sat4j.core* plugins/org.sat4j.core_2.0.3.v20081021.jar
+ln -s %{_javadir}/org.sat4j.pb* plugins/org.sat4j.pb_2.0.3.v20081021.jar
 
 ASMPLUGINVERSION=$(ls dropins/sdk/plugins | grep org.objectweb.asm_ | \
   sed 's/org.objectweb.asm_//')
