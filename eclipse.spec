@@ -20,6 +20,8 @@ Epoch:  1
 %define eclipse_arch   %{_arch}
 %endif
 
+%define initialize      1
+
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
@@ -364,7 +366,7 @@ sed -i -e "s|http://java.sun.com/j2se/1.4/docs/api|%{_datadir}/javadoc/java|" \
 
 pushd plugins/org.eclipse.jdt.core
 %patch14 -p0
-%patch15 -p0
+%patch45 -p0
 popd
 
 pushd plugins/org.eclipse.pde.build
@@ -581,7 +583,7 @@ ln -s %{_javadir}/jsch.jar plugins/com.jcraft.jsch_$JSCHVERSION
 # link to the icu4j stuff
 ICUVERSION=$(ls plugins | grep com.ibm.icu_ | sed 's/com.ibm.icu_//')
 rm plugins/com.ibm.icu_*.jar
-ln -s %{_datadir}/eclipse/plugins/com.ibm.icu_*.jar plugins/com.ibm.icu_$ICUVERSION
+ln -s %{_libdir}/eclipse/plugins/com.ibm.icu_*.jar plugins/com.ibm.icu_$ICUVERSION
 
 # link to lucene
 LUCENEVERSION=$(ls plugins | grep org.apache.lucene_ | \
@@ -1256,7 +1258,7 @@ ln -s %{_javadir}/jsch.jar plugins/com.jcraft.jsch_$JSCHVERSION
 # link to the icu4j stuff
 ICUVERSION=$(ls plugins | grep com.ibm.icu_ | sed 's/com.ibm.icu_//')
 rm plugins/com.ibm.icu_*.jar
-ln -s %{_datadir}/eclipse/plugins/com.ibm.icu_*.jar plugins/com.ibm.icu_$ICUVERSION
+ln -s %{_libdir}/eclipse/plugins/com.ibm.icu_*.jar plugins/com.ibm.icu_$ICUVERSION
 
 # link to lucene
 LUCENEVERSION=$(ls plugins | grep org.apache.lucene_ | \
