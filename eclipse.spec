@@ -25,7 +25,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.1.0
+Release:        %mkrel 0.2.0
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -1389,7 +1389,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{name}/plugins/org.eclipse.ui.workbench_*
 %{_libdir}/%{name}/plugins/org.eclipse.update.configurator_*
 %{_libdir}/%{name}/plugins/org.eclipse.equinox.simpleconfigurator_*
-%{_libdir}/%{name}/plugins/com.ibm.icu_*
+%exclude %{_libdir}/%{name}/plugins/com.ibm.icu_*
 
 %files platform -f %{name}-platform.install
 %defattr(-,root,root)
