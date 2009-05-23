@@ -1138,13 +1138,13 @@ ln -s %{_javadir}/ecj-%{version}.jar \
 
 # Icons
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/48x48/apps
-ln -s %{_libdir}/%{name}/plugins/org.mandriva.ide.platform_3.4.1/eclipse48.png \
+ln -s %{_libdir}/%{name}/plugins/org.mandriva.ide.platform_%{version}/eclipse48.png \
   $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/48x48/apps/%{name}.png
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps
-ln -s %{_libdir}/%{name}/plugins/org.mandriva.ide.platform_3.4.1/eclipse32.png \
+ln -s %{_libdir}/%{name}/plugins/org.mandriva.ide.platform_%{version}/eclipse32.png \
   $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/16x16/apps
-ln -s %{_libdir}/%{name}/plugins/org.mandriva.ide.platform_3.4.1/eclipse.png \
+ln -s %{_libdir}/%{name}/plugins/org.mandriva.ide.platform_%{version}/eclipse.png \
   $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
 install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/pixmaps
 ln -s %{_datadir}/icons/hicolor/48x48/apps/%{name}.png $RPM_BUILD_ROOT%{_datadir}/pixmaps
