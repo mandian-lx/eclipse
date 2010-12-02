@@ -1306,6 +1306,8 @@ ln -s %{_javadir}/tomcat5-jsp-2.0-api.jar \
 
 popd
 
+rm -f %{buildroot}%{_libdir}/%{name}/plugins/com.ibm.icu_*
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -1389,7 +1391,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{name}/plugins/org.eclipse.ui.workbench_*
 %{_libdir}/%{name}/plugins/org.eclipse.update.configurator_*
 %{_libdir}/%{name}/plugins/org.eclipse.equinox.simpleconfigurator_*
-%exclude %{_libdir}/%{name}/plugins/com.ibm.icu_*
 
 %files platform -f %{name}-platform.install
 %defattr(-,root,root)
