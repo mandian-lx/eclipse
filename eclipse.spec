@@ -25,7 +25,7 @@ Epoch:  1
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        %mkrel 0.2.4
+Release:        %mkrel 0.2.5
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
@@ -160,6 +160,7 @@ Patch44:		%{name}-fix-javahome64.patch
 # Default to 1.5 source and bytecode
 # https://bugzilla.redhat.com/354721
 Patch45:		%{name}-ecj-defaultto1.5.patch
+Patch46:	eclipse-3.4.0-CVE-2010-4647.diff
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires:  ant
@@ -681,6 +682,7 @@ popd
 
 %patch43
 %patch44
+%patch46 -p1
 
 %build
 ORIGCLASSPATH=$CLASSPATH
