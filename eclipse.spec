@@ -1,10 +1,10 @@
 
-%global eclipse_major   3
-%global eclipse_minor   7
+%global eclipse_major   4
+%global eclipse_minor   2
 %global eclipse_majmin  %{eclipse_major}.%{eclipse_minor}
 %global eclipse_micro   0
 %global initialize      1
-%global download_url    http://download.eclipse.org/technology/linuxtools/eclipse-build/3.7.x_Indigo/
+%global download_url    http://download.eclipse.org/technology/linuxtools/eclipse-build/4.2.x_Juno/
 
 # All arches line up between Eclipse and Linux kernel names except i386 -> x86
 %ifarch %{ix86}
@@ -27,8 +27,8 @@ Release:        1.5
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
-Source0:        %{download_url}eclipse-build-5791c48513b4207ab1eec1e00bed4b2186f9aad5.tar.xz
-Source1:        %{download_url}eclipse-3.7.0-I20110613-1736-src.tar.bz2
+Source0:        %{download_url}eclipse-build-7b07d10488eb9d6e2880eac320b09c16d1ae78e3.tar.xz
+Source1:        %{download_url}eclipse-4.2.0-I20120608-1400-src.tar.bz2
 # Patch to allow xpcom.cpp to build under latest xulrunner which has removed
 # a particular API and a type it depends on so we don't want to compile that
 # API
@@ -39,7 +39,6 @@ BuildRequires:  rsync
 BuildRequires:  jpackage-utils >= 0:1.5, make, gcc
 BuildRequires:  gtk2-devel
 BuildRequires:  glib2-devel
-BuildRequires:  libgnome-devel
 BuildRequires:  gcc-c++
 BuildRequires:  nspr-devel
 BuildRequires:  libxtst-devel
@@ -86,7 +85,7 @@ Group:          Development/Java
 Requires:       jpackage-utils
 Requires:       gtk2
 Requires:       xulrunner 
-Requires:       webkitgtk
+Requires:       webkit1.0
 Conflicts:      mozilla
 Provides:       libswt3-gtk2 = %{epoch}:%{version}-%{release}
 # The 20 is more than the currently (2008-06-25) latest 3.3.2 package
