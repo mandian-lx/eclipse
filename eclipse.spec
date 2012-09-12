@@ -44,7 +44,7 @@ BuildRequires:  nspr-devel
 BuildRequires:  libxtst-devel
 BuildRequires:  mesagl-devel
 BuildRequires:  mesaglu-devel
-BuildRequires:  cairo >= 1.0
+BuildRequires:  cairo-devel >= 1.0
 BuildRequires:  unzip
 BuildRequires:  desktop-file-utils
 BuildRequires:  java-devel >= 1.6.0
