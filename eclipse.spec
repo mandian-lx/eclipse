@@ -164,10 +164,10 @@ Eclipse Plugin Development Environment.  This package is required for
 developing Eclipse plugins.
 
 %prep
-%setup -q -n eclipse-build-5791c48513b4207ab1eec1e00bed4b2186f9aad5
+%setup -q -n eclipse-build-7b07d10488eb9d6e2880eac320b09c16d1ae78e3
 cp %{SOURCE1} .
 ant -DbuildArch=%{eclipse_arch} applyPatches
-pushd build/eclipse-3.7.0-I20110613-1736-src
+pushd build/eclipse-4.2.0-I20120608-1400-src
 pushd plugins/org.eclipse.swt
 pushd Eclipse\ SWT\ Mozilla/common/library/
 %patch1 -p0
