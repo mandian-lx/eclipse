@@ -5,6 +5,9 @@
 %global eclipse_micro   0
 %global initialize      1
 %global download_url    http://download.eclipse.org/technology/linuxtools/eclipse-build/4.2.x_Juno/
+%global eb_sha1		7b07d10488eb9d6e2880eac320b09c16d1ae78e3
+%global build_id	I20120608-1400
+%global eclipse_version %{eclipse_majmin}.%{eclipse_micro}
 
 # All arches line up between Eclipse and Linux kernel names except i386 -> x86
 %ifarch %{ix86}
@@ -27,8 +30,8 @@ Release:        1.5
 License:        EPL
 Group:          Development/Java
 URL:            http://www.eclipse.org/
-Source0:        %{download_url}eclipse-build-7b07d10488eb9d6e2880eac320b09c16d1ae78e3.tar.xz
-Source1:        %{download_url}eclipse-4.2.0-I20120608-1400-src.tar.bz2
+Source0:        %{download_url}eclipse-build-%{eb_sha1}.tar.xz
+Source1:        %{download_url}eclipse-%{eclipse_version}-%{build_id}-src.tar.bz2
 # Patch to allow xpcom.cpp to build under latest xulrunner which has removed
 # a particular API and a type it depends on so we don't want to compile that
 # API
@@ -164,10 +167,11 @@ Eclipse Plugin Development Environment.  This package is required for
 developing Eclipse plugins.
 
 %prep
-%setup -q -n eclipse-build-7b07d10488eb9d6e2880eac320b09c16d1ae78e3
+export JAVA_HOME=%{java_home}
+%setup -q -n eclipse-build-%{eb_sha1}
 cp %{SOURCE1} .
 ant -DbuildArch=%{eclipse_arch} applyPatches
-pushd build/eclipse-4.2.0-I20120608-1400-src
+pushd build/eclipse-%{eclipse_version}-%{build_id}-src
 pushd plugins/org.eclipse.swt
 pushd Eclipse\ SWT\ Mozilla/common/library/
 %patch1 -p0
