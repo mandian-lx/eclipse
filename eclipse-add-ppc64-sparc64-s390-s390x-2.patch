@@ -1,0 +1,68 @@
+diff -up ./features/org.eclipse.rcp/feature.xml.arches ./features/org.eclipse.rcp/feature.xml
+--- ./features/org.eclipse.rcp/feature.xml.arches	2008-10-03 09:05:02.000000000 -0400
++++ ./features/org.eclipse.rcp/feature.xml	2008-10-03 09:06:45.000000000 -0400
+@@ -229,6 +229,50 @@
+          unpack="false"/>
+ 
+    <plugin
++         id="org.eclipse.swt.gtk.linux.ppc64"
++         os="linux"
++         ws="gtk"
++         arch="ppc64"
++         download-size="0"
++         install-size="0"
++         version="0.0.0"
++         fragment="true"
++         unpack="false"/>
++
++   <plugin
++         id="org.eclipse.swt.gtk.linux.sparc"
++         os="linux"
++         ws="gtk"
++         arch="sparc"
++         download-size="0"
++         install-size="0"
++         version="0.0.0"
++         fragment="true"
++         unpack="false"/>
++
++   <plugin
++         id="org.eclipse.swt.gtk.linux.sparc64"
++         os="linux"
++         ws="gtk"
++         arch="sparc64"
++         download-size="0"
++         install-size="0"
++         version="0.0.0"
++         fragment="true"
++         unpack="false"/>
++
++   <plugin
++         id="org.eclipse.swt.gtk.linux.alpha"
++         os="linux"
++         ws="gtk"
++         arch="alpha"
++         download-size="0"
++         install-size="0"
++         version="0.0.0"
++         fragment="true"
++         unpack="false"/>
++
++   <plugin
+          id="org.eclipse.swt.gtk.solaris.sparc"
+          os="solaris"
+          ws="gtk"
+diff -up ./features/org.eclipse.rcp.source/feature.xml.arches ./features/org.eclipse.rcp.source/feature.xml
+--- ./features/org.eclipse.rcp.source/feature.xml.arches	2008-10-03 09:05:08.000000000 -0400
++++ ./features/org.eclipse.rcp.source/feature.xml	2008-10-03 09:07:51.000000000 -0400
+@@ -45,6 +45,10 @@
+ 	<plugin id="org.eclipse.swt.motif.hpux.ia64_32.source" version="3.4.1.v3452b" os="hpux" arch="ia64_32" ws="motif"  unpack="false"/>
+ 	<plugin id="org.eclipse.swt.motif.linux.x86.source" version="3.4.1.v3452b" os="linux" arch="x86" ws="motif"  unpack="false"/>
+ 	<plugin id="org.eclipse.swt.gtk.linux.ia64.source" version="3.4.0.HEAD" os="linux" arch="ia64" ws="gtk"  unpack="false"/>
++	<plugin id="org.eclipse.swt.gtk.linux.ppc64.source" version="3.4.1.v3452b" os="linux" arch="ppc64" ws="gtk"  unpack="false"/>
++	<plugin id="org.eclipse.swt.gtk.linux.sparc.source" version="3.4.1.v3452b" os="linux" arch="sparc" ws="gtk"  unpack="false"/>
++	<plugin id="org.eclipse.swt.gtk.linux.sparc64.source" version="3.4.1.v3452b" os="linux" arch="sparc64" ws="gtk"  unpack="false"/>
++	<plugin id="org.eclipse.swt.gtk.linux.alpha.source" version="3.4.1.v3452b" os="linux" arch="alpha" ws="gtk"  unpack="false"/>
+ 	<plugin id="org.eclipse.swt.motif.solaris.sparc.source" version="3.4.1.v3452b" os="solaris" arch="sparc" ws="motif"  unpack="false"/>
+ 	<plugin id="org.eclipse.swt.photon.qnx.x86.source" version="3.4.1.v3452b" os="qnx" arch="x86" ws="photon"  unpack="false"/>
+ 	<plugin id="org.eclipse.rcp.source" version="3.4.1.R342_v20090205"     unpack="false"/>

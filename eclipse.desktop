@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Eclipse
+Comment=Eclipse Integrated Development Environment
+Exec=eclipse
+Icon=eclipse
+Terminal=false
+Type=Application
+Categories=IDE;Development;Java;X-Red-Hat-Base;
