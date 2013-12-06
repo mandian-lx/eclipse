@@ -26,7 +26,7 @@
 Summary:        An open, extensible IDE
 Name:           eclipse
 Version:        %{eclipse_majmin}.%{eclipse_micro}
-Release:        0.2.10
+Release:        0.2.11
 Epoch:		1
 License:        EPL
 Group:          Development/Java
