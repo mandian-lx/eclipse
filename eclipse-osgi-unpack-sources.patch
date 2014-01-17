@@ -1,0 +1,106 @@
+--- rt.equinox.framework/bundles/org.eclipse.osgi.services/build.properties.bak	2013-05-10 10:19:28.000000000 +0200
++++ rt.equinox.framework/bundles/org.eclipse.osgi.services/build.properties	2013-05-10 11:29:48.359120855 +0200
+@@ -16,8 +16,11 @@
+ src.includes = src.zip,\
+                about.html,\
+                about_files/
+-source.. = .
+-output.. = .
++source.. = src/
++output.. = bin/
+ customBuildCallbacks=customBuildCallbacks.xml
+ javacSource = 1.5
+ javacTarget = 1.5
++jars.compile.order = library.jar,\
++                     src/
++source.library.jar = src2/
+\ No newline at end of file
+--- rt.equinox.framework/bundles/org.eclipse.osgi.services/pom.xml.bak	2013-05-10 10:19:28.000000000 +0200
++++ rt.equinox.framework/bundles/org.eclipse.osgi.services/pom.xml	2013-05-10 11:28:11.292306529 +0200
+@@ -27,18 +27,79 @@
+       <plugin>
+         <groupId>org.eclipse.tycho</groupId>
+         <artifactId>target-platform-configuration</artifactId>
+-        <!-- 
+-        When building monolith, optional import-package javax.microedition.io causes circular dependency
+-        between this org.eclipse.osgi.services bundle and org.eclipse.equinox.io. 
+-        Since this bundle does not need to compile anything, we just disable optional dependencies during
+-        the build. 
+-         -->
+         <configuration>
+           <dependency-resolution>
+-            <optionalDependencies>ignore</optionalDependencies>
++            <optionalDependencies>ignore</optionalDependencies>
++			<extraRequirements>
++              <requirement>
++                <type>eclipse-plugin</type>
++                <id>javax.servlet</id>
++                <versionRange>0.0.0</versionRange>
++              </requirement>
++            </extraRequirements>
+           </dependency-resolution>
+         </configuration>
+       </plugin>
++       <plugin>
++            <artifactId>maven-antrun-plugin</artifactId>
++            <version>1.7</version>
++            <executions>
++              <execution>
++                <id>extract-sources</id>
++                <phase>process-resources</phase>
++                <configuration>
++                  <target>
++                    <mkdir dir="src" />
++                    <mkdir dir="bin" />
++                    <unzip src="src.zip" dest="src" overwrite="false"/>
++                    <mkdir dir="src2/javax" />
++                    <copy todir="src2/javax/">
++                    	<fileset dir="../../../rt.equinox.bundles/bundles/org.eclipse.equinox.io/src/javax"/>
++                    </copy>
++                  </target>
++                </configuration>
++                <goals>
++                  <goal>run</goal>
++                </goals>
++              </execution>
++              <execution>
++                <id>copy-classes-back</id>
++                <phase>process-classes</phase>
++                <configuration>
++                  <target>
++                    <copy todir="org/">
++                    	<fileset dir="target/classes/org/"/>
++                    </copy>
++                  </target>
++                </configuration>
++                <goals>
++                  <goal>run</goal>
++                </goals>
++              </execution>
++            </executions>
++            <dependencies>
++              <!-- dependency>
++                <groupId>bsf</groupId>
++                <artifactId>bsf</artifactId>
++                <version>2.4.0</version>
++              </dependency>
++              <dependency>
++                <groupId>rhino</groupId>
++                <artifactId>js</artifactId>
++                <version>1.7R2</version>
++              </dependency>
++              <dependency>
++                <groupId>org.apache.ant</groupId>
++                <artifactId>ant-apache-bsf</artifactId>
++                <version>1.8.3</version>
++              </dependency>
++              <dependency>
++                <groupId>org.apache.ant</groupId>
++                <artifactId>ant-nodeps</artifactId>
++                <version>1.8.1</version>
++              </dependency-->
++            </dependencies>
++          </plugin>      
+     </plugins>
+   </build>
+ 
