@@ -24,7 +24,6 @@ URL:		https://abf.rosalinux.ru/openmandriva/eclipse-debuginfo
 BuildArch:	noarch
 Summary:	eclipse bootstrap version
 Requires:	javapackages-bootstrap
-Provides:	eclipse-debuginfo = 1:4.3.1-11.1:2014.0
 
 %description
 eclipse bootstrap version.
@@ -32,9 +31,6 @@ eclipse bootstrap version.
 
 #------------------------------------------------------------------------
 %package	-n eclipse-swt
-Epoch:		1
-Version:	4.3.1
-Release:	11.0
 Summary:	eclipse-swt bootstrap version
 Requires:	javapackages-bootstrap
 Provides:       osgi(org.eclipse.swt) = 3.102.1
@@ -78,8 +74,8 @@ Requires:	atinject >= 1-6
 Requires:	batik >= 1.8
 Requires:	eclipse-ecf-core >= 3.6.0-2
 Requires:	eclipse-emf-core >= 2.9.0-1
-Requires:	eclipse-equinox-osgi = 1:4.3.1-11.0
-Requires:	eclipse-swt = 1:4.3.1-11.1
+Requires:	eclipse-equinox-osgi = 1:4.3.1
+Requires:	eclipse-swt = 1:4.3.1
 Requires:	felix-gogo-command >= 0.12
 Requires:	felix-gogo-shell >= 0.10.0-3
 Requires:	geronimo-annotation >= 1.0-7
@@ -121,9 +117,9 @@ Requires:	sat4j >= 2.3.5-1
 Requires:	tomcat-el-2.2-api
 Requires:	tomcat-servlet-3.0-api
 Requires:	xml-commons-apis >= 1.4.01-12
-Provides:	eclipse-cvs-client = 1:4.3.1-11.1
-Provides:	eclipse-platform = 1:4.3.1-11.1:2014.0
-Provides:	eclipse-rcp = 1:4.3.1-11.1
+Provides:	eclipse-cvs-client = 1:4.3.1
+Provides:	eclipse-platform = 1:4.3.1
+Provides:	eclipse-rcp = 1:4.3.1
 Provides:	mvn(org.eclipse.equinox.http:servlet) = 1.0.0-v20070606
 Provides:	osgi(org.apache.ant) = 1.8.4
 Provides:	osgi(org.eclipse.ant.core) = 3.2.500
@@ -1215,7 +1211,7 @@ Summary:	eclipse-equinox-osgi bootstrap version
 Requires:	javapackages-bootstrap
 Requires:	java >= 1:1.7.0
 Requires:	jpackage-utils
-Provides:	eclipse-equinox-osgi = 1:4.3.1-11.1:2014.0
+Provides:	eclipse-equinox-osgi = 1:4.3.1
 Provides:	mvn(org.eclipse.osgi:org.eclipse.osgi) = 3.6.0.v20100517
 Provides:	mvn(org.eclipse.osgi:org.eclipse.osgi.services) = 3.2.100.v20100503
 Provides:	mvn(org.eclipse.osgi:services) = 3.2.100.v20100503
@@ -1248,8 +1244,8 @@ Version:	4.3.1
 Release:	11.0
 Summary:	eclipse-jdt bootstrap version
 Requires:	javapackages-bootstrap
-Requires:	eclipse-cvs-client = 1:4.3.1-11.1
-Requires:	eclipse-platform = 1:4.3.1-11.1
+Requires:	eclipse-cvs-client = 1:4.3.1
+Requires:	eclipse-platform = 1:4.3.1
 Requires:	hamcrest >= 0:1.1-11
 Requires:	java-javadoc >= 1:1.7.0
 Requires:	jpackage-utils
@@ -1294,7 +1290,7 @@ Requires:	osgi(org.eclipse.ui.navigator.resources)
 Requires:	osgi(org.eclipse.ui.views)
 Requires:	osgi(org.eclipse.ui.workbench.texteditor)
 Requires:	osgi(org.junit)
-Provides:	eclipse-jdt = 1:4.3.1-11.1:2014.0
+Provides:	eclipse-jdt = 1:4.3.1
 Provides:	mvn(org.eclipse.jdt:core) = 3.8.0.v_C03
 Provides:	mvn(org.eclipse.jdt:org.eclipse.jdt.core) = 3.8.0.v_C03
 Provides:	mvn(org.eclipse.jetty.orbit:org.eclipse.jdt.core) = 3.8.0.v_C03
@@ -1377,8 +1373,8 @@ Release:	11.0
 Summary:	eclipse-pde bootstrap version
 Requires:	javapackages-bootstrap
 Requires:	bash
-Requires:	eclipse-jdt = 1:4.3.1-11.1
-Requires:	eclipse-platform = 1:4.3.1-11.1
+Requires:	eclipse-jdt = 1:4.3.1
+Requires:	eclipse-platform = 1:4.3.1
 Requires:	objectweb-asm >= 3.3.1-1
 Requires:	osgi(org.eclipse.ant.core)
 Requires:	osgi(org.eclipse.ant.ui)
@@ -1438,10 +1434,10 @@ Requires:	osgi(org.eclipse.update.configurator)
 Requires:	osgi(org.junit)
 Requires:	osgi(org.objectweb.asm)
 Requires:	zip
-Provides:	eclipse = 1:4.3.1-11.1
-Provides:	eclipse-pde = 1:4.3.1-11.1:2014.0
-Provides:	eclipse-pde-runtime = 1:4.3.1-11.1
-Provides:	eclipse-sdk = 1:4.3.1-11.1
+Provides:	eclipse = 1:4.3.1
+Provides:	eclipse-pde = 1:4.3.1
+Provides:	eclipse-pde-runtime = 1:4.3.1
+Provides:	eclipse-sdk = 1:4.3.1
 Provides:	osgi(FRAGMENT_ID) = FRAGMENT_VERSION
 Provides:	osgi(PLUGIN_ID) = PLUGIN_VERSION
 Provides:	osgi(org.eclipse.ant.core.source) = 3.2.500
