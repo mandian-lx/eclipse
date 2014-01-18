@@ -1378,7 +1378,7 @@ cd %{buildroot}
 rpm2cpio %{SOURCE0} | cpio -id
 rpm2cpio %{SOURCE1} | cpio -id
 rpm2cpio %{SOURCE2} | cpio -id
-mkdir -p %{buildroot}/usr/lib/java %{buildroot}/usr/lib/eclipse
+mkdir -p %{buildroot}/usr/lib/java
 cp -p %{SOURCE3} %{buildroot}/usr/lib64/eclipse
 ln -sf /usr/lib64/eclipse %{buildroot}/usr/lib/eclipse
 ln -sf /usr/lib64/eclipse/swt.jar %{buildroot}/usr/lib/java
