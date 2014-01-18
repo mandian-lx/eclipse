@@ -12,7 +12,7 @@
 Name:		eclipse
 Epoch:		1
 Version:	4.3.1
-Release:	11.1
+Release:	11.2
 License:	GPLv3+
 Source0:	eclipse-platform-4.3.1-11.0-omv2014.0.x86_64.rpm
 Source1:	eclipse-equinox-osgi-4.3.1-11.0-omv2014.0.x86_64.rpm
@@ -20,7 +20,7 @@ Source2:	eclipse-jdt-4.3.1-11.0-omv2014.0.x86_64.rpm
 Source3:	eclipse-pde-4.3.1-11.0-omv2014.0.x86_64.rpm
 Source4:	swt.jar
 
-URL:		https://abf.rosalinux.ru/openmandriva/eclipse-debuginfo
+URL:		https://abf.rosalinux.ru/openmandriva/eclipse
 BuildArch:	noarch
 Summary:	eclipse bootstrap version
 Requires:	javapackages-bootstrap
@@ -44,9 +44,6 @@ eclipse-swt bootstrap version.
 
 #------------------------------------------------------------------------
 %package	-n eclipse-platform
-Epoch:		1
-Version:	4.3.1
-Release:	11.0
 Summary:	eclipse-platform bootstrap version
 Requires:	javapackages-bootstrap
 Requires:	ant-antlr
@@ -1204,9 +1201,6 @@ eclipse-platform bootstrap version.
 
 #------------------------------------------------------------------------
 %package	-n eclipse-equinox-osgi
-Epoch:		1
-Version:	4.3.1
-Release:	11.0
 Summary:	eclipse-equinox-osgi bootstrap version
 Requires:	javapackages-bootstrap
 Requires:	java >= 1:1.7.0
@@ -1239,9 +1233,6 @@ eclipse-equinox-osgi bootstrap version.
 
 #------------------------------------------------------------------------
 %package	-n eclipse-jdt
-Epoch:		1
-Version:	4.3.1
-Release:	11.0
 Summary:	eclipse-jdt bootstrap version
 Requires:	javapackages-bootstrap
 Requires:	eclipse-cvs-client = 1:4.3.1
@@ -1367,9 +1358,6 @@ eclipse-jdt bootstrap version.
 
 #------------------------------------------------------------------------
 %package	-n eclipse-pde
-Epoch:		1
-Version:	4.3.1
-Release:	11.0
 Summary:	eclipse-pde bootstrap version
 Requires:	javapackages-bootstrap
 Requires:	bash
