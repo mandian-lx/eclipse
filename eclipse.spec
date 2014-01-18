@@ -12,18 +12,19 @@
 Name:		eclipse
 Epoch:		1
 Version:	4.3.1
-Release:	11.0
+Release:	11.1
 License:	GPLv3+
 Source0:	eclipse-platform-4.3.1-11.0-omv2014.0.x86_64.rpm
 Source1:	eclipse-equinox-osgi-4.3.1-11.0-omv2014.0.x86_64.rpm
 Source2:	eclipse-jdt-4.3.1-11.0-omv2014.0.x86_64.rpm
-Source3:        swt.jar
+Source3:	eclipse-pde-4.3.1-11.0-omv2014.0.x86_64.rpm
+Source4:	swt.jar
 
 URL:		https://abf.rosalinux.ru/openmandriva/eclipse-debuginfo
 BuildArch:	noarch
 Summary:	eclipse bootstrap version
 Requires:	javapackages-bootstrap
-Provides:	eclipse-debuginfo = 1:4.3.1-11.0:2014.0
+Provides:	eclipse-debuginfo = 1:4.3.1-11.1:2014.0
 
 %description
 eclipse bootstrap version.
@@ -78,7 +79,7 @@ Requires:	batik >= 1.8
 Requires:	eclipse-ecf-core >= 3.6.0-2
 Requires:	eclipse-emf-core >= 2.9.0-1
 Requires:	eclipse-equinox-osgi = 1:4.3.1-11.0
-Requires:	eclipse-swt = 1:4.3.1-11.0
+Requires:	eclipse-swt = 1:4.3.1-11.1
 Requires:	felix-gogo-command >= 0.12
 Requires:	felix-gogo-shell >= 0.10.0-3
 Requires:	geronimo-annotation >= 1.0-7
@@ -120,9 +121,9 @@ Requires:	sat4j >= 2.3.5-1
 Requires:	tomcat-el-2.2-api
 Requires:	tomcat-servlet-3.0-api
 Requires:	xml-commons-apis >= 1.4.01-12
-Provides:	eclipse-cvs-client = 1:4.3.1-11.0
-Provides:	eclipse-platform = 1:4.3.1-11.0:2014.0
-Provides:	eclipse-rcp = 1:4.3.1-11.0
+Provides:	eclipse-cvs-client = 1:4.3.1-11.1
+Provides:	eclipse-platform = 1:4.3.1-11.1:2014.0
+Provides:	eclipse-rcp = 1:4.3.1-11.1
 Provides:	mvn(org.eclipse.equinox.http:servlet) = 1.0.0-v20070606
 Provides:	osgi(org.apache.ant) = 1.8.4
 Provides:	osgi(org.eclipse.ant.core) = 3.2.500
@@ -1214,7 +1215,7 @@ Summary:	eclipse-equinox-osgi bootstrap version
 Requires:	javapackages-bootstrap
 Requires:	java >= 1:1.7.0
 Requires:	jpackage-utils
-Provides:	eclipse-equinox-osgi = 1:4.3.1-11.0:2014.0
+Provides:	eclipse-equinox-osgi = 1:4.3.1-11.1:2014.0
 Provides:	mvn(org.eclipse.osgi:org.eclipse.osgi) = 3.6.0.v20100517
 Provides:	mvn(org.eclipse.osgi:org.eclipse.osgi.services) = 3.2.100.v20100503
 Provides:	mvn(org.eclipse.osgi:services) = 3.2.100.v20100503
@@ -1247,8 +1248,8 @@ Version:	4.3.1
 Release:	11.0
 Summary:	eclipse-jdt bootstrap version
 Requires:	javapackages-bootstrap
-Requires:	eclipse-cvs-client = 1:4.3.1-11.0
-Requires:	eclipse-platform = 1:4.3.1-11.0
+Requires:	eclipse-cvs-client = 1:4.3.1-11.1
+Requires:	eclipse-platform = 1:4.3.1-11.1
 Requires:	hamcrest >= 0:1.1-11
 Requires:	java-javadoc >= 1:1.7.0
 Requires:	jpackage-utils
@@ -1293,7 +1294,7 @@ Requires:	osgi(org.eclipse.ui.navigator.resources)
 Requires:	osgi(org.eclipse.ui.views)
 Requires:	osgi(org.eclipse.ui.workbench.texteditor)
 Requires:	osgi(org.junit)
-Provides:	eclipse-jdt = 1:4.3.1-11.0:2014.0
+Provides:	eclipse-jdt = 1:4.3.1-11.1:2014.0
 Provides:	mvn(org.eclipse.jdt:core) = 3.8.0.v_C03
 Provides:	mvn(org.eclipse.jdt:org.eclipse.jdt.core) = 3.8.0.v_C03
 Provides:	mvn(org.eclipse.jetty.orbit:org.eclipse.jdt.core) = 3.8.0.v_C03
@@ -1369,6 +1370,640 @@ eclipse-jdt bootstrap version.
 /usr/share/maven-poms/JPP.eclipse-jdt.core.pom
 
 #------------------------------------------------------------------------
+%package	-n eclipse-pde
+Epoch:		1
+Version:	4.3.1
+Release:	11.0
+Summary:	eclipse-pde bootstrap version
+Requires:	javapackages-bootstrap
+Requires:	bash
+Requires:	eclipse-jdt = 1:4.3.1-11.1
+Requires:	eclipse-platform = 1:4.3.1-11.1
+Requires:	objectweb-asm >= 3.3.1-1
+Requires:	osgi(org.eclipse.ant.core)
+Requires:	osgi(org.eclipse.ant.ui)
+Requires:	osgi(org.eclipse.compare)
+Requires:	osgi(org.eclipse.core.expressions)
+Requires:	osgi(org.eclipse.core.filebuffers)
+Requires:	osgi(org.eclipse.core.filesystem)
+Requires:	osgi(org.eclipse.core.resources)
+Requires:	osgi(org.eclipse.core.runtime)
+Requires:	osgi(org.eclipse.core.variables)
+Requires:	osgi(org.eclipse.debug.core)
+Requires:	osgi(org.eclipse.debug.ui)
+Requires:	osgi(org.eclipse.equinox.frameworkadmin)
+Requires:	osgi(org.eclipse.equinox.frameworkadmin.equinox)
+Requires:	osgi(org.eclipse.equinox.p2.artifact.repository)
+Requires:	osgi(org.eclipse.equinox.p2.core)
+Requires:	osgi(org.eclipse.equinox.p2.director)
+Requires:	osgi(org.eclipse.equinox.p2.engine)
+Requires:	osgi(org.eclipse.equinox.p2.garbagecollector)
+Requires:	osgi(org.eclipse.equinox.p2.metadata)
+Requires:	osgi(org.eclipse.equinox.p2.metadata.repository)
+Requires:	osgi(org.eclipse.equinox.p2.operations)
+Requires:	osgi(org.eclipse.equinox.p2.repository)
+Requires:	osgi(org.eclipse.equinox.p2.repository.tools)
+Requires:	osgi(org.eclipse.equinox.p2.touchpoint.eclipse)
+Requires:	osgi(org.eclipse.equinox.p2.ui)
+Requires:	osgi(org.eclipse.equinox.simpleconfigurator)
+Requires:	osgi(org.eclipse.equinox.simpleconfigurator.manipulator)
+Requires:	osgi(org.eclipse.help)
+Requires:	osgi(org.eclipse.jdt.core)
+Requires:	osgi(org.eclipse.jdt.debug)
+Requires:	osgi(org.eclipse.jdt.debug.ui)
+Requires:	osgi(org.eclipse.jdt.junit)
+Requires:	osgi(org.eclipse.jdt.junit.core)
+Requires:	osgi(org.eclipse.jdt.junit.runtime)
+Requires:	osgi(org.eclipse.jdt.launching)
+Requires:	osgi(org.eclipse.jdt.ui)
+Requires:	osgi(org.eclipse.jface.text)
+Requires:	osgi(org.eclipse.ltk.core.refactoring)
+Requires:	osgi(org.eclipse.ltk.ui.refactoring)
+Requires:	osgi(org.eclipse.osgi)
+Requires:	osgi(org.eclipse.search)
+Requires:	osgi(org.eclipse.team.core)
+Requires:	osgi(org.eclipse.team.ui)
+Requires:	osgi(org.eclipse.text)
+Requires:	osgi(org.eclipse.ui)
+Requires:	osgi(org.eclipse.ui.cheatsheets)
+Requires:	osgi(org.eclipse.ui.console)
+Requires:	osgi(org.eclipse.ui.editors)
+Requires:	osgi(org.eclipse.ui.forms)
+Requires:	osgi(org.eclipse.ui.ide)
+Requires:	osgi(org.eclipse.ui.intro)
+Requires:	osgi(org.eclipse.ui.navigator.resources)
+Requires:	osgi(org.eclipse.ui.views)
+Requires:	osgi(org.eclipse.ui.workbench.texteditor)
+Requires:	osgi(org.eclipse.update.configurator)
+Requires:	osgi(org.junit)
+Requires:	osgi(org.objectweb.asm)
+Requires:	zip
+Provides:	eclipse = 1:4.3.1-11.1
+Provides:	eclipse-pde = 1:4.3.1-11.1:2014.0
+Provides:	eclipse-pde-runtime = 1:4.3.1-11.1
+Provides:	eclipse-sdk = 1:4.3.1-11.1
+Provides:	osgi(FRAGMENT_ID) = FRAGMENT_VERSION
+Provides:	osgi(PLUGIN_ID) = PLUGIN_VERSION
+Provides:	osgi(org.eclipse.ant.core.source) = 3.2.500
+Provides:	osgi(org.eclipse.ant.launching.source) = 1.0.300
+Provides:	osgi(org.eclipse.ant.ui.source) = 3.5.400
+Provides:	osgi(org.eclipse.compare.core.source) = 3.5.300
+Provides:	osgi(org.eclipse.compare.source) = 3.5.401
+Provides:	osgi(org.eclipse.core.commands.source) = 3.6.100
+Provides:	osgi(org.eclipse.core.contenttype.source) = 3.4.200
+Provides:	osgi(org.eclipse.core.databinding.beans.source) = 1.2.200
+Provides:	osgi(org.eclipse.core.databinding.observable.source) = 1.4.1
+Provides:	osgi(org.eclipse.core.databinding.property.source) = 1.4.200
+Provides:	osgi(org.eclipse.core.databinding.source) = 1.4.1
+Provides:	osgi(org.eclipse.core.expressions.source) = 3.4.500
+Provides:	osgi(org.eclipse.core.externaltools.source) = 1.0.200
+Provides:	osgi(org.eclipse.core.filebuffers.source) = 3.5.300
+Provides:	osgi(org.eclipse.core.filesystem.source) = 1.4.0
+Provides:	osgi(org.eclipse.core.jobs.source) = 3.5.300
+Provides:	osgi(org.eclipse.core.net.source) = 1.2.200
+Provides:	osgi(org.eclipse.core.resources.source) = 3.8.101
+Provides:	osgi(org.eclipse.core.runtime.compatibility.registry.source) = 3.5.200
+Provides:	osgi(org.eclipse.core.runtime.compatibility.source) = 3.2.200
+Provides:	osgi(org.eclipse.core.runtime.source) = 3.9.0
+Provides:	osgi(org.eclipse.core.variables.source) = 3.2.700
+Provides:	osgi(org.eclipse.debug.core.source) = 3.8.0
+Provides:	osgi(org.eclipse.debug.ui.source) = 3.9.0
+Provides:	osgi(org.eclipse.e4.core.commands.source) = 0.10.2
+Provides:	osgi(org.eclipse.e4.core.contexts.source) = 1.3.1
+Provides:	osgi(org.eclipse.e4.core.di.extensions.source) = 0.11.100
+Provides:	osgi(org.eclipse.e4.core.di.source) = 1.3.0
+Provides:	osgi(org.eclipse.e4.core.services.source) = 1.1.0
+Provides:	osgi(org.eclipse.e4.ui.bindings.source) = 0.10.101
+Provides:	osgi(org.eclipse.e4.ui.css.core.source) = 0.10.100
+Provides:	osgi(org.eclipse.e4.ui.css.swt.source) = 0.11.0
+Provides:	osgi(org.eclipse.e4.ui.css.swt.theme.source) = 0.9.100
+Provides:	osgi(org.eclipse.e4.ui.di.source) = 1.0.0
+Provides:	osgi(org.eclipse.e4.ui.model.workbench.source) = 1.0.1
+Provides:	osgi(org.eclipse.e4.ui.services.source) = 1.0.1
+Provides:	osgi(org.eclipse.e4.ui.widgets.source) = 1.0.0
+Provides:	osgi(org.eclipse.e4.ui.workbench.addons.swt.source) = 1.0.1
+Provides:	osgi(org.eclipse.e4.ui.workbench.renderers.swt.source) = 0.11.1
+Provides:	osgi(org.eclipse.e4.ui.workbench.source) = 1.0.1
+Provides:	osgi(org.eclipse.e4.ui.workbench.swt.source) = 0.12.1
+Provides:	osgi(org.eclipse.e4.ui.workbench3.source) = 0.12.0
+Provides:	osgi(org.eclipse.equinox.app.source) = 1.3.100
+Provides:	osgi(org.eclipse.equinox.bidi.source) = 0.10.0
+Provides:	osgi(org.eclipse.equinox.common.source) = 3.6.200
+Provides:	osgi(org.eclipse.equinox.console.source) = 1.0.100
+Provides:	osgi(org.eclipse.equinox.ds.source) = 1.4.101
+Provides:	osgi(org.eclipse.equinox.event.source) = 1.3.0
+Provides:	osgi(org.eclipse.equinox.frameworkadmin.equinox.source) = 1.0.500
+Provides:	osgi(org.eclipse.equinox.frameworkadmin.source) = 2.0.100
+Provides:	osgi(org.eclipse.equinox.http.jetty.source) = 3.0.100
+Provides:	osgi(org.eclipse.equinox.http.registry.source) = 1.1.300
+Provides:	osgi(org.eclipse.equinox.http.servlet.source) = 1.1.400
+Provides:	osgi(org.eclipse.equinox.jsp.jasper.registry.source) = 1.0.300
+Provides:	osgi(org.eclipse.equinox.jsp.jasper.source) = 1.0.400
+Provides:	osgi(org.eclipse.equinox.p2.artifact.repository.source) = 1.1.200
+Provides:	osgi(org.eclipse.equinox.p2.console.source) = 1.0.300
+Provides:	osgi(org.eclipse.equinox.p2.core.source) = 2.3.0
+Provides:	osgi(org.eclipse.equinox.p2.director.app.source) = 1.0.300
+Provides:	osgi(org.eclipse.equinox.p2.director.source) = 2.3.0
+Provides:	osgi(org.eclipse.equinox.p2.directorywatcher.source) = 1.0.300
+Provides:	osgi(org.eclipse.equinox.p2.engine.source) = 2.3.0
+Provides:	osgi(org.eclipse.equinox.p2.extensionlocation.source) = 1.2.100
+Provides:	osgi(org.eclipse.equinox.p2.garbagecollector.source) = 1.0.200
+Provides:	osgi(org.eclipse.equinox.p2.jarprocessor.source) = 1.0.300
+Provides:	osgi(org.eclipse.equinox.p2.metadata.repository.source) = 1.2.100
+Provides:	osgi(org.eclipse.equinox.p2.metadata.source) = 2.2.0
+Provides:	osgi(org.eclipse.equinox.p2.operations.source) = 2.3.0
+Provides:	osgi(org.eclipse.equinox.p2.publisher.eclipse.source) = 1.1.200
+Provides:	osgi(org.eclipse.equinox.p2.publisher.source) = 1.3.0
+Provides:	osgi(org.eclipse.equinox.p2.ql.source) = 2.0.100
+Provides:	osgi(org.eclipse.equinox.p2.reconciler.dropins.source) = 1.1.200
+Provides:	osgi(org.eclipse.equinox.p2.repository.source) = 2.3.0
+Provides:	osgi(org.eclipse.equinox.p2.repository.tools.source) = 2.1.0
+Provides:	osgi(org.eclipse.equinox.p2.touchpoint.eclipse.source) = 2.1.200
+Provides:	osgi(org.eclipse.equinox.p2.touchpoint.natives.source) = 1.1.100
+Provides:	osgi(org.eclipse.equinox.p2.transport.ecf.source) = 1.1.0
+Provides:	osgi(org.eclipse.equinox.p2.ui.importexport.source) = 1.1.0
+Provides:	osgi(org.eclipse.equinox.p2.ui.sdk.scheduler.source) = 1.2.0
+Provides:	osgi(org.eclipse.equinox.p2.ui.sdk.source) = 1.0.300
+Provides:	osgi(org.eclipse.equinox.p2.ui.source) = 2.3.0
+Provides:	osgi(org.eclipse.equinox.p2.updatechecker.source) = 1.1.200
+Provides:	osgi(org.eclipse.equinox.p2.updatesite.source) = 1.0.400
+Provides:	osgi(org.eclipse.equinox.preferences.source) = 3.5.100
+Provides:	osgi(org.eclipse.equinox.registry.source) = 3.5.301
+Provides:	osgi(org.eclipse.equinox.security.source) = 1.2.0
+Provides:	osgi(org.eclipse.equinox.security.ui.source) = 1.1.100
+Provides:	osgi(org.eclipse.equinox.simpleconfigurator.manipulator.source) = 2.0.0
+Provides:	osgi(org.eclipse.equinox.simpleconfigurator.source) = 1.0.400
+Provides:	osgi(org.eclipse.equinox.util.source) = 1.0.500
+Provides:	osgi(org.eclipse.help.base.source) = 4.0.0
+Provides:	osgi(org.eclipse.help.source) = 3.6.0
+Provides:	osgi(org.eclipse.help.ui.source) = 4.0.1
+Provides:	osgi(org.eclipse.help.webapp.source) = 3.6.200
+Provides:	osgi(org.eclipse.jdt.annotation.source) = 1.1.0
+Provides:	osgi(org.eclipse.jdt.apt.core.source) = 3.3.500
+Provides:	osgi(org.eclipse.jdt.apt.pluggable.core.source) = 1.0.400
+Provides:	osgi(org.eclipse.jdt.apt.ui.source) = 3.3.300
+Provides:	osgi(org.eclipse.jdt.compiler.apt.source) = 1.0.600
+Provides:	osgi(org.eclipse.jdt.compiler.tool.source) = 1.0.200
+Provides:	osgi(org.eclipse.jdt.core.manipulation.source) = 1.5.0
+Provides:	osgi(org.eclipse.jdt.core.source) = 3.9.1
+Provides:	osgi(org.eclipse.jdt.debug.source) = 3.8.0
+Provides:	osgi(org.eclipse.jdt.debug.ui.source) = 3.6.200
+Provides:	osgi(org.eclipse.jdt.doc.isv) = 3.9.1
+Provides:	osgi(org.eclipse.jdt.junit.core.source) = 3.7.200
+Provides:	osgi(org.eclipse.jdt.junit.runtime.source) = 3.4.400
+Provides:	osgi(org.eclipse.jdt.junit.source) = 3.7.200
+Provides:	osgi(org.eclipse.jdt.junit4.runtime.source) = 1.1.300
+Provides:	osgi(org.eclipse.jdt.launching.source) = 3.7.0
+Provides:	osgi(org.eclipse.jdt.ui.source) = 3.9.1
+Provides:	osgi(org.eclipse.jface.databinding.source) = 1.6.200
+Provides:	osgi(org.eclipse.jface.source) = 3.9.1
+Provides:	osgi(org.eclipse.jface.text.source) = 3.8.101
+Provides:	osgi(org.eclipse.jsch.core.source) = 1.1.400
+Provides:	osgi(org.eclipse.jsch.ui.source) = 1.1.400
+Provides:	osgi(org.eclipse.ltk.core.refactoring.source) = 3.6.100
+Provides:	osgi(org.eclipse.ltk.ui.refactoring.source) = 3.7.100
+Provides:	osgi(org.eclipse.osgi.services.source) = 3.3.100
+Provides:	osgi(org.eclipse.osgi.source) = 3.9.1
+Provides:	osgi(org.eclipse.osgi.util.source) = 3.2.300
+Provides:	osgi(org.eclipse.pde) = 3.8.100
+Provides:	osgi(org.eclipse.pde.api.tools) = 1.0.501
+Provides:	osgi(org.eclipse.pde.api.tools.source) = 1.0.501
+Provides:	osgi(org.eclipse.pde.api.tools.ui) = 1.0.401
+Provides:	osgi(org.eclipse.pde.api.tools.ui.source) = 1.0.401
+Provides:	osgi(org.eclipse.pde.build) = 3.8.100
+Provides:	osgi(org.eclipse.pde.build.source) = 3.8.100
+Provides:	osgi(org.eclipse.pde.core) = 3.9.1
+Provides:	osgi(org.eclipse.pde.core.source) = 3.9.1
+Provides:	osgi(org.eclipse.pde.doc.user) = 3.9.1
+Provides:	osgi(org.eclipse.pde.ds.core) = 1.0.300
+Provides:	osgi(org.eclipse.pde.ds.core.source) = 1.0.300
+Provides:	osgi(org.eclipse.pde.ds.ui) = 1.0.300
+Provides:	osgi(org.eclipse.pde.ds.ui.source) = 1.0.300
+Provides:	osgi(org.eclipse.pde.junit.runtime) = 3.4.300
+Provides:	osgi(org.eclipse.pde.junit.runtime.source) = 3.4.300
+Provides:	osgi(org.eclipse.pde.launching) = 3.6.101
+Provides:	osgi(org.eclipse.pde.launching.source) = 3.6.101
+Provides:	osgi(org.eclipse.pde.runtime) = 3.4.400
+Provides:	osgi(org.eclipse.pde.runtime.source) = 3.4.400
+Provides:	osgi(org.eclipse.pde.ua.core) = 1.0.300
+Provides:	osgi(org.eclipse.pde.ua.core.source) = 1.0.300
+Provides:	osgi(org.eclipse.pde.ua.ui) = 1.0.300
+Provides:	osgi(org.eclipse.pde.ua.ui.source) = 1.0.300
+Provides:	osgi(org.eclipse.pde.ui) = 3.8.0
+Provides:	osgi(org.eclipse.pde.ui.source) = 3.8.0
+Provides:	osgi(org.eclipse.pde.ui.templates) = 3.4.600
+Provides:	osgi(org.eclipse.pde.ui.templates.source) = 3.4.600
+Provides:	osgi(org.eclipse.platform.doc.isv) = 4.3.0
+Provides:	osgi(org.eclipse.platform.source) = 4.3.1
+Provides:	osgi(org.eclipse.sdk) = 4.3.1
+Provides:	osgi(org.eclipse.search.source) = 3.9.0
+Provides:	osgi(org.eclipse.swt.gtk.linux.x86_64.source) = 3.102.1
+Provides:	osgi(org.eclipse.team.core.source) = 3.7.0
+Provides:	osgi(org.eclipse.team.cvs.core.source) = 3.3.500
+Provides:	osgi(org.eclipse.team.cvs.ssh2.source) = 3.2.300
+Provides:	osgi(org.eclipse.team.cvs.ui.source) = 3.3.600
+Provides:	osgi(org.eclipse.team.ui.source) = 3.7.1
+Provides:	osgi(org.eclipse.text.source) = 3.5.300
+Provides:	osgi(org.eclipse.ui.browser.source) = 3.4.100
+Provides:	osgi(org.eclipse.ui.cheatsheets.source) = 3.4.200
+Provides:	osgi(org.eclipse.ui.console.source) = 3.5.200
+Provides:	osgi(org.eclipse.ui.editors.source) = 3.8.100
+Provides:	osgi(org.eclipse.ui.externaltools.source) = 3.2.200
+Provides:	osgi(org.eclipse.ui.forms.source) = 3.6.1
+Provides:	osgi(org.eclipse.ui.ide.application.source) = 1.0.400
+Provides:	osgi(org.eclipse.ui.ide.source) = 3.9.1
+Provides:	osgi(org.eclipse.ui.intro.source) = 3.4.200
+Provides:	osgi(org.eclipse.ui.intro.universal.source) = 3.2.600
+Provides:	osgi(org.eclipse.ui.navigator.resources.source) = 3.4.500
+Provides:	osgi(org.eclipse.ui.navigator.source) = 3.5.300
+Provides:	osgi(org.eclipse.ui.net.source) = 1.2.200
+Provides:	osgi(org.eclipse.ui.source) = 3.105.0
+Provides:	osgi(org.eclipse.ui.trace) = 1.0.100
+Provides:	osgi(org.eclipse.ui.trace.source) = 1.0.100
+Provides:	osgi(org.eclipse.ui.views.log) = 1.0.400
+Provides:	osgi(org.eclipse.ui.views.log.source) = 1.0.400
+Provides:	osgi(org.eclipse.ui.views.properties.tabbed.source) = 3.6.0
+Provides:	osgi(org.eclipse.ui.views.source) = 3.6.100
+Provides:	osgi(org.eclipse.ui.workbench.source) = 3.105.1
+Provides:	osgi(org.eclipse.ui.workbench.texteditor.source) = 3.8.101
+Provides:	osgi(org.eclipse.update.configurator.source) = 3.3.200
+Obsoletes:	eclipse-pde-runtime < 1:3.3.2-20
+
+%description	-n eclipse-pde
+eclipse-pde bootstrap version.
+
+%files		-n eclipse-pde
+/usr/bin/eclipse-pdebuild
+/usr/lib64/eclipse/buildscripts
+/usr/lib64/eclipse/buildscripts/copy-platform
+/usr/lib64/eclipse/dropins/sdk
+/usr/lib64/eclipse/dropins/sdk/features
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.cvs.source_1.4.0.v20140117-1748
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.cvs.source_1.4.0.v20140117-1748/META-INF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.cvs.source_1.4.0.v20140117-1748/META-INF/MANIFEST.MF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.cvs.source_1.4.0.v20140117-1748/epl-v10.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.cvs.source_1.4.0.v20140117-1748/feature.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.cvs.source_1.4.0.v20140117-1748/feature.xml
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.cvs.source_1.4.0.v20140117-1748/license.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.e4.rcp.source_1.2.1.v20140117-1748
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.e4.rcp.source_1.2.1.v20140117-1748/META-INF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.e4.rcp.source_1.2.1.v20140117-1748/META-INF/MANIFEST.MF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.e4.rcp.source_1.2.1.v20140117-1748/build.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.e4.rcp.source_1.2.1.v20140117-1748/eclipse_update_120.jpg
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.e4.rcp.source_1.2.1.v20140117-1748/epl-v10.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.e4.rcp.source_1.2.1.v20140117-1748/feature.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.e4.rcp.source_1.2.1.v20140117-1748/feature.xml
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.e4.rcp.source_1.2.1.v20140117-1748/license.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.core.feature.source_1.2.1.v20140117-1748
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.core.feature.source_1.2.1.v20140117-1748/META-INF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.core.feature.source_1.2.1.v20140117-1748/META-INF/MANIFEST.MF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.core.feature.source_1.2.1.v20140117-1748/build.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.core.feature.source_1.2.1.v20140117-1748/epl-v10.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.core.feature.source_1.2.1.v20140117-1748/feature.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.core.feature.source_1.2.1.v20140117-1748/feature.xml
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.core.feature.source_1.2.1.v20140117-1748/license.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.extras.feature.source_1.2.0.v20140117-1748
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.extras.feature.source_1.2.0.v20140117-1748/META-INF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.extras.feature.source_1.2.0.v20140117-1748/META-INF/MANIFEST.MF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.extras.feature.source_1.2.0.v20140117-1748/build.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.extras.feature.source_1.2.0.v20140117-1748/epl-v10.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.extras.feature.source_1.2.0.v20140117-1748/feature.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.extras.feature.source_1.2.0.v20140117-1748/feature.xml
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.extras.feature.source_1.2.0.v20140117-1748/license.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.rcp.feature.source_1.2.0.v20140117-1748
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.rcp.feature.source_1.2.0.v20140117-1748/META-INF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.rcp.feature.source_1.2.0.v20140117-1748/META-INF/MANIFEST.MF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.rcp.feature.source_1.2.0.v20140117-1748/build.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.rcp.feature.source_1.2.0.v20140117-1748/epl-v10.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.rcp.feature.source_1.2.0.v20140117-1748/feature.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.rcp.feature.source_1.2.0.v20140117-1748/feature.xml
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.rcp.feature.source_1.2.0.v20140117-1748/license.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.user.ui.source_2.2.0.v20140117-1748
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.user.ui.source_2.2.0.v20140117-1748/META-INF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.user.ui.source_2.2.0.v20140117-1748/META-INF/MANIFEST.MF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.user.ui.source_2.2.0.v20140117-1748/build.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.user.ui.source_2.2.0.v20140117-1748/epl-v10.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.user.ui.source_2.2.0.v20140117-1748/feature.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.user.ui.source_2.2.0.v20140117-1748/feature.xml
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.equinox.p2.user.ui.source_2.2.0.v20140117-1748/license.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.help.source_2.0.1.v20140117-1748
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.help.source_2.0.1.v20140117-1748/META-INF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.help.source_2.0.1.v20140117-1748/META-INF/MANIFEST.MF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.help.source_2.0.1.v20140117-1748/epl-v10.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.help.source_2.0.1.v20140117-1748/feature.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.help.source_2.0.1.v20140117-1748/feature.xml
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.help.source_2.0.1.v20140117-1748/license.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.jdt.source_3.9.1.v20140117-1748
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.jdt.source_3.9.1.v20140117-1748/META-INF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.jdt.source_3.9.1.v20140117-1748/META-INF/MANIFEST.MF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.jdt.source_3.9.1.v20140117-1748/epl-v10.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.jdt.source_3.9.1.v20140117-1748/feature.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.jdt.source_3.9.1.v20140117-1748/feature.xml
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.jdt.source_3.9.1.v20140117-1748/license.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.pde.source_3.9.1.v20140117-1748
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.pde.source_3.9.1.v20140117-1748/META-INF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.pde.source_3.9.1.v20140117-1748/META-INF/MANIFEST.MF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.pde.source_3.9.1.v20140117-1748/epl-v10.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.pde.source_3.9.1.v20140117-1748/feature.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.pde.source_3.9.1.v20140117-1748/feature.xml
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.pde.source_3.9.1.v20140117-1748/license.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.pde_3.9.1.v20140117-1748
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.pde_3.9.1.v20140117-1748/META-INF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.pde_3.9.1.v20140117-1748/META-INF/MANIFEST.MF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.pde_3.9.1.v20140117-1748/epl-v10.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.pde_3.9.1.v20140117-1748/feature.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.pde_3.9.1.v20140117-1748/feature.xml
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.pde_3.9.1.v20140117-1748/license.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.platform.source_4.3.1.v20140117-1748
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.platform.source_4.3.1.v20140117-1748/META-INF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.platform.source_4.3.1.v20140117-1748/META-INF/MANIFEST.MF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.platform.source_4.3.1.v20140117-1748/build.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.platform.source_4.3.1.v20140117-1748/epl-v10.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.platform.source_4.3.1.v20140117-1748/feature.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.platform.source_4.3.1.v20140117-1748/feature.xml
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.platform.source_4.3.1.v20140117-1748/license.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.rcp.source_4.3.1.v20140117-1748
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.rcp.source_4.3.1.v20140117-1748/META-INF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.rcp.source_4.3.1.v20140117-1748/META-INF/MANIFEST.MF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.rcp.source_4.3.1.v20140117-1748/build.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.rcp.source_4.3.1.v20140117-1748/epl-v10.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.rcp.source_4.3.1.v20140117-1748/feature.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.rcp.source_4.3.1.v20140117-1748/feature.xml
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.rcp.source_4.3.1.v20140117-1748/license.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.sdk_4.3.1.v20140117-1748
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.sdk_4.3.1.v20140117-1748/META-INF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.sdk_4.3.1.v20140117-1748/META-INF/MANIFEST.MF
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.sdk_4.3.1.v20140117-1748/epl-v10.html
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.sdk_4.3.1.v20140117-1748/feature.properties
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.sdk_4.3.1.v20140117-1748/feature.xml
+/usr/lib64/eclipse/dropins/sdk/features/org.eclipse.sdk_4.3.1.v20140117-1748/license.html
+/usr/lib64/eclipse/dropins/sdk/plugins
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ant.core.source_3.2.500.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ant.launching.source_1.0.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ant.ui.source_3.5.400.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.compare.core.source_3.5.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.compare.source_3.5.401.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.core.commands.source_3.6.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.core.contenttype.source_3.4.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.core.databinding.beans.source_1.2.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.core.databinding.observable.source_1.4.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.core.databinding.property.source_1.4.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.core.databinding.source_1.4.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.core.expressions.source_3.4.500.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.core.externaltools.source_1.0.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.core.filebuffers.source_3.5.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.core.filesystem.source_1.4.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.core.jobs.source_3.5.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.core.net.source_1.2.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.core.resources.source_3.8.101.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.core.runtime.compatibility.registry.source_3.5.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.core.runtime.compatibility.source_3.2.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.core.runtime.source_3.9.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.core.variables.source_3.2.700.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.debug.core.source_3.8.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.debug.ui.source_3.9.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.e4.core.commands.source_0.10.2.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.e4.core.contexts.source_1.3.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.e4.core.di.extensions.source_0.11.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.e4.core.di.source_1.3.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.e4.core.services.source_1.1.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.e4.ui.bindings.source_0.10.101.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.e4.ui.css.core.source_0.10.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.e4.ui.css.swt.source_0.11.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.e4.ui.css.swt.theme.source_0.9.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.e4.ui.di.source_1.0.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.e4.ui.model.workbench.source_1.0.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.e4.ui.services.source_1.0.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.e4.ui.widgets.source_1.0.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.e4.ui.workbench.addons.swt.source_1.0.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.e4.ui.workbench.renderers.swt.source_0.11.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.e4.ui.workbench.source_1.0.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.e4.ui.workbench.swt.source_0.12.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.e4.ui.workbench3.source_0.12.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.app.source_1.3.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.bidi.source_0.10.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.common.source_3.6.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.console.source_1.0.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.ds.source_1.4.101.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.event.source_1.3.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.frameworkadmin.equinox.source_1.0.500.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.frameworkadmin.source_2.0.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.http.jetty.source_3.0.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.http.registry.source_1.1.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.http.servlet.source_1.1.400.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.jsp.jasper.registry.source_1.0.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.jsp.jasper.source_1.0.400.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.artifact.repository.source_1.1.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.console.source_1.0.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.core.source_2.3.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.director.app.source_1.0.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.director.source_2.3.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.directorywatcher.source_1.0.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.engine.source_2.3.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.extensionlocation.source_1.2.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.garbagecollector.source_1.0.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.jarprocessor.source_1.0.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.metadata.repository.source_1.2.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.metadata.source_2.2.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.operations.source_2.3.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.publisher.eclipse.source_1.1.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.publisher.source_1.3.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.ql.source_2.0.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.reconciler.dropins.source_1.1.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.repository.source_2.3.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.repository.tools.source_2.1.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.touchpoint.eclipse.source_2.1.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.touchpoint.natives.source_1.1.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.transport.ecf.source_1.1.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.ui.importexport.source_1.1.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.ui.sdk.scheduler.source_1.2.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.ui.sdk.source_1.0.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.ui.source_2.3.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.updatechecker.source_1.1.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.p2.updatesite.source_1.0.400.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.preferences.source_3.5.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.registry.source_3.5.301.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.security.source_1.2.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.security.ui.source_1.1.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.simpleconfigurator.manipulator.source_2.0.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.simpleconfigurator.source_1.0.400.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.equinox.util.source_1.0.500.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.help.base.source_4.0.0.v20140117-1541.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.help.source_3.6.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.help.ui.source_4.0.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.help.webapp.source_3.6.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jdt.annotation.source_1.1.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jdt.apt.core.source_3.3.500.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jdt.apt.pluggable.core.source_1.0.400.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jdt.apt.ui.source_3.3.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jdt.compiler.apt.source_1.0.600.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jdt.compiler.tool.source_1.0.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jdt.core.manipulation.source_1.5.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jdt.core.source_3.9.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jdt.debug.source_3.8.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jdt.debug.ui.source_3.6.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jdt.doc.isv_3.9.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jdt.junit.core.source_3.7.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jdt.junit.runtime.source_3.4.400.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jdt.junit.source_3.7.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jdt.junit4.runtime.source_1.1.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jdt.launching.source_3.7.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jdt.ui.source_3.9.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jface.databinding.source_1.6.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jface.source_3.9.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jface.text.source_3.8.101.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jsch.core.source_1.1.400.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.jsch.ui.source_1.1.400.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ltk.core.refactoring.source_3.6.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ltk.ui.refactoring.source_3.7.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.osgi.services.source_3.3.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.osgi.source_3.9.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.osgi.util.source_3.2.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.api.tools.source_1.0.501.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.api.tools.ui.source_1.0.401.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.api.tools.ui_1.0.401.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.api.tools_1.0.501.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build.source_3.8.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/.api_description
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/.options
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/META-INF
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/META-INF/MANIFEST.MF
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/META-INF/eclipse.inf
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/about.html
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/about_files
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/about_files/LICENSE-2.0.txt
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/data
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/data/21
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/data/21/fragment
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/data/21/fragment/fragment.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/data/21/plugin
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/data/21/plugin/plugin.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/data/30
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/data/30/fragment
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/data/30/fragment/META-INF
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/data/30/fragment/META-INF/MANIFEST.MF
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/data/30/fragment/fragment.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/data/30/plugin
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/data/30/plugin/META-INF
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/data/30/plugin/META-INF/MANIFEST.MF
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/data/30/plugin/plugin.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/data/env.properties
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/lib
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/lib/pdebuild-ant.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/pdebuild.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/plugin.properties
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/plugin.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/scripts
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/scripts/build.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/scripts/genericTargets.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/scripts/package.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/scripts/productBuild
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/scripts/productBuild/allElements.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/scripts/productBuild/productBuild.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/templates
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/templates/features
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/templates/features/customBuildCallbacks.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/templates/headless-build
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/templates/headless-build/allElements.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/templates/headless-build/build.properties
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/templates/headless-build/customAssembly.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/templates/headless-build/customTargets.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/templates/package-build
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/templates/package-build/build.properties
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/templates/package-build/customTargets-assemble-target.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/templates/package-build/customTargets.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/templates/package-build/prepare-build-dir.sh
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/templates/packager
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/templates/packager/customTargets.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/templates/packager/packager.properties
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/templates/packager/packaging.properties
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/templates/plugins
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_3.8.100.v20140117-1748/templates/plugins/customBuildCallbacks.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.core.source_3.9.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.core_3.9.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.doc.user_3.9.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.ds.core.source_1.0.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.ds.core_1.0.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.ds.ui.source_1.0.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.ds.ui_1.0.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.junit.runtime.source_3.4.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.junit.runtime_3.4.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.launching.source_3.6.101.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.launching_3.6.101.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.runtime.source_3.4.400.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.runtime_3.4.400.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.ua.core.source_1.0.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.ua.core_1.0.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.ua.ui.source_1.0.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.ua.ui_1.0.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.ui.source_3.8.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.ui.templates.source_3.4.600.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.ui.templates_3.4.600.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde.ui_3.8.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.pde_3.8.100.v20140117-1541.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.platform.doc.isv_4.3.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.platform.source_4.3.1.v20140117-1541.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/META-INF
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/META-INF/MANIFEST.MF
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/about.html
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/about.ini
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/about.mappings
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/about.properties
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/book.css
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/disabled_book.css
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/eclipse16.gif
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/eclipse16.png
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/eclipse256.png
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/eclipse32.gif
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/eclipse32.png
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/eclipse48.gif
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/eclipse48.png
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/eclipse_lg.gif
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/helpData.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/intro-eclipse.png
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/introData.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/macosx_narrow_book.css
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/narrow_book.css
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/plugin.properties
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/plugin.xml
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/plugin_customization.ini
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.sdk_4.3.1.v20140117-1541/plugin_customization.properties
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.search.source_3.9.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.swt.gtk.linux.x86_64.source_3.102.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.team.core.source_3.7.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.team.cvs.core.source_3.3.500.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.team.cvs.ssh2.source_3.2.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.team.cvs.ui.source_3.3.600.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.team.ui.source_3.7.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.text.source_3.5.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.browser.source_3.4.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.cheatsheets.source_3.4.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.console.source_3.5.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.editors.source_3.8.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.externaltools.source_3.2.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.forms.source_3.6.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.ide.application.source_1.0.400.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.ide.source_3.9.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.intro.source_3.4.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.intro.universal.source_3.2.600.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.navigator.resources.source_3.4.500.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.navigator.source_3.5.300.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.net.source_1.2.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.source_3.105.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.trace.source_1.0.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.trace_1.0.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.views.log.source_1.0.400.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.views.log_1.0.400.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.views.properties.tabbed.source_3.6.0.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.views.source_3.6.100.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.workbench.source_3.105.1.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.ui.workbench.texteditor.source_3.8.101.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.eclipse.update.configurator.source_3.3.200.v20140117-1748.jar
+/usr/lib64/eclipse/dropins/sdk/plugins/org.objectweb.asm_3.3.1.jar
+
+#------------------------------------------------------------------------
 %prep
 
 %build
@@ -1378,7 +2013,8 @@ cd %{buildroot}
 rpm2cpio %{SOURCE0} | cpio -id
 rpm2cpio %{SOURCE1} | cpio -id
 rpm2cpio %{SOURCE2} | cpio -id
+rpm2cpio %{SOURCE3} | cpio -id
 mkdir -p %{buildroot}/usr/lib/java
-cp -p %{SOURCE3} %{buildroot}/usr/lib64/eclipse
+cp -p %{SOURCE4} %{buildroot}/usr/lib64/eclipse
 ln -sf /usr/lib64/eclipse %{buildroot}/usr/lib/eclipse
 ln -sf /usr/lib64/eclipse/swt.jar %{buildroot}/usr/lib/java
