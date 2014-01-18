@@ -1,3 +1,8 @@
 sources:
   R4_platform-aggregator-R4_3_1.tar.xz: 44dfa8cc826ab69da787d04b59c385bcb7744a66
   eclipse-build-79dfa1abc0ba06375b42d0015c7f0ceb3759eb5b.tar.xz: 4809028b3122ebb886e4a184f471db835e15e446
+  eclipse-equinox-osgi-4.3.1-11.0-omv2014.0.x86_64.rpm: f736b5dcbc58529eddf931913d8b730886e65ccf
+  eclipse-jdt-4.3.1-11.0-omv2014.0.x86_64.rpm: a115e7f32f5265d8bd02bb9fe14d036fc439bde7
+  eclipse-pde-4.3.1-11.0-omv2014.0.x86_64.rpm: 4365fba9a6fae2c83a84b9c9e10116dbd5916b2e
+  eclipse-platform-4.3.1-11.0-omv2014.0.x86_64.rpm: 932386382f588d428c07482957feb4b1685d9f01
+  swt.jar: e0def7f6f0f8c1e0366ca6ec63b1c446c953347c
