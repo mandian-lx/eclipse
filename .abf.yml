@@ -1,8 +1,3 @@
 sources:
-  "ecf-filetransfer-v20080611-1715.tar.bz2": f962ec6761ceaf3cf78aa8c071c6dc3c2467c439
-  "eclipse-3.4.2-testframework.tar.bz2": 896fe263f28ce3a8eeffa0abaec87567c389bdb0
-  "eclipse-ecj-gcj.tar.bz2": e2489007a7cc6a7036ffb8e4a9c0c483cd2f7f4c
-  "eclipse-fileinitializerapp.tar.bz2": 26d71eb0cfca2cf44f97bad53dc839960b422687
-  "eclipse-sourceBuild-srcIncluded-3.4.2.zip": 2a093a119def58b4df43e672c4d75c2f62fb0b16
-  "org.mandriva.ide.feature-1.0.0.zip": 3b37b8f93cc1824223a1114e6a52ab7d348ef4bb
-  "org.mandriva.ide.platform-3.4.2.zip": 9db71334cdeae6e0dc76cb125132a68d80108cbb
+  R4_platform-aggregator-R4_3_1.tar.xz: 44dfa8cc826ab69da787d04b59c385bcb7744a66
+  eclipse-build-79dfa1abc0ba06375b42d0015c7f0ceb3759eb5b.tar.xz: 4809028b3122ebb886e4a184f471db835e15e446
