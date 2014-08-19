@@ -56,6 +56,7 @@ Release:        11.4%{?dist}
 License:        EPL
 
 URL:            http://www.eclipse.org/
+Group:			Development/Java			
 #get-eclipse.sh
 Source0:        R4_platform-aggregator-%{eclipse_tag}.tar.xz
 #http://git.eclipse.org/c/linuxtools/org.eclipse.linuxtools.eclipse-build.git/snapshot/org.eclipse.linuxtools.eclipse-build-701400b0ca475ea73bd828c66b00fb63c5ec2c8c.tar.bz2
@@ -595,6 +596,8 @@ cat >> eclipse.ini <<EOF
 -XX:CompileCommand=exclude,org/eclipse/tycho/core/osgitools/EquinoxResolver,newState
 -Dorg.eclipse.equinox.p2.reconciler.dropins.directory=%{_scl_root}/usr/share/eclipse/dropins
 -Declipse.p2.skipMovedInstallDetection=true
+--launcher.GTK_version
+2
 EOF
 
 popd #eclipse
