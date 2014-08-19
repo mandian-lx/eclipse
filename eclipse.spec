@@ -596,8 +596,6 @@ cat >> eclipse.ini <<EOF
 -XX:CompileCommand=exclude,org/eclipse/tycho/core/osgitools/EquinoxResolver,newState
 -Dorg.eclipse.equinox.p2.reconciler.dropins.directory=%{_scl_root}/usr/share/eclipse/dropins
 -Declipse.p2.skipMovedInstallDetection=true
---launcher.GTK_version
-2
 EOF
 
 popd #eclipse
