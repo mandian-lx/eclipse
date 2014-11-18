@@ -1,6 +1,6 @@
---- eclipse-platform-parent/pom.xml.orig	2013-03-14 11:05:42.000000000 +0100
-+++ eclipse-platform-parent/pom.xml	2013-03-14 13:11:05.104112979 +0100
-@@ -289,7 +289,7 @@
+--- eclipse-platform-parent/pom.xml.orig	2014-03-12 10:25:46.000000000 +0000
++++ eclipse-platform-parent/pom.xml	2014-03-12 12:12:56.387914854 +0000
+@@ -308,7 +308,7 @@
            <artifactId>tycho-packaging-plugin</artifactId>
            <version>${tycho.version}</version>
            <dependencies>
@@ -9,7 +9,7 @@
                <groupId>org.eclipse.tycho.extras</groupId>
                <artifactId>tycho-buildtimestamp-jgit</artifactId>
                <version>${tycho-extras.version}</version>
-@@ -280,18 +280,18 @@
+@@ -317,19 +317,19 @@
                <groupId>org.eclipse.tycho.extras</groupId>
                <artifactId>tycho-sourceref-jgit</artifactId>
                <version>${tycho-extras.version}</version>
@@ -24,6 +24,7 @@
              <jgit.ignore>
  		pom.xml
              </jgit.ignore>
+             <jgit.dirtyWorkingTree>${jgit.dirtyWorkingTree}</jgit.dirtyWorkingTree>
 -            <sourceReferences>
 +            <!--sourceReferences>
                <generate>true</generate>

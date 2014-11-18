@@ -41,7 +41,7 @@ index 5a15c5b..d4fb54e 100644
 +                <phase>generate-resources</phase>
 +                <configuration>
 +                  <target>
-+                    <ant antfile="../../../../bundles/org.eclipse.equinox.executable/library/carbon/build.xml" dir="../../bundles/org.eclipse.equinox.executable/library/carbon/" target="build_eclipse"/>
++                    <ant antfile="../../../../features/org.eclipse.equinox.executable.feature/library/carbon/build.xml" dir="../../features/org.eclipse.equinox.executable.feature/library/carbon/" target="build_eclipse"/>
 +                  </target>
 +                </configuration>
 +                <goals>
@@ -105,7 +105,7 @@ index 59f46ae..e7616ed 100644
 +                <phase>generate-resources</phase>
 +                <configuration>
 +                  <target>
-+                    <ant antfile="../../../../bundles/org.eclipse.equinox.executable/library/gtk/build.xml" dir="../../bundles/org.eclipse.equinox.executable/library/gtk/" target="build_eclipse"/>
++                    <ant antfile="../../../../features/org.eclipse.equinox.executable.feature/library/gtk/build.xml" dir="../../features/org.eclipse.equinox.executable.feature/library/gtk/" target="build_eclipse"/>
 +                  </target>
 +                </configuration>
 +                <goals>
@@ -169,7 +169,7 @@ index d639b6e..8bf7d74 100644
 +                <phase>generate-resources</phase>
 +                <configuration>
 +                  <target>
-+                    <ant antfile="../../../../bundles/org.eclipse.equinox.executable/library/gtk/build.xml" dir="../../bundles/org.eclipse.equinox.executable/library/gtk/" target="build_eclipse"/>
++                    <ant antfile="../../../../features/org.eclipse.equinox.executable.feature/library/gtk/build.xml" dir="../../features/org.eclipse.equinox.executable.feature/library/gtk/" target="build_eclipse"/>
 +                  </target>
 +                </configuration>
 +                <goals>
@@ -234,7 +234,7 @@ index e0b59be..f82005c 100644
 +                <phase>generate-resources</phase>
 +                <configuration>
 +                  <target>
-+                    <ant antfile="../../../../bundles/org.eclipse.equinox.executable/library/win32/build.xml" dir="../../bundles/org.eclipse.equinox.executable/library/win32/" target="build_eclipse"/>
++                    <ant antfile="../../../../features/org.eclipse.equinox.executable.feature/library/win32/build.xml" dir="../../features/org.eclipse.equinox.executable.feature/library/win32/" target="build_eclipse"/>
 +                  </target>
 +                </configuration>
 +                <goals>
@@ -299,7 +299,7 @@ index ce4252c..4b72b1f 100644
 +                <phase>generate-resources</phase>
 +                <configuration>
 +                  <target>
-+                    <ant antfile="../../../../bundles/org.eclipse.equinox.executable/library/win32/build.xml" dir="../../bundles/org.eclipse.equinox.executable/library/win32/" target="build_eclipse"/>
++                    <ant antfile="../../../../features/org.eclipse.equinox.executable.feature/library/win32/build.xml" dir="../../features/org.eclipse.equinox.executable.feature/library/win32/" target="build_eclipse"/>
 +                  </target>
 +                </configuration>
 +                <goals>
@@ -364,7 +364,7 @@ index ce4252c..4b72b1f 100644
 +                <phase>generate-resources</phase>
 +                <configuration>
 +                  <target>
-+                    <ant antfile="../../../../bundles/org.eclipse.equinox.executable/library/gtk/build.xml" dir="../../bundles/org.eclipse.equinox.executable/library/gtk/" target="build_eclipse"/>
++                    <ant antfile="../../../../features/org.eclipse.equinox.executable.feature/library/gtk/build.xml" dir="../../features/org.eclipse.equinox.executable.feature/library/gtk/" target="build_eclipse"/>
 +                  </target>
 +                </configuration>
 +                <goals>
@@ -429,7 +429,7 @@ index ce4252c..4b72b1f 100644
 +                <phase>generate-resources</phase>
 +                <configuration>
 +                  <target>
-+                    <ant antfile="../../../../bundles/org.eclipse.equinox.executable/library/gtk/build.xml" dir="../../bundles/org.eclipse.equinox.executable/library/gtk/" target="build_eclipse"/>
++                    <ant antfile="../../../../features/org.eclipse.equinox.executable.feature/library/gtk/build.xml" dir="../../features/org.eclipse.equinox.executable.feature/library/gtk/" target="build_eclipse"/>
 +                  </target>
 +                </configuration>
 +                <goals>
@@ -494,7 +494,7 @@ index ce4252c..4b72b1f 100644
 +                <phase>generate-resources</phase>
 +                <configuration>
 +                  <target>
-+                    <ant antfile="../../../../bundles/org.eclipse.equinox.executable/library/gtk/build.xml" dir="../../bundles/org.eclipse.equinox.executable/library/gtk/" target="build_eclipse"/>
++                    <ant antfile="../../../../features/org.eclipse.equinox.executable.feature/library/gtk/build.xml" dir="../../features/org.eclipse.equinox.executable.feature/library/gtk/" target="build_eclipse"/>
 +                  </target>
 +                </configuration>
 +                <goals>
@@ -559,7 +559,7 @@ index ce4252c..4b72b1f 100644
 +                <phase>generate-resources</phase>
 +                <configuration>
 +                  <target>
-+                    <ant antfile="../../../../bundles/org.eclipse.equinox.executable/library/gtk/build.xml" dir="../../bundles/org.eclipse.equinox.executable/library/gtk/" target="build_eclipse"/>
++                    <ant antfile="../../../../features/org.eclipse.equinox.executable.feature/library/gtk/build.xml" dir="../../features/org.eclipse.equinox.executable.feature/library/gtk/" target="build_eclipse"/>
 +                  </target>
 +                </configuration>
 +                <goals>

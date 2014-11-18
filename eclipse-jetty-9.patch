@@ -629,4 +629,33 @@ index c9224bd..4435b86 100755
 -			}
  		if (sessionInactiveInterval != null)
  			sessionManager.setMaxInactiveInterval(sessionInactiveInterval.intValue());
- 
+
+From 12bc35c1dc35b7bf25874b4476bc672b940c8714 Mon Sep 17 00:00:00 2001
+From: Michael Simacek <msimacek@redhat.com>
+Date: Thu, 28 Nov 2013 13:51:05 +0100
+Subject: [PATCH] Update to Jetty 9.1.0
+
+---
+ .../org/eclipse/equinox/http/jetty/internal/EquinoxStdErrLog.java   | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git rt.equinox.bundles/bundles/org.eclipse.equinox.http.jetty8/src/org/eclipse/equinox/http/jetty/internal/EquinoxStdErrLog.java b/rt.equinox.bundles/bundles/org.eclipse.equinox.http.jetty8/src/org/eclipse/equinox/http/jetty/internal/EquinoxStdErrLog.java
+index 8ce6825..4cc4b94 100644
+--- rt.equinox.bundles/bundles/org.eclipse.equinox.http.jetty8/src/org/eclipse/equinox/http/jetty/internal/EquinoxStdErrLog.java
++++ rt.equinox.bundles/bundles/org.eclipse.equinox.http.jetty8/src/org/eclipse/equinox/http/jetty/internal/EquinoxStdErrLog.java
+@@ -169,6 +169,12 @@ public class EquinoxStdErrLog implements Logger {
+ 		realLogger.debug(thrown);
+ 	}
+
++	public void debug(String msg, long value) {
++		if (threshold > DEBUG)
++			return;
++		realLogger.debug(msg, value);
++	}
++
+ 	public void ignore(Throwable ignored) {
+ 		// Just post this to debug
+ 		debug(ignored);
+--
+1.8.3.1
+

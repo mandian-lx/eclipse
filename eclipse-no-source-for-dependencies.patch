@@ -30,7 +30,7 @@
              </goals>
 +            <configuration>
 +              <excludes>
-+                <plugin id="javax.servlet" /><plugin id="javax.el" /><plugin id="org.apache.el" /><plugin id="org.apache.commons.logging" />
++                <plugin id="javax.servlet" /><plugin id="javax.el" /><plugin id="com.sun.el.javax.el" /><plugin id="org.apache.el" /><plugin id="org.apache.commons.logging" />
 +                <plugin id="javax.servlet.jsp" /><plugin id="org.apache.lucene.analysis" /><plugin id="org.apache.lucene.core" />
 +                <plugin id="org.apache.tomcat" /><plugin id="org.eclipse.jetty.continuation" /><plugin id="org.eclipse.jetty.http" />
 +                <plugin id="org.apache.juli" /><plugin id="org.eclipse.jetty.io" /><plugin id="org.eclipse.jetty.security" />
@@ -99,7 +99,7 @@
 \ No newline at end of file
 --- eclipse.platform.ui/features/org.eclipse.e4.rcp/pom.xml.bak	2013-03-14 11:35:02.000000000 +0100
 +++ eclipse.platform.ui/features/org.eclipse.e4.rcp/pom.xml	2013-03-14 12:53:51.015502076 +0100
-@@ -72,6 +72,14 @@
+@@ -72,6 +72,15 @@
                  <plugin id="org.w3c.css.sac"/>
                  <plugin id="org.w3c.dom.smil"/>
                  <plugin id="org.w3c.dom.svg"/>
@@ -110,21 +110,22 @@
 +				<plugin id="com.ibm.icu"/>
 +				<plugin id="org.apache.felix.gogo.runtime" />
 +				<plugin id="org.eclipse.equinox.launcher.gtk.linux.arm" />
++				<plugin id="org.eclipse.equinox.launcher.gtk.linux.aarch64" />
 +				<plugin id="org.apache.felix.gogo.shell" />
                </excludes>
              </configuration>
            </execution>
 --- eclipse.platform.releng/features/org.eclipse.platform-feature/pom.xml.bak	2013-03-14 11:18:11.000000000 +0100
 +++ eclipse.platform.releng/features/org.eclipse.platform-feature/pom.xml	2013-03-14 12:57:12.344569351 +0100
-@@ -77,6 +77,13 @@
+@@ -76,6 +76,13 @@
+                 <plugin id="org.eclipse.update.core.linux"/>
                  <plugin id="org.eclipse.update.core.win32"/>
                  <plugin id="org.eclipse.equinox.security.macosx"/>
-                 <plugin id="org.eclipse.equinox.security.macosx"/>
-+                
-+                
++
 +                <plugin id="com.jcraft.jsch"/>
 +                <plugin id="org.apache.ant"/>
 +                <plugin id="org.eclipse.core.filesystem.linux.arm"/>
++                <plugin id="org.eclipse.core.filesystem.linux.aarch64"/>
 +                <plugin id="org.eclipse.core.filesystem.linux.s390"/>
 +                <plugin id="org.eclipse.core.filesystem.linux.s390x"/>
                </excludes>

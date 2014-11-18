@@ -1,0 +1,222 @@
+--- "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/os.c"
++++ "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/os.c"
+@@ -11321,6 +11321,24 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1image_1new_1from_1pixbuf)
+ }
+ #endif
+ 
++#ifndef NO__1gtk_1image_1set_1from_1gicon
++JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1image_1set_1from_1gicon)
++	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2)
++{
++	OS_NATIVE_ENTER(env, that, _1gtk_1image_1set_1from_1gicon_FUNC);
++/*
++	gtk_image_set_from_gicon((GtkImage *)arg0, (GIcon *)arg1, (GtkIconSize)arg2);
++*/
++	{
++		OS_LOAD_FUNCTION(fp, gtk_image_set_from_gicon)
++		if (fp) {
++			((void (CALLING_CONVENTION*)(GtkImage *, GIcon *, GtkIconSize))fp)((GtkImage *)arg0, (GIcon *)arg1, (GtkIconSize)arg2);
++		}
++	}
++	OS_NATIVE_EXIT(env, that, _1gtk_1image_1set_1from_1gicon_FUNC);
++}
++#endif
++
+ #ifndef NO__1gtk_1image_1set_1from_1pixbuf
+ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1image_1set_1from_1pixbuf)
+ 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+--- "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/os_custom.h"
++++ "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/os_custom.h"
+@@ -175,6 +175,7 @@
+ #define gtk_icon_info_free_LIB LIB_GTK
+ #define gtk_icon_set_render_icon_LIB LIB_GTK
+ #define gtk_icon_theme_lookup_by_gicon_LIB LIB_GTK
++#define gtk_image_set_from_gicon_LIB LIB_GTK
+ #define gdk_keyboard_ungrab_LIB LIB_GDK
+ #define gtk_icon_theme_get_default_LIB LIB_GTK
+ #define gtk_menu_item_remove_submenu_LIB LIB_GTK
+--- "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/os_stats.c"
++++ "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/os_stats.c"
+@@ -818,6 +818,7 @@ char * OS_nativeFunctionNames[] = {
+ 	"_1gtk_1image_1menu_1item_1set_1image",
+ 	"_1gtk_1image_1new",
+ 	"_1gtk_1image_1new_1from_1pixbuf",
++	"_1gtk_1image_1set_1from_1gicon",
+ 	"_1gtk_1image_1set_1from_1pixbuf",
+ 	"_1gtk_1init_1check",
+ 	"_1gtk_1label_1get_1layout",
+--- "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/os_stats.h"
++++ "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/os_stats.h"
+@@ -828,6 +828,7 @@ typedef enum {
+ 	_1gtk_1image_1menu_1item_1set_1image_FUNC,
+ 	_1gtk_1image_1new_FUNC,
+ 	_1gtk_1image_1new_1from_1pixbuf_FUNC,
++	_1gtk_1image_1set_1from_1gicon_FUNC,
+ 	_1gtk_1image_1set_1from_1pixbuf_FUNC,
+ 	_1gtk_1init_1check_FUNC,
+ 	_1gtk_1label_1get_1layout_FUNC,
+--- "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT PI/gtk/org/eclipse/swt/internal/gtk/OS.java"
++++ "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT PI/gtk/org/eclipse/swt/internal/gtk/OS.java"
+@@ -8266,6 +8266,21 @@ public static final void gtk_image_set_from_pixbuf(long /*int*/ image, long /*in
+ 	}
+ }
+ /**
++ * @method flags=dynamic
++ * @param image cast=(GtkImage *)
++ * @param gicon cast=(GIcon *)
++ * @param size cast=(GtkIconSize)
++ */
++public static final native void _gtk_image_set_from_gicon(long /*int*/ image, long /*int*/ gicon, int size);
++public static final void gtk_image_set_from_gicon(long /*int*/ image, long /*int*/ gicon, int size) {
++	lock.lock();
++	try {
++		_gtk_image_set_from_gicon(image, gicon, size);
++	} finally {
++		lock.unlock();
++	}
++}
++/**
+  * @param argc cast=(int *)
+  * @param argv cast=(char ***)
+  */
+--- "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/Button.java"
++++ "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/Button.java"
+@@ -875,11 +875,11 @@ public void setImage (Image image) {
+ 		imageList = new ImageList ();
+ 		int imageIndex = imageList.add (image);
+ 		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
+-		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
++		gtk_image_set_from_pixbuf(imageHandle, pixbuf);
+ 		if (text.length () == 0) OS.gtk_widget_hide (labelHandle);
+ 		OS.gtk_widget_show (imageHandle);
+ 	} else {
+-		OS.gtk_image_set_from_pixbuf (imageHandle, 0);
++		gtk_image_set_from_pixbuf (imageHandle, 0);
+ 		OS.gtk_widget_show (labelHandle);
+ 		OS.gtk_widget_hide (imageHandle);
+ 	}
+--- "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/ExpandItem.java"
++++ "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/ExpandItem.java"
+@@ -535,11 +535,11 @@ public void setImage (Image image) {
+ 		imageList = new ImageList ();
+ 		int imageIndex = imageList.add (image);
+ 		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
+-		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
++		gtk_image_set_from_pixbuf (imageHandle, pixbuf);
+ 		if (text.length () == 0) OS.gtk_widget_hide (labelHandle);
+ 		OS.gtk_widget_show (imageHandle);
+ 	} else {
+-		OS.gtk_image_set_from_pixbuf (imageHandle, 0);
++		gtk_image_set_from_pixbuf (imageHandle, 0);
+ 		OS.gtk_widget_show (labelHandle);
+ 		OS.gtk_widget_hide (imageHandle);
+ 	}
+--- "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/Label.java"
++++ "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/Label.java"
+@@ -535,11 +535,11 @@ public void setImage (Image image) {
+ 		imageList = new ImageList ();
+ 		int imageIndex = imageList.add (image);
+ 		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
+-		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
++		gtk_image_set_from_pixbuf (imageHandle, pixbuf);
+ 		OS.gtk_widget_hide (labelHandle);
+ 		OS.gtk_widget_show (imageHandle);
+ 	} else {
+-		OS.gtk_image_set_from_pixbuf (imageHandle, 0);
++		gtk_image_set_from_pixbuf (imageHandle, 0);
+ 		OS.gtk_widget_show (labelHandle);
+ 		OS.gtk_widget_hide (imageHandle);
+ 	}
+--- "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/TabItem.java"
++++ "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/TabItem.java"
+@@ -307,10 +307,10 @@ public void setImage (Image image) {
+ 			imageList.put (imageIndex, image);
+ 		}
+ 		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
+-		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
++		gtk_image_set_from_pixbuf (imageHandle, pixbuf);
+ 		OS.gtk_widget_show (imageHandle);
+ 	} else {
+-		OS.gtk_image_set_from_pixbuf (imageHandle, 0);
++		gtk_image_set_from_pixbuf (imageHandle, 0);
+ 		OS.gtk_widget_hide (imageHandle);
+ 	}
+ }
+--- "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/TableColumn.java"
++++ "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/TableColumn.java"
+@@ -553,10 +553,10 @@ public void setImage (Image image) {
+ 		int imageIndex = headerImageList.indexOf (image);
+ 		if (imageIndex == -1) imageIndex = headerImageList.add (image);
+ 		long /*int*/ pixbuf = headerImageList.getPixbuf (imageIndex);
+-		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
++		gtk_image_set_from_pixbuf (imageHandle, pixbuf);
+ 		OS.gtk_widget_show (imageHandle);
+ 	} else {
+-		OS.gtk_image_set_from_pixbuf (imageHandle, 0);
++		gtk_image_set_from_pixbuf (imageHandle, 0);
+ 		OS.gtk_widget_hide (imageHandle);
+ 	}
+ }
+--- "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/ToolItem.java"
++++ "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/ToolItem.java"
+@@ -608,7 +608,7 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
+ 			int index = imageList.indexOf (hotImage);
+ 			if (index != -1 && imageHandle != 0) {
+ 				long /*int*/ pixbuf = imageList.getPixbuf (index);
+-				OS.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
++				gtk_image_set_from_pixbuf(imageHandle, pixbuf);
+ 			}
+ 		}
+ 	}
+@@ -652,7 +652,7 @@ long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
+ 				int index = imageList.indexOf (image);
+ 				if (index != -1 && imageHandle != 0) {
+ 					long /*int*/ pixbuf = imageList.getPixbuf (index);
+-					OS.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
++					gtk_image_set_from_pixbuf(imageHandle, pixbuf);
+ 				}
+ 			}
+ 		}	
+@@ -998,9 +998,9 @@ public void setImage (Image image) {
+ 			imageList.put (imageIndex, image);
+ 		}
+ 		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
+-		OS.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
++		gtk_image_set_from_pixbuf(imageHandle, pixbuf);
+ 	} else {
+-		OS.gtk_image_set_from_pixbuf(imageHandle, 0);
++		gtk_image_set_from_pixbuf(imageHandle, 0);
+ 	}
+ 	/*
+ 	* If Text/Image of a tool-item changes, then it is 
+--- "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/TreeColumn.java"
++++ "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/TreeColumn.java"
+@@ -550,10 +550,10 @@ public void setImage (Image image) {
+ 		int imageIndex = headerImageList.indexOf (image);
+ 		if (imageIndex == -1) imageIndex = headerImageList.add (image);
+ 		long /*int*/ pixbuf = headerImageList.getPixbuf (imageIndex);
+-		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
++		gtk_image_set_from_pixbuf (imageHandle, pixbuf);
+ 		OS.gtk_widget_show (imageHandle);
+ 	} else {
+-		OS.gtk_image_set_from_pixbuf (imageHandle, 0);
++		gtk_image_set_from_pixbuf (imageHandle, 0);
+ 		OS.gtk_widget_hide (imageHandle);
+ 	}
+ }
+--- "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/Widget.java"
++++ "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT/gtk/org/eclipse/swt/widgets/Widget.java"
+@@ -2171,4 +2171,13 @@ void gtk_widget_get_preferred_size (long /*int*/ widget, GtkRequisition requisit
+ 		OS.gtk_widget_size_request (widget, requisition);
+ 	}
+ }
++
++void gtk_image_set_from_pixbuf (long /*int*/ imageHandle, long /*int*/ pixbuf){
++	if (OS.GTK3) {
++		OS.gtk_image_set_from_gicon(imageHandle, pixbuf, OS.GTK_ICON_SIZE_SMALL_TOOLBAR);
++	} else {
++		OS.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
++	}
++}
++
+ }

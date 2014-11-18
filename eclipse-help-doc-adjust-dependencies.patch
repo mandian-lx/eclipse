@@ -1,16 +1,17 @@
-diff -r -Nu eclipse-3.8.0-M1-src/features/org.eclipse.help/feature.xml eclipse-3.8.0-M1-src.patched/features/org.eclipse.help/feature.xml
---- eclipse.platform.releng/features/org.eclipse.help-feature/feature.xml   2011-03-27 10:30:27.000000000 -0400
-+++ eclipse.platform.releng/features/org.eclipse.help-feature/feature.xml   2011-08-23 14:01:19.026328809 -0400
-@@ -36,7 +36,7 @@
+diff --git a/eclipse.platform.releng/features/org.eclipse.help-feature/feature.xml b/eclipse.platform.releng/features/org.eclipse.help-feature/feature.xml
+index c63d1e1..8e7cc30 100644
+--- a/eclipse.platform.releng/features/org.eclipse.help-feature/feature.xml
++++ b/eclipse.platform.releng/features/org.eclipse.help-feature/feature.xml
+@@ -42,7 +42,7 @@
           unpack="false"/>
-   
+ 
     <plugin
 -         id="com.sun.el"
 +         id="javax.el"
           download-size="0"
           install-size="0"
           version="0.0.0"
-@@ -50,7 +50,7 @@
+@@ -56,7 +56,7 @@
           unpack="false"/>
  
     <plugin
@@ -19,9 +20,64 @@ diff -r -Nu eclipse-3.8.0-M1-src/features/org.eclipse.help/feature.xml eclipse-3
           download-size="0"
           install-size="0"
           version="0.0.0"
---- eclipse.platform.ua/org.eclipse.ua.tests/pom.xml.bak	2013-01-28 12:30:27.000000000 +0100
-+++ eclipse.platform.ua/org.eclipse.ua.tests/pom.xml	2013-01-28 19:23:02.071410170 +0100
-@@ -22,4 +22,29 @@
+diff --git a/eclipse.platform.releng/features/org.eclipse.help-feature/pom.xml b/eclipse.platform.releng/features/org.eclipse.help-feature/pom.xml
+index a12f6d8..b16a0a3 100644
+--- a/eclipse.platform.releng/features/org.eclipse.help-feature/pom.xml
++++ b/eclipse.platform.releng/features/org.eclipse.help-feature/pom.xml
+@@ -31,13 +31,13 @@
+             <extraRequirements>
+               <requirement>
+                 <type>eclipse-plugin</type>
+-                <id>org.apache.lucene</id>
+-                <versionRange>[3.5,4.0)</versionRange>
++                <id>org.apache.lucene.core</id>
++                <versionRange>[3.5,5.0)</versionRange>
+               </requirement>
+               <requirement>
+                 <type>eclipse-plugin</type>
+                 <id>org.apache.lucene.analysis</id>
+-                <versionRange>[3.5,4.0)</versionRange>
++                <versionRange>[3.5,5.0)</versionRange>
+               </requirement>
+             </extraRequirements>
+           </dependency-resolution>
+diff --git a/eclipse.platform.ua/org.eclipse.help.base/META-INF/MANIFEST.MF b/eclipse.platform.ua/org.eclipse.help.base/META-INF/MANIFEST.MF
+index 0af7e6b..1985d9e 100644
+--- a/eclipse.platform.ua/org.eclipse.help.base/META-INF/MANIFEST.MF
++++ b/eclipse.platform.ua/org.eclipse.help.base/META-INF/MANIFEST.MF
+@@ -43,8 +43,8 @@ Require-Bundle: org.eclipse.ant.core;bundle-version="3.2.200";resolution:=option
+  org.eclipse.core.runtime;bundle-version="3.6.0",
+  org.eclipse.help;bundle-version="[3.5.0,4.0.0)";visibility:=reexport,
+  org.eclipse.core.expressions;bundle-version="[3.4.200,4.0.0)",
+- org.apache.lucene.analysis;bundle-version="[3.5.0,4.0.0)",
+- org.apache.lucene.core;bundle-version="[3.5.0,4.0.0)"
++ org.apache.lucene.analysis;bundle-version="[3.5.0,5.0.0)",
++ org.apache.lucene.core;bundle-version="[3.5.0,5.0.0)"
+ Import-Package: com.ibm.icu.text,
+  org.eclipse.equinox.http.jetty;resolution:=optional
+ Bundle-RequiredExecutionEnvironment: J2SE-1.5
+diff --git a/eclipse.platform.ua/org.eclipse.ua.tests/META-INF/MANIFEST.MF b/eclipse.platform.ua/org.eclipse.ua.tests/META-INF/MANIFEST.MF
+index 12beb8e..e20ea19 100644
+--- a/eclipse.platform.ua/org.eclipse.ua.tests/META-INF/MANIFEST.MF
++++ b/eclipse.platform.ua/org.eclipse.ua.tests/META-INF/MANIFEST.MF
+@@ -25,9 +25,9 @@ Bundle-Vendor: Eclipse.org
+ Bundle-ClassPath: ua-tests.jar
+ Import-Package: javax.servlet;version="2.4.0",
+  javax.servlet.http;version="2.4.0",
+- org.apache.lucene.index;core=split;version="[3.5.0,4.0.0)",
+- org.apache.lucene.search;core=split;version="[3.5.0,4.0.0)",
+- org.apache.lucene.store;core=split;version="[3.5.0,4.0.0)"
++ org.apache.lucene.index;version="[3.5.0,5.0.0)",
++ org.apache.lucene.search;version="[3.5.0,5.0.0)",
++ org.apache.lucene.store;version="[3.5.0,5.0.0)"
+ Bundle-RequiredExecutionEnvironment: J2SE-1.5
+ Export-Package: org.eclipse.ua.tests,
+  org.eclipse.ua.tests.browser,
+diff --git a/eclipse.platform.ua/org.eclipse.ua.tests/pom.xml b/eclipse.platform.ua/org.eclipse.ua.tests/pom.xml
+index 06eb56f..d7b592d 100644
+--- a/eclipse.platform.ua/org.eclipse.ua.tests/pom.xml
++++ b/eclipse.platform.ua/org.eclipse.ua.tests/pom.xml
+@@ -20,4 +20,29 @@
    <artifactId>org.eclipse.ua.tests</artifactId>
    <version>3.3.600-SNAPSHOT</version>
    <packaging>eclipse-test-plugin</packaging>
@@ -37,12 +93,12 @@ diff -r -Nu eclipse-3.8.0-M1-src/features/org.eclipse.help/feature.xml eclipse-3
 +              <requirement> 
 +                <type>eclipse-plugin</type> 
 +                <id>org.apache.lucene.core</id> 
-+                <versionRange>[3.0,4.0)</versionRange> 
++                <versionRange>[3.0,5.0)</versionRange>
 +              </requirement>
 +              <requirement>
 +                <type>eclipse-plugin</type>
 +                <id>org.apache.lucene.analysis</id>
-+                <versionRange>[3.0,4.0)</versionRange>
++                <versionRange>[3.0,5.0)</versionRange>
 +              </requirement>
 +            </extraRequirements>
 +          </dependency-resolution>
@@ -51,29 +107,23 @@ diff -r -Nu eclipse-3.8.0-M1-src/features/org.eclipse.help/feature.xml eclipse-3
 +    </plugins>
 +   </build>
  </project>
-          --- eclipse.platform.ua/org.eclipse.ua.tests/META-INF/MANIFEST.MF.orig	2013-02-20 17:00:07.000000000 +0100
-+++ eclipse.platform.ua/org.eclipse.ua.tests/META-INF/MANIFEST.MF	2013-02-21 16:29:42.318407536 +0100
-@@ -25,9 +25,9 @@
- Bundle-ClassPath: ua-tests.jar
- Import-Package: javax.servlet;version="2.4.0",
-  javax.servlet.http;version="2.4.0",
-- org.apache.lucene.index;core=split;version="[3.5.0,4.0.0)",
-- org.apache.lucene.search;core=split;version="[3.5.0,4.0.0)",
-- org.apache.lucene.store;core=split;version="[3.5.0,4.0.0)"
-+ org.apache.lucene.index;version="[3.5.0,4.0.0)",
-+ org.apache.lucene.search;version="[3.5.0,4.0.0)",
-+ org.apache.lucene.store;version="[3.5.0,4.0.0)"
- Bundle-RequiredExecutionEnvironment: J2SE-1.5
- Export-Package: org.eclipse.ua.tests,
-  org.eclipse.ua.tests.browser,
---- eclipse.platform.releng/features/org.eclipse.help-feature/pom.xml.bak	2013-03-14 11:18:11.000000000 +0100
-+++ eclipse.platform.releng/features/org.eclipse.help-feature/pom.xml	2013-03-14 12:29:48.067564008 +0100
-@@ -31,7 +31,7 @@
-             <extraRequirements>
+diff --git a/eclipse.platform.ua/pom.xml b/eclipse.platform.ua/pom.xml
+index 927e027..c2480a8 100644
+--- a/eclipse.platform.ua/pom.xml
++++ b/eclipse.platform.ua/pom.xml
+@@ -59,12 +59,12 @@
                <requirement>
                  <type>eclipse-plugin</type>
--                <id>org.apache.lucene</id>
-+                <id>org.apache.lucene.core</id>
-                 <versionRange>[3.5,4.0)</versionRange>
+                 <id>org.apache.lucene</id>
+-                <versionRange>[3.5,4.0)</versionRange>
++                <versionRange>[3.5,5.0)</versionRange>
                </requirement>
                <requirement>
+                 <type>eclipse-plugin</type>
+                 <id>org.apache.lucene.analysis</id>
+-                <versionRange>[3.5,4.0)</versionRange>
++                <versionRange>[3.5,5.0)</versionRange>
+               </requirement>
+             </extraRequirements>
+           </dependency-resolution>
+

@@ -3,19 +3,25 @@
 %{!?scl:%global pkg_name %{name}}
 %{!?scl:%global _scl_root %{nil}}
 
+# Set to 1 to build Eclipse without dependency to eclipse-pde
+# Some parts (help) will not be built, and second run will be required,
+# but this is a way to bootstrap Eclipse on secondary archs.
+%global bootstrap       0
+
+
 Epoch:                  1
 
 %global eclipse_major   4
 %global eclipse_minor   3
 %global eclipse_majmin  %{eclipse_major}.%{eclipse_minor}
-%global eclipse_micro   1
+%global eclipse_micro   2
 %global initialize      1
-%global eb_commit       79dfa1abc0ba06375b42d0015c7f0ceb3759eb5b
-%global eclipse_tag     R4_3_1
+%global eb_commit       bab4b82a63ce57704cfe70c84f414b6dab8a97dc
+%global eclipse_tag     R4_3_2
 %global eclipse_version %{eclipse_majmin}.%{eclipse_micro}
 %global installation_loc %{_libdir}/%{pkg_name}
 
-%global _jetty_version 9
+%global _jetty_version 9.1.3
 %{?scl:%global _jetty_version 8}
 
 %ifarch %{ix86}
@@ -27,15 +33,13 @@ Epoch:                  1
 %ifarch %{power64} 
     %define eclipse_arch ppc64
 %endif
-%ifarch s390 s390x ppc x86_64
+%ifarch s390 s390x ppc x86_64 aarch64
     %define eclipse_arch %{_arch}
 %endif
 
-# FIXME:  update java packaging guidelines for this.  See
-# fedora-devel-java-list discussion in September 2008.
+# See fedora-devel-java-list discussion in September 2008.
 #
 # Prevent brp-java-repack-jars from being run.
-%define __jar_repack 0
 %define __jar_repack %{nil}
 
 #Usage
@@ -52,14 +56,13 @@ fi;
 Summary:        An open, extensible IDE
 Name:           %{?scl_prefix}eclipse
 Version:        %{eclipse_version}
-Release:        11.4%{?dist}
+Release:        3%{?dist}
 License:        EPL
-
+Group:          Development/Tools
 URL:            http://www.eclipse.org/
 #get-eclipse.sh
 Source0:        R4_platform-aggregator-%{eclipse_tag}.tar.xz
-#http://git.eclipse.org/c/linuxtools/org.eclipse.linuxtools.eclipse-build.git/snapshot/org.eclipse.linuxtools.eclipse-build-701400b0ca475ea73bd828c66b00fb63c5ec2c8c.tar.bz2
-Source1:        eclipse-build-%{eb_commit}.tar.xz
+Source1:        http://git.eclipse.org/c/linuxtools/org.eclipse.linuxtools.eclipse-build.git/snapshot/org.eclipse.linuxtools.eclipse-build-%{eb_commit}.tar.xz
 
 # -com.sun.el
 # +javax.el
@@ -74,62 +77,67 @@ Patch1:         %{pkg_name}-remove-w3c-smil-and-use-geronimo.patch
 
 # Eclipse should not duplicate dependency sources (which are delivered
 # by those dependencies packages).
-Patch3:         %{pkg_name}-no-source-for-dependencies.patch
+Patch2:         %{pkg_name}-no-source-for-dependencies.patch
 
 # This has too many dependencies. We will not build it.
-Patch4:         %{pkg_name}-remove-weaving.patch
+Patch3:         %{pkg_name}-remove-weaving.patch
 
 # https://bugs.eclipse.org/bugs/show_bug.cgi?id=385970
-Patch5:        %{pkg_name}-osgi-unpack-sources.patch
+Patch4:        %{pkg_name}-osgi-unpack-sources.patch
 
 # https://bugs.eclipse.org/bugs/show_bug.cgi?id=379102
-Patch6:        %{pkg_name}-do-not-run-as-root.patch
+Patch5:        %{pkg_name}-do-not-run-as-root.patch
 
 # https://bugs.eclipse.org/bugs/show_bug.cgi?id=377515
-Patch7:        %{pkg_name}-p2-pick-up-renamed-jars.patch
+Patch6:        %{pkg_name}-p2-pick-up-renamed-jars.patch
 
 # Patch for this was contributed. Unlikely to be released.
-Patch8:        %{pkg_name}-ignore-version-when-calculating-home.patch
+Patch7:        %{pkg_name}-ignore-version-when-calculating-home.patch
 
 # CBI uses timestamps generated from the git commits. We don't have the repo,
 # just source, and we don't want additional dependencies.
-Patch9:        %{pkg_name}-remove-jgit-provider.patch
+Patch8:        %{pkg_name}-remove-jgit-provider.patch
 
 # This is for Fedora purposes to have working eclipse-pdebuild script.
-Patch10:        %{pkg_name}-pdebuild-add-target.patch
+Patch9:        %{pkg_name}-pdebuild-add-target.patch
 
 # Strict Fedora purpose, too. We can't build entire product, just base
 # and JDT and SDK as update sites, then we can assemble our own packages.
 # https://bugs.eclipse.org/bugs/show_bug.cgi?id=386670
 # additional poms are a part of e-b
-Patch11:        %{pkg_name}-change-build-packagings.patch
+Patch10:        %{pkg_name}-change-build-packagings.patch
 
-Patch14:        %{pkg_name}-test-support.patch
+Patch11:        %{pkg_name}-test-support.patch
 
-Patch17:        %{pkg_name}-secondary-arches.patch
+Patch12:        %{pkg_name}-secondary-arches.patch
 
-Patch18:        %{pkg_name}-debug-symbols.patch
+Patch13:        %{pkg_name}-debug-symbols.patch
 
-Patch20:        %{pkg_name}-fix-comaptibility-class.patch
+Patch14:        %{pkg_name}-fix-comaptibility-class.patch
 
-Patch21:		%{pkg_name}-fix-swt-build-in-rawhide.patch
+Patch15:        %{pkg_name}-fix-swt-build-in-rawhide.patch
 
-Patch22:		%{pkg_name}-bug-903537.patch
+Patch16:        %{pkg_name}-bug-903537.patch
 
-Patch23:		%{pkg_name}-jetty-9.patch
+Patch17:        %{pkg_name}-jetty-9.patch
 
-Patch25:		%{pkg_name}-fix-startup-class-refresh.patch
+Patch18:        %{pkg_name}-fix-startup-class-refresh.patch
 
-Patch26:		%{pkg_name}-fix-dropins.patch
+Patch19:        %{pkg_name}-fix-dropins.patch
 
-Patch27:		%{pkg_name}-bug-408505.patch
+Patch20:        %{pkg_name}-bug-408505.patch
 
-Patch29:		%{pkg_name}-bug-386377.patch
+Patch21:        %{pkg_name}-bug-386377.patch
+Patch22:        %{pkg_name}-servlet-3.1.patch
+Patch23:        %{pkg_name}-lucene-4.patch
+Patch24:        %{pkg_name}-no-target-platform.patch
+
+Patch101:	java8.patch
 
 BuildRequires: ant >= 1.8.3
 BuildRequires: rsync
-BuildRequires: jpackage-utils >= 0:1.5, make, gcc
 %if 0%{?fedora}
+BuildRequires: make, gcc
 BuildRequires: gtk2-devel
 BuildRequires: gtk3-devel
 BuildRequires: glib2-devel
@@ -138,7 +146,6 @@ BuildRequires: pkgconfig(gtk+-2.0)
 BuildRequires: pkgconfig(gtk+-3.0)
 BuildRequires: pkgconfig(glib-2.0)
 %endif
-BuildRequires: GConf2-devel
 BuildRequires: gcc-c++
 BuildRequires: nspr-devel
 %if 0%{?fedora}
@@ -156,7 +163,6 @@ BuildRequires: unzip
 BuildRequires: coreutils
 BuildRequires: desktop-file-utils
 BuildRequires: java-devel >= 1:1.7.0
-BuildRequires: java-javadoc >= 1:1.7.0
 %if 0%{?fedora}
 BuildRequires: libXt-devel
 BuildRequires: webkitgtk-devel
@@ -170,7 +176,6 @@ BuildRequires: geronimo-annotation >= 1.0-7
 BuildRequires: %{?scl_prefix}icu4j-eclipse >= 1:50.1.1
 BuildRequires: ant-antlr ant-apache-bcel ant-apache-log4j ant-apache-oro ant-apache-regexp ant-apache-resolver ant-commons-logging ant-apache-bsf ant-commons-net
 BuildRequires: ant-javamail ant-jdepend ant-junit ant-swing ant-jsch ant-testutil ant-apache-xalan2 ant-jmf
-BuildRequires: ant-scripts
 BuildRequires: jsch >= 0:0.1.46-2
 BuildRequires: apache-commons-el >= 1.0-22
 BuildRequires: apache-commons-logging
@@ -184,12 +189,12 @@ BuildRequires: osgi(org.eclipse.jetty.continuation) >= %{_jetty_version}
 BuildRequires: osgi(org.eclipse.jetty.io) >= %{_jetty_version}
 BuildRequires: osgi(org.eclipse.jetty.security) >= %{_jetty_version}
 BuildRequires: osgi(org.eclipse.jetty.servlet) >= %{_jetty_version}
-BuildRequires: lucene >= 2.9.4-8
-BuildRequires: lucene-contrib >= 2.9.4-8
+#BuildRequires: lucene-core >= 4.7.0-7
+#BuildRequires: lucene-analysis >= 4.7.0-7
 BuildRequires: junit >= 4.10-5
 BuildRequires: hamcrest >= 0:1.1-11
 BuildRequires: %{?scl_prefix}sat4j >= 2.3.5-1
-BuildRequires: objectweb-asm >= 3.3.1-1
+BuildRequires: objectweb-asm3 >= 3.3.1-1
 BuildRequires: zip
 BuildRequires: sac >= 1.3-12
 BuildRequires: batik  >= 1.8
@@ -197,25 +202,24 @@ BuildRequires: xml-commons-apis >= 1.4.01-12
 BuildRequires: atinject >= 1-6
 BuildRequires: tycho >= 0.16
 BuildRequires: tycho-extras >= 0.16
-BuildRequires: eclipse-emf-core >= 1:2.9.0-1
+BuildRequires: eclipse-emf-core >= 1:2.9.1-1
 BuildRequires: %{?scl_prefix}eclipse-ecf-core >= 3.6.0-2
 BuildRequires: tomcat-servlet-3.0-api
 BuildRequires: tomcat-el-2.2-api
 BuildRequires: glassfish-jsp-api >= 2.2.1-4
 BuildRequires: cglib
 BuildRequires: glassfish-jsp >= 2.2.5
+BuildRequires: glassfish-servlet-api >= 3.1.0
 BuildRequires: cbi-plugins
 BuildRequires: xml-maven-plugin
 BuildRequires: mvn(org.apache.maven.plugins:maven-install-plugin)
 BuildRequires: maven-deploy-plugin
 BuildRequires: httpcomponents-core
 BuildRequires: httpcomponents-client
-BuildRequires: eclipse-egit
-BuildRequires: eclipse-jgit
+%if ! %{bootstrap}
 BuildRequires: eclipse-pde
-%if 0%{?rhel} >= 6
-ExclusiveArch: %{ix86} x86_64
 %endif
+BuildRequires: eclipse-license
 
 %description
 The Eclipse platform is designed for building integrated development
@@ -223,43 +227,33 @@ environments (IDEs), server-side applications, desktop applications, and
 everything in between.
 
 %package     swt
-Version:        %{eclipse_version}
 Summary:        SWT Library for GTK+
-
+Group:          Development/Tools
 # %%{_libdir}/java directory owned by jpackage-utils
 Requires:       java >= 1:1.7.0
 Requires:       jpackage-utils
 Requires:       gtk2
-%if 0%{?fedora}
 Requires:       gtk3
 Requires:       webkitgtk
 Requires:       webkitgtk3
-%else
-Requires:       gtk+3
-Requires:       webkit1.0
-Requires:       webkit3.0
-%endif
 
 %description swt
 SWT Library for GTK+.
 
 %package      equinox-osgi
-Version:        %{eclipse_version}
 Summary:        Eclipse OSGi - Equinox
-Requires:       java >= 1:1.7.0
-Requires:       jpackage-utils
+Requires:       java-headless >= 1:1.7.0
+Requires:       javapackages-tools
 Provides:       osgi(system.bundle) = %{epoch}:%{eclipse_version}
 
 %description  equinox-osgi
 Eclipse OSGi - Equinox
 
 %package        platform
-Version:        %{eclipse_version}
 Summary:        Eclipse platform common files
-
+Group:          Development/Tools
 Requires: ant-antlr ant-apache-bcel ant-apache-log4j ant-apache-oro ant-apache-regexp ant-apache-resolver ant-commons-logging ant-apache-bsf ant-commons-net
 Requires: ant-javamail ant-jdepend ant-junit ant-swing ant-jsch ant-testutil ant-apache-xalan2 ant-jmf
-Requires: ant-scripts
 Requires: apache-commons-el >= 1.0-23
 Requires: apache-commons-logging
 Requires: apache-commons-codec >= 1.6-2
@@ -273,8 +267,8 @@ Requires: osgi(org.eclipse.jetty.io) >= %{_jetty_version}
 Requires: osgi(org.eclipse.jetty.security) >= %{_jetty_version}
 Requires: osgi(org.eclipse.jetty.servlet) >= %{_jetty_version}
 Requires: jsch >= 0.1.46-2
-Requires: lucene >= 2.9.4-8
-Requires: lucene-contrib >= 2.9.4-8
+Requires: lucene-core >= 4.7.0-7
+Requires: lucene-analysis >= 4.7.0-7
 Requires: %{?scl_prefix}sat4j >= 2.3.5-1
 Requires: sac >= 1.3-12
 Requires: xml-commons-apis >= 1.4.01-12
@@ -282,19 +276,18 @@ Requires: batik >= 1.8
 Requires: atinject >= 1-6
 Requires: geronimo-annotation >= 1.0-7
 Requires: %{?scl_prefix}eclipse-ecf-core >= 3.6.0-2
-Requires: eclipse-emf-core >= 2.9.0-1
+Requires: eclipse-emf-core >= 2.9.1-1
 Requires: tomcat-servlet-3.0-api
 Requires: tomcat-el-2.2-api
 Requires: glassfish-jsp-api >= 2.2.1-4
 Requires: glassfish-jsp >= 2.2.5
+Requires: glassfish-servlet-api >= 3.1.0
 Requires: %{?scl_prefix}icu4j-eclipse >= 1:50.1.1
 Requires: %{name}-swt = %{epoch}:%{eclipse_version}-%{release}
 Requires: %{name}-equinox-osgi = %{epoch}:%{eclipse_version}-%{release}
 Requires: httpcomponents-core
 Requires: httpcomponents-client
 %{?scl:Requires: %scl_runtime}
-Provides: %{name}-cvs-client = %{epoch}:%{eclipse_version}-%{release}
-Obsoletes: %{name}-cvs-client < 1:3.3.2-20
 Obsoletes: %{name}-rcp < 1:4.3.0
 Provides: %{name}-rcp = 1:%{eclipse_version}-%{release}
 
@@ -303,45 +296,36 @@ The Eclipse Platform is the base of all IDE plugins.  This does not include the
 Java Development Tools or the Plugin Development Environment.
 
 %package        jdt
-Version:        %{eclipse_version}
 Summary:        Eclipse Java Development Tools
-
+Group:          Development/Tools
 Requires:       %{name}-platform = %{epoch}:%{eclipse_version}-%{release}
-Requires:       %{name}-cvs-client = %{epoch}:%{eclipse_version}-%{release}
 Requires:       junit >= 4.10-5
 Requires:       hamcrest >= 0:1.1-11
-Requires:       java-javadoc >= 1:1.7.0
-
 
 %description    jdt
 Eclipse Java Development Tools.  This package is required to use Eclipse for
 developing software written in the Java programming language.
 
 %package        pde
-Version:        %{eclipse_version}
 Summary:        Eclipse Plugin Development Environment
-
+Group:          Development/Tools
 Provides:       %{name} = %{epoch}:%{eclipse_version}-%{release}
-Provides:       %{name}-sdk = %{epoch}:%{eclipse_version}-%{release}
 Requires:       %{name}-platform = %{epoch}:%{eclipse_version}-%{release}
 Requires:       %{name}-jdt = %{epoch}:%{eclipse_version}-%{release}
-Requires:       objectweb-asm >= 3.3.1-1
+Requires:       objectweb-asm3 >= 3.3.1-1
 # For PDE Build wrapper script + creating jars
 Requires:       zip
 Requires:       bash
-Provides:       %{name}-pde-runtime = 1:%{eclipse_version}-%{release}
-Obsoletes:      %{name}-pde-runtime < 1:3.3.2-20
 
 %description    pde
 Eclipse Plugin Development Environment.  This package is required for
 developing Eclipse plugins.
 
 %package        tests
-Version:        %{eclipse_version}
 Summary:        Eclipse Tests
-
+Group:          Development/Tools
 Requires:       %{name}-pde = %{epoch}:%{eclipse_version}-%{release}
-Requires:		%{?scl_prefix}easymock3
+Requires:       %{?scl_prefix}easymock3
 
 %description    tests
 Eclipse Tests.
@@ -352,8 +336,9 @@ Eclipse Tests.
 
 tar --strip-components=1 -xf %{SOURCE1} 
 
-%patch0
+%patch0 -p1
 %patch1
+%patch2
 %patch3
 %patch4
 %patch5
@@ -363,19 +348,23 @@ tar --strip-components=1 -xf %{SOURCE1}
 %patch9
 %patch10
 %patch11
+%patch12 -p1
+%patch13
 %patch14
-%patch17
+%patch15
+%patch16
+%{!?scl:%patch17}
 %patch18
+%patch19
 %patch20
-%patch21
-%patch22
-%{!?scl:%patch23}
-%patch25
-%patch26
-%patch27
 pushd rt.equinox.framework
-%patch29 -p1
+%patch21 -p1
 popd
+%patch22
+#patch23 -p1
+%patch24
+
+%patch101
 
 #Disable as many things as possible to make the build faster. We care only for Eclipse.
 %pom_disable_module platform.sdk eclipse.platform.releng.tychoeclipsebuilder
@@ -419,32 +408,13 @@ popd
 %pom_disable_module bundles/org.eclipse.swt.gtk.solaris.x86 eclipse.platform.swt.binaries
 %pom_disable_module bundles/org.eclipse.swt.gtk.hpux.ia64 eclipse.platform.swt.binaries
 
-
-# Use our system-installed javadocs, reference only what we built, and
-# don't like to osgi.org docs (FIXME:  maybe we should package them?)
-sed -i -e "s|http://download.oracle.com/javase/6/docs/api|%{_datadir}/javadoc/java|" \
-   -e "/osgi\.org/d" \
-   -e "s|-breakiterator|;../org.eclipse.equinox.util/@dot\n;../org.eclipse.ecf.filetransfer_3.0.0.v20090302-0803.jar\n;../org.eclipse.ecf_3.0.0.v20090302-0803.jar\n-breakiterator|" \
-    eclipse.platform.common/bundles/org.eclipse.platform.doc.isv/platformOptions.txt
-sed -i -e "s|http://download.oracle.com/javase/6/docs/api|%{_datadir}/javadoc/java|" \
-   -e "s/win32.win32.x86/gtk.linux.%{eclipse_arch}/" \
-   eclipse.platform.common/bundles/org.eclipse.jdt.doc.isv/jdtOptions.txt
-sed -i -e "s|http://download.oracle.com/javase/6/docs/api|%{_datadir}/javadoc/java|" \
-   -e "/osgi\.org/d" \
-   eclipse.platform.common/bundles/org.eclipse.jdt.doc.isv/jdtOptions.txt
-sed -i -e "s|http://download.oracle.com/javase/1.4.2/docs/api|%{_datadir}/javadoc/java|" \
-   -e "s/motif.linux.x86/gtk.linux.%{eclipse_arch}/" \
-   -e "/osgi\.org/d" \
-   eclipse.platform.common/bundles/org.eclipse.pde.doc.user/pdeOptions.txt \
-   eclipse.platform.common/bundles/org.eclipse.pde.doc.user/pdeOptions.txt
-sed -i -e "s|http://download.oracle.com/javase/6/docs/api|%{_datadir}/javadoc/java|" \
-   eclipse.platform.common/bundles/org.eclipse.pde.doc.user/pdeOptions.txt \
-   eclipse.platform.common/bundles/org.eclipse.pde.doc.user/pdeOptions.txt
+%pom_disable_module org.eclipse.ua.tests eclipse.platform.ua
 
 
 #This part generates secondary fragments using primary fragments.
 pushd  eclipse.platform.swt.binaries/bundles
     %_secondary gtk.linux.x86 x86 arm
+    %_secondary gtk.linux.x86_64 x86_64 aarch64
     find . -name build.xml -exec sed -i -e "s/make_xulrunner//g" {} \;
     find . -name build.xml -exec sed -i -e "s/make_mozilla//g" {} \;
     find . -name build.xml -exec sed -i -e "s/make_xpcominit//g" {} \;
@@ -453,6 +423,7 @@ pushd eclipse.platform.resources/bundles
     %_secondary linux.x86 x86 arm
     %_secondary linux.x86 x86 s390
     %_secondary linux.x86_64 x86_64 s390x
+    %_secondary linux.x86_64 x86_64 aarch64
 popd
 pushd eclipse.platform.team/bundles/org.eclipse.core.net/fragments
     %_secondary linux.x86 x86 arm
@@ -460,12 +431,15 @@ pushd eclipse.platform.team/bundles/org.eclipse.core.net/fragments
     %_secondary linux.x86_64 x86_64 ppc64
     %_secondary linux.x86 x86 s390
     %_secondary linux.x86_64 x86_64 s390x
+    %_secondary linux.x86_64 x86_64 aarch64
 popd
 pushd rt.equinox.framework/bundles
     %_secondary gtk.linux.x86 x86 arm
+    %_secondary gtk.linux.x86_64 x86_64 aarch64
 popd
 pushd rt.equinox.binaries
     %_secondary gtk.linux.x86 x86 arm
+    %_secondary gtk.linux.x86_64 x86_64 aarch64
 popd
 
 #hack - there should be a patch providing a profile for each arch
@@ -478,23 +452,43 @@ sed -i -e "s|@DATADIR@|%{_datadir}|g" eclipse.pde.build/org.eclipse.pde.build/te
 
 #ensure that bundles with *.so libs are dirs, so no *.so is extracted into user.home
 for f in `find eclipse.platform.swt.binaries/bundles/org.eclipse.swt.gtk.* -name MANIFEST.MF` ; do 
-	echo -e "Eclipse-BundleShape: dir\n\n" >> $f; 
+    echo -e "Eclipse-BundleShape: dir\n\n" >> $f; 
 done
 for f in `find eclipse.platform.resources/bundles/org.eclipse.core.filesystem.linux.* -name MANIFEST.MF` ; do 
-	echo -e "Eclipse-BundleShape: dir\n\n" >> $f; 
+    echo -e "Eclipse-BundleShape: dir\n\n" >> $f; 
 done
 for f in `find eclipse.platform.team/bundles/org.eclipse.core.net/fragments -name MANIFEST.MF` ; do 
-	echo -e "Eclipse-BundleShape: dir\n\n" >> $f; 
+    echo -e "Eclipse-BundleShape: dir\n\n" >> $f; 
 done
 
 #fake dependencies that don't exist in fedora
 ./dependencies/./fake_ant_dependency.sh .m2/p2/repo-sdk/plugins/org.apache.ant_* /usr/share/java /usr/bin -makejar
 
+cp -r /usr/share/java/eclipse-license/eclipse/features/* .m2/p2/repo-sdk/features
 cp -r /usr/share/java/emf/eclipse/features/* .m2/p2/repo-sdk/features/
 %{?scl: cp %{_javadir}/ecf/eclipse/plugins/* .m2/p2/repo-sdk/plugins}
 %{?scl: cp %{_javadir}/*sat4j* .m2/p2/repo-sdk/plugins}
+%if ! %{bootstrap}
 cp -rf %{_libdir}/eclipse/dropins/sdk/plugins/org.eclipse.pde.build_* .m2/p2/repo-sdk/plugins/
 cp -rf %{_libdir}/eclipse/dropins/sdk/plugins/org.eclipse.pde.core_* .m2/p2/repo-sdk/plugins/
+%else
+# Use org.eclipse.tycho:org.eclipse.jdt.core (ecj)
+sed -i -e 's@>org.eclipse.jdt<@>org.eclipse.tycho<@' eclipse-platform-parent/pom.xml
+%endif
+
+# Bump batik from 1.6.0 to 1.7.0
+sed -i '/org\.apache\.batik/ s/1\.7\.0/1\.8\.0/' eclipse.platform.ui/bundles/org.eclipse.e4.ui.css.core/META-INF/MANIFEST.MF
+sed -i 's/1\.6\.0/1\.7\.0/' eclipse.platform.ui/features/org.eclipse.e4.rcp/feature.xml
+
+# Allow usage of javax.servlet.jsp 2.3.
+sed -i '/javax\.servlet\.jsp/ s/2\.3/2\.4/' rt.equinox.bundles/bundles/org.eclipse.equinox.jsp.jasper/META-INF/MANIFEST.MF
+
+# Use com.sun.el.java.el (Glassfish) instead of javax.el (Tomcat)
+#sed -i 's/javax\.el/com\.sun\.el\.javax\.el/' eclipse.platform.releng/features/org.eclipse.help-feature/feature.xml
+
+# Bump javax.servlet Import-Package statements
+sed -i '/javax\.servlet/ s/3\.1/3\.2/' rt.equinox.bundles/bundles/org.eclipse.equinox.http.servlet/META-INF/MANIFEST.MF
+sed -i '/javax\.servlet/ s/3\.1/3\.2/' rt.equinox.bundles/bundles/org.eclipse.equinox.jsp.jasper/META-INF/MANIFEST.MF
 
 %pom_remove_plugin  org.mortbay.jetty:jetty-jspc-maven-plugin  eclipse.platform.ua/org.eclipse.help.webapp
 %pom_remove_plugin  org.eclipse.tycho:tycho-compiler-plugin rt.equinox.p2/org.eclipse.equinox.p2.releng/org.eclipse.equinox.p2-parent
@@ -503,42 +497,45 @@ find eclipse.platform.ua -name pom.xml -exec sed -i -e 's@org.apache.lucene<@org
 
 #this is not really necessary but reduces the build time.
 pushd eclipse.platform.swt.binaries/bundles/
-	for bundle in `ls | grep "org.eclipse.swt" | grep -v -e "org.eclipse.swt.gtk.linux.%{eclipse_arch}$"` ; do
-		if [ -e $bundle/pom.xml ]; then
-			%pom_xpath_remove "/pom:project/pom:build" $bundle/pom.xml
-		fi 
-	done
+    for bundle in `ls | grep "org.eclipse.swt" | grep -v -e "org.eclipse.swt.gtk.linux.%{eclipse_arch}$"` ; do
+        if [ -e $bundle/pom.xml ]; then
+            %pom_xpath_remove "/pom:project/pom:build" $bundle/pom.xml
+        fi 
+    done
 popd
 
 sed -i -e 's@Dhelp.lucene.tokenizer=standard@XX:MaxPermSize=384M@g' eclipse.platform.common/bundles/org.eclipse.platform.doc.isv/pom.xml
+
 %build
 %{?scl:%scl_maven_opts}
 #This is the lowest value where the build succeeds. 512m is not enough.
-export MAVEN_OPTS="-Xmx900m -XX:CompileCommand=exclude,org/eclipse/tycho/core/osgitools/EquinoxResolver,newState ${MAVEN_OPTS}"
+export MAVEN_OPTS="-Xmx1000m -XX:MaxPermSize=256m -XX:CompileCommand=exclude,org/eclipse/tycho/core/osgitools/EquinoxResolver,newState ${MAVEN_OPTS}"
 export JAVA_HOME=%{java_home}
 
+
+%if ! %{bootstrap}
 pushd eclipse.platform.swt.binaries/bundles/org.eclipse.swt.gtk.linux.%{eclipse_arch}
-	mvn-rpmbuild clean verify \
-   -Dmaven.test.skip=true -Dnative=gtk.linux.%{eclipse_arch} -DskipTychoVersionCheck \
-   -Dtycho.local.keepTarget -Dmaven.repo.local=../../../.m2
+    xmvn -o clean verify \
+    -Dmaven.test.skip=true -Dnative=gtk.linux.%{eclipse_arch} \
+    -Dtycho.local.keepTarget -Dmaven.repo.local=../../../.m2
 popd
+%endif
 
 export GTK_VERSION=3.0
-mvn-rpmbuild clean verify -P update-branding-plugins \
-   -Dmaven.test.skip=true -Dnative=gtk.linux.%{eclipse_arch} -DskipTychoVersionCheck \
+xmvn -o clean verify -P update-branding-plugins \
+%if %{bootstrap}
+   -P !api-generation,!build-docs \
+%endif
+   -Dmaven.test.skip=true -Dnative=gtk.linux.%{eclipse_arch} \
    -Dtycho.local.keepTarget -DbuildId=`echo "%{release}" | tr -d "."`
-
-# XMvn may places jars differently from mvn-rpmbuild
-sed -i 's/glassfish-jsp-api\.jar/glassfish-jsp-api\/javax\.servlet\.jsp-api\.jar/' dependencies/./replace_platform_plugins_with_symlinks.sh
-sed -i 's/felix\/org\.apache\.felix\.gogo\.runtime\.jar/felix\/felix-gogo-runtime\.jar/' dependencies/./replace_platform_plugins_with_symlinks.sh
 
 #symlink necessary plugins (that are provided by other packages)
 dependencies/./replace_platform_plugins_with_symlinks.sh \
-	eclipse.platform.releng.tychoeclipsebuilder/platform/target/products/org.fedoraproject.eclipse.platform/linux/gtk/%{eclipse_arch}/eclipse %{_javadir}
+    eclipse.platform.releng.tychoeclipsebuilder/platform/target/products/org.fedoraproject.eclipse.platform/linux/gtk/%{eclipse_arch}/eclipse %{_javadir}
 #ant again
 ./dependencies/./fake_ant_dependency.sh \
-	 eclipse.platform.releng.tychoeclipsebuilder/platform/target/products/org.fedoraproject.eclipse.platform/linux/gtk/%{eclipse_arch}/eclipse/plugins/org.apache.ant_* /usr/share/java \
-     /usr/bin
+    eclipse.platform.releng.tychoeclipsebuilder/platform/target/products/org.fedoraproject.eclipse.platform/linux/gtk/%{eclipse_arch}/eclipse/plugins/org.apache.ant_* /usr/share/java \
+    /usr/bin
 
 # JDT and PDE are built as update sites.
 # Initialize them and move into dropins.
@@ -547,6 +544,15 @@ eclipse.platform.releng.tychoeclipsebuilder/platform/target/products/org.fedorap
 `pwd`/eclipse.platform.releng.tychoeclipsebuilder/jdtpde/target/repository
 
 pushd eclipse.platform.releng.tychoeclipsebuilder/platform/target/products/org.fedoraproject.eclipse.platform/linux/gtk/%{eclipse_arch}/eclipse
+
+# This is a temporary hack
+# We offer javax.servlet and javax.servlet-api as the same bundle
+# References to javax.servlet should be renamed
+pushd plugins
+ f=`ls | grep -e "^javax.servlet-api_"`
+ rm -f $f
+ ln -s %{_javadir}/glassfish-servlet-api.jar $f
+popd
 
 #in jdt and pde
 pushd dropins/jdt/plugins
@@ -560,7 +566,7 @@ popd
 pushd dropins/sdk/plugins
  f=`ls | grep -e "^org.objectweb.asm_"`
  rm $f 
- ln -s %{_javadir}/objectweb-asm/asm-all.jar $f
+ ln -s %{_javadir}/objectweb-asm3/asm-all.jar $f
 popd
 
 #clean up
@@ -668,14 +674,14 @@ cd ${SWT_JAR}
 zip -r "../../swt.jar" *
 popd
     ln -s  swt.jar swt-gtk.jar
-	mkdir -p ../../lib/java
-	ln -s  %{_libdir}/%{pkg_name}/swt.jar ../../lib/java/swt.jar
+    mkdir -p ../../lib/java
+    ln -s  %{_libdir}/%{pkg_name}/swt.jar ../../lib/java/swt.jar
 popd
 
 #eclipse ini
 mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/
 pushd $RPM_BUILD_ROOT/%{_sysconfdir}/
-	ln -s %{_libdir}/%{pkg_name}/eclipse.ini
+    ln -s %{_libdir}/%{pkg_name}/eclipse.ini
 popd
 #################################
 ### End of extraction           #
@@ -758,7 +764,6 @@ rm $f
 ln -s /usr/share/java/easymock.jar $f
 rm -rf org.hamcrest.core_*
 rm -rf org.junit_*
-rm -rf org.junit4_*
 popd
 
 sed -i -e "s#@libdir@#%{_libdir}#" $RPM_BUILD_ROOT/%{_javadir}/eclipse-testing/runtests.sh
@@ -809,7 +814,6 @@ fi
 %dir %{_libdir}/%{pkg_name}
 %dir %{_libdir}/%{pkg_name}/plugins
 %{_libdir}/%{pkg_name}/notice.html
-%{_libdir}/%{pkg_name}/eclipse.ini
 %{_libdir}/%{pkg_name}/epl-v10.html
 %{_libdir}/%{pkg_name}/plugins/org.eclipse.swt_*
 %{_libdir}/%{pkg_name}/plugins/org.eclipse.swt.gtk.linux.*
@@ -833,6 +837,7 @@ fi
 %dir %{_datadir}/%{pkg_name}/dropins
 %dir %{_libdir}/%{pkg_name}/configuration/
 %{_libdir}/%{pkg_name}/configuration/config.ini
+%dir %{_libdir}/%{pkg_name}/configuration/org.eclipse.equinox.simpleconfigurator
 %{_libdir}/%{pkg_name}/configuration/org.eclipse.equinox.simpleconfigurator/bundles.info
 %dir %{_libdir}/%{pkg_name}/features/
 %{_libdir}/%{pkg_name}/features/org.eclipse.platform_*
@@ -843,6 +848,7 @@ fi
 %{_libdir}/%{pkg_name}/features/org.eclipse.rcp.configuration_*
 %{_libdir}/%{pkg_name}/plugins/com.ibm.icu_*
 %{_libdir}/%{pkg_name}/plugins/com.jcraft.jsch_*
+%{_libdir}/%{pkg_name}/plugins/javax.servlet-api_*
 %{_libdir}/%{pkg_name}/plugins/javax.servlet_*
 %{_libdir}/%{pkg_name}/plugins/javax.servlet.jsp_*
 %{_libdir}/%{pkg_name}/plugins/javax.xml_*
@@ -1055,6 +1061,85 @@ fi
 %{_libdir}/%{pkg_name}/plugins/org.eclipse.osgi.util_*
 
 %changelog
+* Wed Mar 19 2014 Mat Booth <fedora@matbooth.co.uk> - 1:4.3.2-3
+- Accomodate for recent lucene package split.
+
+* Tue Mar 18 2014 Mat Booth <fedora@matbooth.co.uk> - 1:4.3.2-2
+- Rebuild p2 metadata.
+
+* Wed Mar 12 2014 Mat Booth <fedora@matbooth.co.uk> - 1:4.3.2-1
+- Update to 4.3.2
+
+* Wed Mar 12 2014 Roland Grunberg <rgrunber@redhat.com> - 1:4.3.1-25
+- Non bootstrap build.
+
+* Mon Mar 10 2014 Roland Grunberg <rgrunber@redhat.com> - 1:4.3.1-24.2
+- Fix API issues with Lucene 4.
+- Remove old Tomcat Servlet API bundle.
+- Use Glassfish EL instead of Tomcat EL.
+
+* Thu Mar 06 2014 Roland Grunberg <rgrunber@redhat.com> - 1:4.3.1-24.1
+- Update to Lucene 4.
+- Update to Glassfish JSP 2.3.
+- Enable bootstrap build to work around broken UA (Help) bundles.
+
+* Thu Mar 6 2014 Alexander Kurtakov <akurtako@redhat.com> 1:4.3.1-24
+- New e-b snapshot adapted to lucene changes.
+
+* Tue Mar 04 2014 Michael Simacek <msimacek@redhat.com> - 1:4.3.1-23
+- Rebuild for new jetty and httpcomponents-client
+
+* Mon Mar 3 2014 Alexander Kurtakov <akurtako@redhat.com> 1:4.3.1-22
+- Rebuild for new jetty.
+
+* Wed Feb 26 2014 Alexander Kurtakov <akurtako@redhat.com> 1:4.3.1-21
+- Non bootstrap build.
+
+* Tue Feb 25 2014 Alexander Kurtakov <akurtako@redhat.com> 1:4.3.1-20.1
+- Use new e-b snapshot that is adapted to ant packaging changes.
+- Enable bootstrap build to work around broken runtime Eclipse.
+- Make changes to deal with batik update (1.6.0 to 1.7.0).
+
+* Fri Feb 21 2014 Alexander Kurtakov <akurtako@redhat.com> 1:4.3.1-20
+- Require java-headless in equinox-osgi.
+
+* Mon Feb 17 2014 Alexander Kurtakov <akurtako@redhat.com> 1:4.3.1-19
+- Rebuild for new Jetty version.
+
+* Thu Jan 30 2014 Sami Wagiaalla <swagiaal@redhat.com> - 1:4.3.1-18
+- Increase JVM stack size for Maven. Fixes bz 1059816.
+
+* Fri Jan 24 2014 Roland Grunberg <rgrunber@redhat.com> - 1:4.3.1-18
+- Re-introduce and update bootstrapping capability.
+- Add support for aarch64.
+
+* Fri Jan 17 2014 Alexander Kurtakov <akurtako@redhat.com> 1:4.3.1-17
+- Rebuild for Jetty 9.1.1.
+
+* Mon Jan 6 2014 Alexander Kurtakov <akurtako@redhat.com> 1:4.3.1-16
+- Rebuild for glassfish-jsp update.
+- Add patch implementing servlet 3.1 methods.
+- Disable o.e.ua.tests due to servlet 3.1 incompatibilities.
+
+* Mon Dec 16 2013 Roland Grunberg <rgrunber@redhat.com> - 1:4.3.1-15
+- Minor specfile cleanup.
+- Merge Jetty 9 & Jetty 9.1 patches.
+- Remove BuildRequires on eclipse-{egit,jgit}.
+
+* Fri Dec 13 2013 Alexander Kurtakov <akurtako@redhat.com> 1:4.3.1-14
+- Reenable API generation.
+
+* Thu Dec 12 2013 Roland Grunberg <rgrunber@redhat.com> - 1:4.3.1-13
+- Rebuild against Jetty 9.1.0. (Bug 1036888)
+- Temporarily disable API Generation.
+
+* Wed Dec 4 2013 Alexander Kurtakov <akurtako@redhat.com> 1:4.3.1-12
+- Move pre-kepler changelog to separate file.
+- Fix rpmlint warnings.
+- Drop old provides/obsoletes.
+- Give up on linking javadoc against local java-javadoc.
+- Adapt to objectweb-asm3 rename.
+
 * Mon Nov 4 2013 Krzysztof Daniel <kdaniel@redhat.com> 1:4.3.1-11
 - Fix the app data.
 
@@ -1341,603 +1426,3 @@ fi
 
 * Thu Jan 31 2013 Krzysztof Daniel <kdaniel@redhat.com> 1:4.3.0-0.1.git20121217
 - Update to Kepler.
-
-* Fri Jan 25 2013 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.2-0.5.git20121217
-- RHBZ#832053: Ship SWT and other native plugins as folders.
-
-* Thu Jan 17 2013 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.2-0.4.git20121217
-- RHBZ#893774: file shipped twice in eclipse-platform and eclipse-equinox-osgi
-
-* Sat Jan 5 2013 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.2-0.3.git20121217
-- Fix missing about files on arm and ppc.
-
-* Wed Jan 2 2013 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.2-0.2.git20121217
-- Enable bootstrap (for the purpose of arm build).
-- Fix the launcher build for arm.
-- Fix the s390 build issue.
-
-* Fri Dec 21 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.2-0.1.git20121217
-- Update to pre SR2.
-
-* Fri Dec 14 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-22
-- Enable javadoc build.
-
-* Mon Nov 26 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-21
-- Remove javax.xml removal patch declaration.
-
-* Fri Nov 23 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-19
-- Excluded ResolverState from JIT to fix arm build.
-
-* Thu Nov 22 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-18
-- Get rid off javax.xml.
-- Fix building launcher on arm.
-- Fix RHBZ #878210
-
-* Mon Nov 12 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-17
-- Don't package non-existing fragments on s390, s390x.
-- Add BR to GConf-2-devel
-
-* Thu Nov 8 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-16
-- Added debug symbols to SWT.
-- Restored the debug package.
-- Removed the debug flag from the build.
-
-* Wed Nov 7 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-15
-- Simplify initial repo creation.
-
-* Tue Nov 6 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-14
-- Export missing java home.
-
-* Mon Nov 5 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-13
-- Reduce the memory available for Tycho build.
-- Reduce the build time.
-- Use the upstream help generation patch.
-
-* Wed Oct 31 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-12
-- Remove the reference to org.apache.jasper (replaced by glassfish)
-
-* Wed Oct 31 2012 Alexander Kurtakov <akurtako@redhat.com> 1:4.2.1-11
-- Small cleanups.
-- Bump release to be bigger than F-18.
-
-* Wed Oct 24 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-9
-- Make the removal of the icon more error prone.
-
-* Tue Oct 23 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-8
-- Remove a hack for building executable.
-
-* Tue Oct 23 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-7
-- Add profiles in the equinox executable for ppc and arm.
-
-* Mon Oct 22 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-6
-- Moved launcher version change after secondary fragments creation.
-- Created some directories when creating secondary fragments.
-
-* Fri Oct 19 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-5
-- Removed patch for droping user installed changes.
-- Moved Provides:osgi(system.bundle) to eclipse-equinox-osgi subpackage.
-- Removed platform dependency to eclipse-rcp.
-- Fixed building of core.net on secondary arches.
-
-* Fri Oct 19 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-4
-- Use glassfish-jsp-api instead of tomcat-jsp-api.
-
-* Fri Oct 5 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-3
-- Bootstrap build.
-- Support for secondary architectures.
-
-* Tue Oct 2 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-2
-- Bump emf version to 2.8.1.
-
-* Mon Oct 1 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-1
-- Rebuild with latest emf 2.8.1.
-
-* Fri Sep 28 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-0.4
-- 861037: Eclipse does not start in rawhide
-
-* Thu Sep 20 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-0.3
-- Remove build artifacts from P2 files.
-- Fix native gnome-proxy build.
-
-* Wed Sep 19 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-0.2
-- Build the jdt.debug.launching internal jar.
-
-* Wed Sep 19 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.1-0.1
-- Update to SR1 RC4.
-
-* Mon Sep 17 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-19
-- Add BR/R tomcat-jsp-2.2-api tp platform.
-
-* Mon Sep 10 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-18
-- Explicit dependency to jdt in platform.
-
-* Fri Sep 7 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-17
-- Yet another version of the previous patch.
-
-* Fri Sep 7 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-16
-- Remove remaining mina-core dependency.
-
-* Fri Sep 7 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-15
-- Use existing software group.
-- Add BR to eclipse-pde
-- Removed dependency on tomcat6
-- Removed BR GConf2-devel.
-- Removed BR apache-sshd.
-- Removed BR/R tomcat-lib.
-- jetty BR/R transformed to osgi() style.
-- Excluded org.eclipse.equinox.console.jaas from builds.
-
-* Wed Sep 5 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-14
-- Native network support added.
-- Native filesystem support added.
-- Added test package.
-- Generated help contents.
-
-* Fri Aug 24 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-12
-- Fix eclipse-pdebuild script to have proper path to pde bundle.
-- Ensure there are right R dependencies between subpackages.
-- Overall spec improvements.
-- Bug 820248 - Start using glassfish-jsp
-
-* Thu Aug 23 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-11
-- Symlink junit 4.
-- Move additional, non-Eclipse sources back to eclipse-build.
-- Make the patch for setting BREE smaller.
-- Patch for the compatibility.registry updated.
-- Introduce a macro for symlinking.
-- Bug 851190 - eclipse CBI build does not Requires: icu4j-eclipse
-
-* Wed Aug 22 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-10
-- Fix Eclipse not picking anything from dropins folder.
-
-* Tue Aug 21 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-9
-- Adopt upstream CBI system.
-
-* Tue Aug 14 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-8
-- Symlink emf bundles.
-
-* Tue Aug 14 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-7
-- Reduce the emf-core dependency strength.
-
-* Wed Aug  1 2012 Stanislav Ochotnicky <sochotnicky@redhat.com> - 1:4.2.0-6
-- Move maven fragments and pom files in appropriate subpackages
-
-* Wed Jul 18 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:4.2.0-5
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
-
-* Tue Jul 17 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-4
-- Bug 839986 - eclipse-rcp: broken symlinks
-
-* Fri Jul 6 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-3
-- Improved patch for discovering changes after update.
-
-* Thu Jul 5 2012 Alexander Kurtakov <akurtako@redhat.com> 1:4.2.0-2
-- Fix compilation against lucene 3.x.
-
-* Fri Jun 29 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-1
-- Included patch for Eclipse bug 251167
-- Recompiled all jsr14 bundles as 1.5
-- Update to final Juno release.
-- Removed the old pdebuild script warning.
-- Created OSGI subpackage.
-- Removed the necessity to delete ~/.eclipse after some updates.
-
-* Mon Jun 18 2012 Sami Wagiaalla <swagiaal@redhat.com> 1:4.2.0-0.24.I201205031800
-- Remove empty reconciler script.
-
-* Fri Jun 15 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.23.I201205031800
-- Workaround for Eclipse bug 382574
-
-* Thu May 24 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.22.I201205031800
-- Do not pass the -preventMasterLaunch to non SDK applications.
-
-* Fri May 18 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.21.I201205031800
-- Prevent running Eclipse as root.
-- Populate Update Sites.
-- Pick renamed plugins on startup.
-- Bundle the .option file for investigating startup problems.
-
-* Sat May 5 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.20.I201205031800
-- Update to M7.
-
-* Mon Apr 30 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.19.I201204291800
-- Update to I20120429-1800.
-
-* Tue Apr 24 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.18.I201204171000
-- Regenerating s390 and s390x launcher fragments from scratch.
-
-* Mon Apr 23 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.17.I201204171000
-- Remove duplicated junit library.
-- Initial s390 and s390x support.
-- Update to latest eclipse-build.
-
-* Fri Apr 20 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.16.I201204171000
-- Bug 814332 - Documentation is not pointing to locally installed javadoc.
-
-* Thu Apr 19 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.15.I201204171000
-- Amendment to previous release.
-
-* Thu Apr 19 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.14.I201204171000
-- Bug 813763 - /usr/bin/efj has missising exec permissions
-- Bug 813756 - eclipse-jdt: bundled junit library
-- Move hamcrest dependency to JDT.
-
-* Wed Apr 18 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.13.I201204171000
-- Move to the latest upstream I-build
-- Generate full documentation.
-- Formalize requirement on geronimo.
-
-* Wed Apr 18 2012 Sami Wagiaalla <swagiaal@redhat.com> 1:4.2.0-0.12.I201204051114
-- Don't fail if icon.xpm does not exist.
-
-* Thu Apr 12 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.11.I201204051114
-- Version more requirements.
-- Move java requirement to the lowest-in-stack package.
-- Removed some rpmlint warnings from spec file.
-
-* Wed Apr 11 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.10.I201204051114
-- Specified version for java-javadoc requirements.
-
-* Tue Apr 10 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.9.I201204051114
-- Add proper version to conflicts eclipse-emf-core
-
-* Tue Apr 10 2012 Andrew Overholt <overholt@redhat.com> 1:4.2.0-0.8.I201204051114
-- Add epoch to java and java-devel {Build,}Requires.
-
-* Tue Apr 10 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.7.I201204051114
-- Bug 810568 - require Java 7 to run.
-- Bug 810970 - Cannot start 4.2.0-0.6.I201204051114.fc18.x86_64
-
-* Fri Apr 6 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.6.I201204051114
-- Update to I20120405-1114 upstream Eclipse build.
-- Update to latest e-b
-- Bug 810552 - JSch Requires should be versioned
-
-* Wed Apr 4 2012 Roland Grunberg <rgrunber@redhat.com> 1:4.2.0-0.5.fa15ab
-- Define %%{_eclipse_base} to properly resolve %%{_libdir} for noarch.
-
-* Mon Apr 2 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.4.fa15ab
-- pdebuild script installed into %%{_bindir}
-
-* Thu Mar 29 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.3.fa15ab
-- Sort out problems with versions.
-
-* Thu Mar 29 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.2.fa15ab
-- Change eclipse-emf-core package version to 2.8
-
-* Thu Mar 29 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:4.2.0-0.1.fa15ab
-- Update to 4.2
-- Added eclipse-emf-core package.
-
-* Mon Mar 26 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:3.8.0-0.21.I201203201400
-- Added Provides: osgi(system.bundle)  to rcp package.
-
-* Thu Mar 22 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:3.8.0-0.20.I201203201400
-- Update to I20120320-1400.
-- Ant version changed to 1.8.3.
-- ECF version changed to 3.5.5.
-- Experimental ARM support.
-
-* Fri Mar 16 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:3.8.0-0.19.I201203141800
-- Update to I20120314-1800.
-- Eclipse-build updated to head.
-- Required Jsch version updated to include correct MANIFEST.MF
-
-* Sun Mar 11 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:3.8.0-0.18.I201203060800
-- Update to I20120228-0800.
-- Properly build org.eclipse.jdt.launching from source.
-
-* Wed Feb 29 2012 Andrew Overholt <overholt@redhat.com> 1:3.8.0-0.17.I201202280800
-- Add macro for build ID to ease moving to new ones.
-
-* Wed Feb 29 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:3.8.0-0.16.I201202280800
-- Eclipse update to I20120228-0800
-
-* Wed Feb 22 2012 Roland Grunberg <rgrunber@redhat.com> 1:3.8.0-0.15.I201202140800
-- Add org.eclipse.tycho:org.eclipse.osgi to osgi depmap.
-- Install org.eclipse.jdt.core in javadir/eclipse.
-- Add maven pom and depmap for org.eclipse.jdt.core.
-
-* Wed Feb 22 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:3.8.0-0.14.I201202140800
-- Updated dependencies to match jetty 8.1.0-1.
-- Updated commons-codec minimal requirements.
-- Moved icu4j dependency from swt to rcp.
-
-* Fri Feb 17 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:3.8.0-0.13.I201202140800
-- Add the icu4j-source bundle.
-- Update to Eclipse build I20120214-0800.
-
-* Thu Feb 16 2012 Sami Wagiaalla <swagiaal@redhat.com> 1:3.8.0-0.12.I201202070800
-- Install a blank eclipse-reconciler.sh.
-
-* Thu Feb 16 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:3.8.0-0.11.I201202070800
-- Using system jar for junit 4 and different OSGI metadata for junit 3
-- Adopt noarch icu4j-eclipse
-
-* Mon Feb 13 2012 Sami Wagiaalla <swagiaal@redhat.com> 1:3.8.0-0.10.I201202070800
-- Remove reconciler macros from macros.eclipse.
-- Do not create temp eclipse directory in rpm-state.
-- Do not install .so extaction paterns file.
-- Stop running the reconciler.
-
-* Thu Feb 9 2012 Sami Wagiaalla <swagiaal@redhat.com> 1:3.8.0-0.9.I201202070800
-- Remove -debug reconciler flag
-- Remove macro _eclipse_reqs.
-- Define %%{_eclipse_base} in macros.eclipse.
-- Pass dropins dir to reconciler when updating the platform.
-
-* Wed Feb 8 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:3.8.0-0.7.I201201310842
-- Drop the indirect dependency to tomcat 5.
-- Support for gnomelibproxy on x86_64.
-
-* Fri Feb 3 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:3.8.0-0.6.I201201310842
-- Change the makefile patch to be truly universal
-
-* Wed Feb 1 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:3.8.0-0.5.I201201310842
-- Update to Eclipse 3.8 I20120131-0842
-
-* Tue Jan 31 2012 Sami Wagiaalla <swagiaal@redhat.com> 1:3.8.0-0.4.I201201230800
-- Remove xulrunner requirement.
-
-* Tue Jan 31 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:3.8.0-0.3.I201201230800
-- Updated dependency to felix-gogo-shell to include fix for bug 786041.
-- Fixed mixed-use-of-spaces-and-tabs warning in the spec file.
-
-* Tue Jan 31 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:3.8.0-0.2.I201201230800
-- Version changed to a better format.
-
-* Mon Jan 30 2012 Krzysztof Daniel <kdaniel@redhat.com> 1:3.8.0-0.M4c
-- Update to Eclipse 3.8 I20120123-0800
-
-* Fri Jan 20 2012 Sami Wagiaalla <swagiaal@redhat.com> 1:3.7.1-16
-- Remove ORBit-2 requirement.
-
-* Thu Jan 19 2012 Sami Wagiaalla <swagiaal@redhat.com> 1:3.7.1-15
-- Add BuildRequires:  ORBit2-devel
-
-* Thu Jan 19 2012 Sami Wagiaalla <swagiaal@redhat.com> 1:3.7.1-15
-- Use rpm-state/eclipse for run-reconciler file instead of /var/run.
-- Delete eclipse-tmpfiles.conf.
-
-* Thu Jan 19 2012 Sami Wagiaalla <swagiaal@redhat.com> 1:3.7.1-14
-- Remove _eclipse_pkg macro.
-- Use mktemp for creating a backup directory in eclipse-reconciler.sh
-
-* Mon Jan 16 2012 Alexander Kurtakov <akurtako@redhat.com> - 1:3.7.1-13
-- Fix o.e.osgi.services pom to remove fake parent.
-
-* Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:3.7.1-12
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
-
-* Thu Dec 22 2011 Andrew Overholt <overholt@redhat.com> 1:3.7.1-11
-- Install org.eclipse.osgi.services and org.eclipse.equinox.http.servlet in
-  javadir/eclipse.
-- Add maven pom and depmap for the above.
-- Fixes rhbz#769621.
-
-* Tue Dec 20 2011 Andrew Robinson <arobinso@redhat.com> 1:3.7.1-10
-- Specfile fix for license feature.
-
-* Mon Dec 19 2011 Andrew Overholt <overholt@redhat.com> 1:3.7.1-9
-- New eclipse-build snapshot with proper p2 repo URLs.
-
-* Tue Nov 29 2011 Sami Wagiaalla <swagiaal@redhat.com> 1:3.7.1-8
-- Stop using -clean option.
-- Use -Dosgi.checkConfiguration=true when updating the platform.
-- Remove cache.timestamps and .bundledata* when running the reconciler
-  with -Dosgi.checkConfiguration=true.
-- Do not verify %%{_libdir}/%%{name}/artifacts.xml.
-
-* Tue Nov 29 2011 Roland Grunberg <rgrunber@redhat.com> 1:3.7.1-7
-- Bump release.
-
-* Fri Nov 25 2011 Alexander Kurtakov <akurtako@redhat.com> 1:3.7.1-6
-- Add ExclusiveArch for RHEL.
-
-* Fri Nov 25 2011 Roland Grunberg <rgrunber@redhat.com> 1:3.7.1-5
-- (Re-apply) Upgrade to Tomcat 7 Jasper.
-- Include org.eclipse.jdt.core as part of platform to avoid cyclic
-  dependency between platform and jdt.
-
-* Mon Nov 21 2011 Roland Grunberg <rgrunber@redhat.com> 1:3.7.1-4
-- Bump release to match f16 branch.
-
-* Wed Nov 16 2011 Roland Grunberg <rgrunber@redhat.com> 1:3.7.1-2
-- Upload new source fixing RHBZ #753090.
-
-* Tue Nov 08 2011 Roland Grunberg <rgrunber@redhat.com> 1:3.7.1-1
-- Update to 3.7.1.
-- org.apache.lucene no longer used upstream.
-
-* Sat Oct 29 2011 Alexander Kurtakov <akurtako@redhat.com> 1:3.7.0-9
-- New e-b snapshot - fixed Program.launch for remote uris.
-- Adds _javadir/icu4j.jar for secondary archs bootstrapping.
-
-* Wed Oct 26 2011 Sami Wagiaalla <swagiaal@redhat.com> 1:3.7.0-8
-- Add Requires(post/postun) to _eclipse_pkg macro.
-
-* Fri Oct 21 2011 Alexander Kurtakov <akurtako@redhat.com> 1:3.7.0-7
-- Install org.eclipse.osgi in javadir/eclipse/osgi.jar
-- Add maven pom and depmap.
-- Fix compilation with glib 2.31.
-
-* Thu Oct 20 2011 Sami Wagiaalla <swagiaal@redhat.com> 1:3.7.0-7
-- Change _eclipse_pkg to pipe all reconciler output to /dev/null
-
-* Thu Oct 20 2011 Sami Wagiaalla <swagiaal@redhat.com> 1:3.7.0-6
-- Bump the release number.
-
-* Wed Oct 19 2011 Sami Wagiaalla <swagiaal@redhat.com> 1:3.7.0-5
-- Add new line before writing to eclipse.ini.
-
-* Fri Oct 14 2011 Sami Wagiaalla <swagiaal@redhat.com> 1:3.7.0-5
-- Change eclipse-reconciler script to run with no arguments.
-- Use initscripts to create run directory.
-- Run reconciler only once per install transaction.
-
-* Tue Oct 4 2011 Sami Wagiaalla <swagiaal@redhat.com> 1:3.7.0-5
-- New eclipse-build source tar ball.
-
-* Mon Oct 3 2011 Sami Wagiaalla <swagiaal@redhat.com> 1:3.7.0-5
-- Bump the relese number.
-
-* Mon Oct 3 2011 Sami Wagiaalla <swagiaal@redhat.com> 1:3.7.0-5
-- Remove all metadata files created by the reconciler before
-  uninstallation.
-
-* Mon Oct 3 2011 Sami Wagiaalla <swagiaal@redhat.com> 1:3.7.0-5
-- Install .so extraction file.
-- Extract .so files when the reconciler is run with -clean
-
-* Mon Oct 3 2011 Sami Wagiaalla <swagiaal@redhat.com> 1:3.7.0-5
-- Correct verification for files edited by the reconciler.
-- Do not install state files.
-
-* Mon Oct 3 2011 Sami Wagiaalla <swagiaal@redhat.com> 1:3.7.0-5
-- Add Requires post and postun platform to jdt and pde on
-
-* Fri Sep 23 2011 Sami Wagiaalla <swagiaal@redhat.com> 1:3.7.0-4
-- Run reconciler after and before pde installation.
-
-* Fri Sep 23 2011 Sami Wagiaalla <swagiaal@redhat.com> 1:3.7.0-4
-- Add new script eclipse-reconciler.sh
-- Run eclipse-reconciler.sh in the post and postun sections of jdt
-  and post seciton on platform.
-- Remove all old profiles in %%pre rcp.
-
-* Wed Sep 21 2011 Alexander Kurtakov <akurtako@redhat.com> 1:3.7.0-4
-- Remove _bindir/efj in pre - Fixes #738677.
-
-* Mon Sep 12 2011 Alexander Kurtakov <akurtako@redhat.com> 1:3.7.0-3
-- Use latest eclipse-build snapshot - fixes openjdk 7 build.
-- Fix efj launcher script.
-
-* Mon Jun 27 2011 Chris Aniszczyk <zx@redhat.com> 1:3.7.0-1.3
-- Fix eclipse archive name
-
-* Fri Jun 24 2011 Andrew Overholt <overholt@redhat.com> 1:3.7.0-1.2
-- Fix SWT symlink in %%{_libdir} (rhbz#715470)
-
-* Sun Jun 19 2011 Chris Aniszczyk <zx@redhat.com> 1:3.7.0-1.1
-- Fix upload of e-b snapshot
-
-* Wed Jun 15 2011 Chris Aniszczyk <zx@redhat.com> 1:3.7.0-1.0
-- New e-b snapshot to update build on 3.7 Final
-
-* Tue Jun 07 2011 Chris Aniszczyk <zx@redhat.com> 1:3.7.0-0.4.RC4
-- New e-b snapshot to update build on 3.7 RC4
-- Added usage of features back
-
-* Thu Jun 02 2011 Chris Aniszczyk <zx@redhat.com> 1:3.7.0-0.3.RC3
-- New e-b snapshot to update build on 3.7 RC3
-- removed efj as it's part of eclipse-build now
-- removed usage of features
-
-* Tue May 17 2011 Chris Aniszczyk <zx@redhat.com> 1:3.7.0-0.2.RC1
-- New e-b snapshot, fixes org.eclipse.equinox.util issue
-- updated servlet and jsp related dependencies
-
-* Tue May 17 2011 Chris Aniszczyk <zx@redhat.com> 1:3.7.0-0.1.RC1
-- New e-b snapshot - first eclipse 3.7 build based on 3.7 RC1.
-
-* Wed Apr 27 2011 Chris Aniszczyk <zx@redhat.com> 1:3.6.2-5
-- New e-b snapshot - really fixes dropins issue.
-- update sat4j dependency to 2.3.0
-
-* Mon Apr 25 2011 Chris Aniszczyk <zx@redhat.com> 1:3.6.2-4
-- Add rsync to BuildRequires.
-
-* Mon Apr 25 2011 Chris Aniszczyk <zx@redhat.com> 1:3.6.2-3
-- New e-b snapshot - fixes dropins issue.
-
-* Fri Apr 8 2011 Alexander Kurtakov <akurtako@redhat.com> 1:3.6.2-2
-- New e-b snapshot - fixes Program.launch problem without libswt-gnome.
-
-* Fri Apr 8 2011 Alexander Kurtakov <akurtako@redhat.com> 1:3.6.2-1
-- Switch to webkit by default.
-- New eclipse-build snapshot.
-
-* Wed Apr 6 2011 Alexander Kurtakov <akurtako@redhat.com> 1:3.6.2-0.2
-- Drop bootstrap conditional.
-- Drop shell start script.
-- Drop jpp versioned dependencies - apache-commons-* have never had such versions.
-- Removed patches moved to eclipse-build.
-
-* Fri Mar 11 2011 Alexander Kurtakov <akurtako@redhat.com> 1:3.6.2-0.1
-- First take on 3.6.2.
-
-* Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:3.6.1-5
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
-
-* Mon Jan 3 2011 Alexander Kurtakov <akurtako@redhat.com> 1:3.6.1-4
-- Fix build with ant 1.8.2.
-
-* Mon Dec 13 2010 Severin Gehwolf <sgehwolf@redhat.com> 1:3.6.1-3
-- Add fix for Eclipse help XSS vulnerability (RH Bz #661901).
-
-* Tue Oct 12 2010 Severin Gehwolf <sgehwolf@redhat.com> 1:3.6.1-2
-- Require zip for eclipse-pde.
-
-* Tue Oct 5 2010 Alexander Kurtakov <akurtako@redhat.com> 1:3.6.1-1
-- Update to 3.6.1.
-
-* Fri Oct 1 2010 Severin Gehwolf <sgehwolf@redhat.com> 1:3.6.0-17
-- Push release #, since there has been a 3.6.0-16 scratch build.
-
-* Thu Sep 30 2010 Severin Gehwolf <sgehwolf@redhat.com> 1:3.6.0-16
-- Fix copy-platform script generation.
-
-* Mon Sep 27 2010 Severin Gehwolf <sgehwolf@redhat.com> 1:3.6.0-15
-- Add shell script portability patch for prepare-build-dir.sh.
-
-* Tue Sep 21 2010 Alexander Kurtakov <akurtako@redhat.com> 1:3.6.0-14
-- Really reenable webkit.
-
-* Tue Sep 21 2010 Alexander Kurtakov <akurtako@redhat.com> 1:3.6.0-13
-- Reenable webkit support, build is fixed.
-
-* Tue Sep 21 2010 Alexander Kurtakov <akurtako@redhat.com> 1:3.6.0-12
-- Disable webkit support - it is causing build failures.
-
-* Tue Sep 21 2010 Alexander Kurtakov <akurtako@redhat.com> 1:3.6.0-11
-- Add jsp-api dependency and use the tomcat6 one.
-
-* Fri Sep 17 2010 Jeff Johnston <jjohnstn@redhat.com> 1:3.6.0-10
-- Add patch to fix xpcom problem.
-
-* Tue Sep 7 2010 Alexander Kurtakov <akurtako@redhat.com> 1:3.6.0-9
-- Add webkitgtk-devel BR and webkit R.
-
-* Wed Sep 1 2010 Alexander Kurtakov <akurtako@redhat.com> 1:3.6.0-8
-- Add patch to remove ant-trax from ant bundle's classpath.
-- Use new package names in BR/R.
-
-* Wed Sep 1 2010 Alexander Kurtakov <akurtako@redhat.com> 1:3.6.0-7
-- Update to eclipse-build 0.6.1 release.
-- Fix build with ant 1.8.1.
-
-* Tue Aug 17 2010 Andrew Overholt <overholt@redhat.com> 1:3.6.0-6
-- Update to eclipse-build 0.6.1RC2.
-- List a few files that were missing but should be installed.
-- Finally remove %%{_datadir}/%%{name}/{features,plugins} as nothing is
-  installed in there and shouldn't be.
-- Use new eclipse-build targets provision.sdk and installSDKinDropins.
-- Remove filenamepatterns.txt as it's now part of eclipse-build.
-- Update download URL.
-- Remove unused patches.
-
-* Tue Aug 10 2010 Andrew Overholt <overholt@redhat.com> 1:3.6.0-5
-- Update to eclipse-build 0.6.0 final.
-
-* Fri Aug 06 2010 Andrew Overholt <overholt@redhat.com> 1:3.6.0-4
-- Move epl-v10.html and notice.html to SWT sub-package.
-
-* Thu Jul 15 2010 Elliott Baron <ebaron@fedoraproject.org> 1:3.6.0-3
-- Increasing min versions for jetty, icu4j-eclipse and sat4j.
-
-* Fri Jul 9 2010 Alexander Kurtakov <akurtako@redhat.com> 1:3.6.0-2
-- o.e.core.net.linux is no longer x86 only.
-
-* Fri Jul 9 2010 Alexander Kurtakov <akurtako@redhat.com> 1:3.6.0-1
-- Update to 3.6.0.
-- Based on eclipse-build 0.6.1 RC0.
