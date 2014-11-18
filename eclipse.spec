@@ -189,8 +189,8 @@ BuildRequires: osgi(org.eclipse.jetty.continuation) >= %{_jetty_version}
 BuildRequires: osgi(org.eclipse.jetty.io) >= %{_jetty_version}
 BuildRequires: osgi(org.eclipse.jetty.security) >= %{_jetty_version}
 BuildRequires: osgi(org.eclipse.jetty.servlet) >= %{_jetty_version}
-#BuildRequires: lucene-core >= 4.7.0-7
-#BuildRequires: lucene-analysis >= 4.7.0-7
+BuildRequires: lucene-core
+#BuildRequires: lucene-analysis
 BuildRequires: junit >= 4.10-5
 BuildRequires: hamcrest >= 0:1.1-11
 BuildRequires: %{?scl_prefix}sat4j >= 2.3.5-1
@@ -233,9 +233,9 @@ Group:          Development/Tools
 Requires:       java >= 1:1.7.0
 Requires:       jpackage-utils
 Requires:       gtk2
-Requires:       gtk3
-Requires:       webkitgtk
-Requires:       webkitgtk3
+Requires:       gtk+3.0
+Requires:       webkit
+Requires:       webkit3
 
 %description swt
 SWT Library for GTK+.
@@ -267,8 +267,8 @@ Requires: osgi(org.eclipse.jetty.io) >= %{_jetty_version}
 Requires: osgi(org.eclipse.jetty.security) >= %{_jetty_version}
 Requires: osgi(org.eclipse.jetty.servlet) >= %{_jetty_version}
 Requires: jsch >= 0.1.46-2
-Requires: lucene-core >= 4.7.0-7
-Requires: lucene-analysis >= 4.7.0-7
+Requires: lucene-core
+#Requires: lucene-analysis
 Requires: %{?scl_prefix}sat4j >= 2.3.5-1
 Requires: sac >= 1.3-12
 Requires: xml-commons-apis >= 1.4.01-12
