@@ -6,7 +6,7 @@
 # Set to 1 to build Eclipse without dependency to eclipse-pde
 # Some parts (help) will not be built, and second run will be required,
 # but this is a way to bootstrap Eclipse on secondary archs.
-%global bootstrap       1
+%global bootstrap       0
 
 
 Epoch:                  1
