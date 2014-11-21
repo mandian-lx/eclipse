@@ -6,7 +6,7 @@
 # Set to 1 to build Eclipse without dependency to eclipse-pde
 # Some parts (help) will not be built, and second run will be required,
 # but this is a way to bootstrap Eclipse on secondary archs.
-%global bootstrap       0
+%global bootstrap       1
 
 
 Epoch:                  1
@@ -16,7 +16,7 @@ Epoch:                  1
 %global eclipse_majmin  %{eclipse_major}.%{eclipse_minor}
 %global eclipse_micro   2
 %global initialize      1
-%global eb_commit       bab4b82a63ce57704cfe70c84f414b6dab8a97dc
+%global eb_commit       a9e58a88bc034454d79e896530be9b5b98f06dbe
 %global eclipse_tag     R4_3_2
 %global eclipse_version %{eclipse_majmin}.%{eclipse_micro}
 %global installation_loc %{_libdir}/%{pkg_name}
@@ -56,13 +56,13 @@ fi;
 Summary:        An open, extensible IDE
 Name:           %{?scl_prefix}eclipse
 Version:        %{eclipse_version}
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        EPL
 Group:          Development/Tools
 URL:            http://www.eclipse.org/
 #get-eclipse.sh
 Source0:        R4_platform-aggregator-%{eclipse_tag}.tar.xz
-Source1:        http://git.eclipse.org/c/linuxtools/org.eclipse.linuxtools.eclipse-build.git/snapshot/org.eclipse.linuxtools.eclipse-build-%{eb_commit}.tar.xz
+Source1:        http://git.eclipse.org/c/linuxtools/org.eclipse.linuxtools.eclipse-build.git/snapshot/org.eclipse.linuxtools.eclipse-build-%{eb_commit}.tar.bz2
 
 # -com.sun.el
 # +javax.el
@@ -190,7 +190,7 @@ BuildRequires: osgi(org.eclipse.jetty.io) >= %{_jetty_version}
 BuildRequires: osgi(org.eclipse.jetty.security) >= %{_jetty_version}
 BuildRequires: osgi(org.eclipse.jetty.servlet) >= %{_jetty_version}
 BuildRequires: lucene-core
-#BuildRequires: lucene-analysis
+BuildRequires: lucene-analysis
 BuildRequires: junit >= 4.10-5
 BuildRequires: hamcrest >= 0:1.1-11
 BuildRequires: %{?scl_prefix}sat4j >= 2.3.5-1
@@ -207,6 +207,7 @@ BuildRequires: %{?scl_prefix}eclipse-ecf-core >= 3.6.0-2
 BuildRequires: tomcat-servlet-3.0-api
 BuildRequires: tomcat-el-2.2-api
 BuildRequires: glassfish-jsp-api >= 2.2.1-4
+BuildRequires: glassfish-el-api
 BuildRequires: cglib
 BuildRequires: glassfish-jsp >= 2.2.5
 BuildRequires: glassfish-servlet-api >= 3.1.0
@@ -268,7 +269,7 @@ Requires: osgi(org.eclipse.jetty.security) >= %{_jetty_version}
 Requires: osgi(org.eclipse.jetty.servlet) >= %{_jetty_version}
 Requires: jsch >= 0.1.46-2
 Requires: lucene-core
-#Requires: lucene-analysis
+Requires: lucene-analysis
 Requires: %{?scl_prefix}sat4j >= 2.3.5-1
 Requires: sac >= 1.3-12
 Requires: xml-commons-apis >= 1.4.01-12
@@ -361,7 +362,7 @@ pushd rt.equinox.framework
 %patch21 -p1
 popd
 %patch22
-#patch23 -p1
+%patch23 -p1
 %patch24
 
 %patch101
@@ -854,6 +855,7 @@ fi
 %{_libdir}/%{pkg_name}/plugins/javax.xml_*
 %{_libdir}/%{pkg_name}/plugins/javax.el_*
 %{_libdir}/%{pkg_name}/plugins/javax.inject_*.jar
+%{_libdir}/%{pkg_name}/plugins/glassfish-el.jar
 %{_libdir}/%{pkg_name}/plugins/org.apache.ant_*
 %{_libdir}/%{pkg_name}/plugins/org.apache.batik.css_*
 %{_libdir}/%{pkg_name}/plugins/org.apache.batik.util.gui_*
