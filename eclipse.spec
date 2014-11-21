@@ -56,7 +56,7 @@ fi;
 Summary:        An open, extensible IDE
 Name:           %{?scl_prefix}eclipse
 Version:        %{eclipse_version}
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        EPL
 Group:          Development/Tools
 URL:            http://www.eclipse.org/
