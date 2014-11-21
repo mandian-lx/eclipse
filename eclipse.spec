@@ -206,6 +206,7 @@ BuildRequires: eclipse-emf-core >= 1:2.9.1-1
 BuildRequires: %{?scl_prefix}eclipse-ecf-core >= 3.6.0-2
 BuildRequires: tomcat-servlet-3.0-api
 BuildRequires: tomcat-el-2.2-api
+BuildRequires: glassfish-el
 BuildRequires: glassfish-jsp-api >= 2.2.1-4
 BuildRequires: glassfish-el-api
 BuildRequires: cglib
