@@ -1,6 +1,6 @@
---- eclipse-platform-parent/pom.xml.orig	2014-03-12 10:25:46.000000000 +0000
-+++ eclipse-platform-parent/pom.xml	2014-03-12 12:12:56.387914854 +0000
-@@ -308,7 +308,7 @@
+--- eclipse-platform-parent/pom.xml.orig	2014-05-26 17:04:22.000000000 +0300
++++ eclipse-platform-parent/pom.xml	2014-05-26 18:57:29.044704226 +0300
+@@ -332,7 +332,7 @@
            <artifactId>tycho-packaging-plugin</artifactId>
            <version>${tycho.version}</version>
            <dependencies>
@@ -9,12 +9,12 @@
                <groupId>org.eclipse.tycho.extras</groupId>
                <artifactId>tycho-buildtimestamp-jgit</artifactId>
                <version>${tycho-extras.version}</version>
-@@ -317,19 +317,19 @@
+@@ -341,19 +341,19 @@
                <groupId>org.eclipse.tycho.extras</groupId>
                <artifactId>tycho-sourceref-jgit</artifactId>
                <version>${tycho-extras.version}</version>
 -            </dependency>
-+            </dependency -->
++            </dependency-->
            </dependencies>
            <configuration>
              <strictBinIncludes>false</strictBinIncludes>
@@ -22,7 +22,7 @@
 -            <timestampProvider>jgit</timestampProvider>
 +            <!--timestampProvider>jgit</timestampProvider-->
              <jgit.ignore>
- 		pom.xml
+               pom.xml
              </jgit.ignore>
              <jgit.dirtyWorkingTree>${jgit.dirtyWorkingTree}</jgit.dirtyWorkingTree>
 -            <sourceReferences>
@@ -31,5 +31,5 @@
 -            </sourceReferences>
 +            </sourceReferences-->
              <archive>
-                <addMavenDescriptor>false</addMavenDescriptor>
+               <addMavenDescriptor>false</addMavenDescriptor>
              </archive>

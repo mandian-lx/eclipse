@@ -1,14 +1,6 @@
---- rt.equinox.p2/bundles/org.eclipse.equinox.p2.engine/src/org/eclipse/equinox/internal/p2/engine/SimpleProfileRegistry.java
-+++ rt.equinox.p2/bundles/org.eclipse.equinox.p2.engine/src/org/eclipse/equinox/internal/p2/engine/SimpleProfileRegistry.java
-@@ -7,6 +7,7 @@
-  * Contributors: 
-  *     IBM Corporation - initial API and implementation
-  *     Ericsson AB - ongoing development
-+ *     Red Hat, Inc. - Bug 408138
-  ******************************************************************************/
- package org.eclipse.equinox.internal.p2.engine;
- 
-@@ -38,6 +39,7 @@ import org.xml.sax.SAXException;
+--- rt.equinox.p2/bundles/org.eclipse.equinox.p2.engine/src/org/eclipse/equinox/internal/p2/engine/SimpleProfileRegistry.java.orig	2014-03-24 10:49:00.000000000 +0000
++++ rt.equinox.p2/bundles/org.eclipse.equinox.p2.engine/src/org/eclipse/equinox/internal/p2/engine/SimpleProfileRegistry.java	2014-03-24 15:39:32.122246214 +0000
+@@ -39,6 +39,7 @@
  
  public class SimpleProfileRegistry implements IProfileRegistry, IAgentService {
  
@@ -16,9 +8,9 @@
  	private static final String SIMPLE_PROFILE_REGISTRY_INTERNAL = "_simpleProfileRegistry_internal_"; //$NON-NLS-1$
  	private static final String PROFILE_REGISTRY = "profile registry"; //$NON-NLS-1$
  	private static final String PROFILE_PROPERTIES_FILE = "state.properties"; //$NON-NLS-1$
-@@ -263,6 +265,14 @@ public class SimpleProfileRegistry implements IProfileRegistry, IAgentService {
- 					internalSetProfileStateProperty(profile, profile.getTimestamp(), IProfile.STATE_PROP_SHARED_INSTALL, IProfile.STATE_SHARED_INSTALL_VALUE_NEW);
- 					internalSetProfileStateProperty(profile, profile.getTimestamp(), SIMPLE_PROFILE_REGISTRY_INTERNAL + getBaseTimestamp(profile.getProfileId()), getBaseTimestamp(id));
+@@ -266,6 +267,14 @@
+ 					//fragments support - remeber the property
+ 					internalSetProfileStateProperty(profile, profile.getTimestamp(), SIMPLE_PROFILE_REGISTRY_INTERNAL + getExtTimeStamp(), getExtTimeStamp());
  					agent.registerService(SERVICE_SHARED_INSTALL_NEW_TIMESTAMP, Long.toString(profile.getTimestamp()));
 +
 +					// this looks like a hack, but:
@@ -31,19 +23,20 @@
  				} else {
  					//This is the first time we create the shared profile. Tag it as such and also remember the timestamp of the base
  					internalSetProfileStateProperty(profile, profile.getTimestamp(), IProfile.STATE_PROP_SHARED_INSTALL, IProfile.STATE_SHARED_INSTALL_VALUE_INITIAL);
-@@ -279,6 +289,12 @@ public class SimpleProfileRegistry implements IProfileRegistry, IAgentService {
+@@ -299,6 +308,13 @@
  		if (agent.getService(SERVICE_SHARED_INSTALL_NEW_TIMESTAMP) != null)
  			return false;
  
 +		// if the property is set by OSGI, and there is no new timestamp (because of the previous condition)
 +		// ignore current profile. This will happen only once, because SERVICE_SHARED_INSTALL_NEW_TIMESTAMP
 +		// is set during profile reset.
-+		if ("true".equals(System.getProperty(PROP_IGNORE_USER_CONFIGURATION))){ //$NON-NLS-1$ //$NON-NLS-2$
++		if ("true".equals(System.getProperty(PROP_IGNORE_USER_CONFIGURATION))) { //$NON-NLS-1$ //$NON-NLS-2$
 +			System.setProperty(PROP_IGNORE_USER_CONFIGURATION, "processed_and_unset"); //$NON-NLS-1$ //$NON-NLS-2$
-+			return true;}
++			return true;
++		}
  		String baseTimestamp = getBaseTimestamp(profile.getProfileId());
- 		if (baseTimestamp == null)
- 			return false;
+ 		String extTimestamp = getExtTimeStamp();
+ 		if (baseTimestamp == null) {
 --- rt.equinox.p2/bundles/org.eclipse.equinox.p2.reconciler.dropins/src/org/eclipse/equinox/internal/p2/reconciler/dropins/ProfileSynchronizer.java
 +++ rt.equinox.p2/bundles/org.eclipse.equinox.p2.reconciler.dropins/src/org/eclipse/equinox/internal/p2/reconciler/dropins/ProfileSynchronizer.java
 @@ -570,6 +570,7 @@
@@ -84,7 +77,7 @@
  	}
 --- rt.equinox.p2/bundles/org.eclipse.equinox.p2.ui.sdk.scheduler/src/org/eclipse/equinox/internal/p2/ui/sdk/scheduler/migration/MigrationWizard.java	2013-06-10 09:33:20.000000000 +0200
 +++ rt.equinox.p2/bundles/org.eclipse.equinox.p2.ui.sdk.scheduler/src/org/eclipse/equinox/internal/p2/ui/sdk/scheduler/migration/MigrationWizard.java	2013-06-11 15:44:28.654682088 +0200
-@@ -151,7 +151,7 @@
+@@ -145,7 +145,7 @@
  	}
  
  	public boolean performCancel() {

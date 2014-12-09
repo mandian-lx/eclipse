@@ -1,0 +1,28 @@
+From ba6d6b9708a06fa267240471407c239d02484821 Mon Sep 17 00:00:00 2001
+From: Timo Kinnunen
+Date: Fri, 7 Nov 2014 15:28:21 +0100
+Subject: Fixed bug 429308: Make workspace selection dialog visible in the task
+ manager of the OS
+
+Signed-off-by: Timo Kinnunen <timo.kinnunen@gmail.com>
+diff --git a/eclipse.platform.ui/bundles/org.eclipse.ui.ide.application/src/org/eclipse/ui/internal/ide/application/IDEApplication.java b/bundles/org.eclipse.ui.ide.application/src/org/eclipse/ui/internal/ide/application/IDEApplication.java
+index 4797d2d..d88f57f 100644
+--- a/eclipse.platform.ui/bundles/org.eclipse.ui.ide.application/src/org/eclipse/ui/internal/ide/application/IDEApplication.java
++++ b/eclipse.platform.ui/bundles/org.eclipse.ui.ide.application/src/org/eclipse/ui/internal/ide/application/IDEApplication.java
+@@ -314,7 +314,12 @@ public class IDEApplication implements IApplication, IExecutableExtension {
+         URL url = null;
+         do {
+         	// okay to use the shell now - this is the splash shell
+-            new ChooseWorkspaceDialog(shell, launchData, false, true).prompt(force);
++			new ChooseWorkspaceDialog(shell, launchData, false, true) {
++				@Override
++				protected Shell getParentShell() {
++					return null;
++				}
++			}.prompt(force);
+             String instancePath = launchData.getSelection();
+             if (instancePath == null) {
+ 				return null;
+-- 
+cgit v0.10.1-9-gd18e
+

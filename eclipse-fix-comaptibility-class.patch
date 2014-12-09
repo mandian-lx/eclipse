@@ -1,6 +1,6 @@
 --- eclipse.platform.runtime/bundles/org.eclipse.core.runtime.compatibility.registry/pom.xml.orig	2013-01-28 12:14:02.000000000 +0100
 +++ eclipse.platform.runtime/bundles/org.eclipse.core.runtime.compatibility.registry/pom.xml	2013-01-29 11:02:15.865494675 +0100
-@@ -30,4 +30,57 @@
+@@ -28,4 +28,57 @@
        </resource>
      </resources>
    </build>

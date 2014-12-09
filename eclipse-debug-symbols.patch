@@ -1,5 +1,5 @@
---- "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/make_linux.mak.orig"	2014-03-12 10:43:26.000000000 +0000
-+++ "eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/make_linux.mak"	2014-03-12 14:36:44.130938292 +0000
+--- eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/make_linux.mak.orig	2014-03-12 10:43:26.000000000 +0000
++++ eclipse.platform.swt/bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library/make_linux.mak	2014-03-12 14:36:44.130938292 +0000
 @@ -115,7 +115,7 @@
  WEBKIT_OBJECTS = swt.o webkit.o webkit_structs.o webkit_stats.o
  GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o

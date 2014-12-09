@@ -1,151 +1,6 @@
-From 7aae376547c5f3306e311ce91c475c9a9667a0a0 Mon Sep 17 00:00:00 2001
-From: Krzysztof Daniel <kdaniel@redhat.com>
-Date: Tue, 30 Jul 2013 12:22:42 +0200
-Subject: [PATCH] Build executables in the first run.
-
----
- bundles/org.eclipse.equinox.executable/pom.xml     | 265 ---------------------
- .../pom.xml                                        |  56 ++++-
- .../pom.xml                                        |  55 +++++
- .../pom.xml                                        |  55 +++++
- .../pom.xml                                        |  56 +++++
- .../pom.xml                                        |  56 +++++
- 6 files changed, 277 insertions(+), 266 deletions(-)
-
-diff --git a/bundles/org.eclipse.equinox.launcher.cocoa.macosx.x86_64/pom.xml b/bundles/org.eclipse.equinox.launcher.cocoa.macosx.x86_64/pom.xml
-index 5a15c5b..d4fb54e 100644
---- a/bundles/org.eclipse.equinox.launcher.cocoa.macosx.x86_64/pom.xml
-+++ b/bundles/org.eclipse.equinox.launcher.cocoa.macosx.x86_64/pom.xml
-@@ -28,5 +28,59 @@
-     <ws>cocoa</ws>
-     <arch>x86_64</arch>
-   </properties>
--
-+	<profiles>
-+	 <profile>
-+      <id>build-native-launchers-cocoa.macosx.x86_64</id>
-+      <activation>
-+        <property>
-+          <name>native</name>
-+          <value>cocoa.macosx.x86_64</value>
-+        </property>
-+      </activation>
-+      <build>
-+        <plugins>
-+          <plugin>
-+            <artifactId>maven-antrun-plugin</artifactId>
-+            <version> 1.7 </version>
-+            <executions>
-+              <execution>
-+                <id>compile-executable-natives</id>
-+                <phase>generate-resources</phase>
-+                <configuration>
-+                  <target>
-+                    <ant antfile="../../../../features/org.eclipse.equinox.executable.feature/library/carbon/build.xml" dir="../../features/org.eclipse.equinox.executable.feature/library/carbon/" target="build_eclipse"/>
-+                  </target>
-+                </configuration>
-+                <goals>
-+                  <goal>run</goal>
-+                </goals>
-+              </execution>
-+            </executions>
-+            <dependencies>
-+              <dependency>
-+                <groupId>bsf</groupId>
-+                <artifactId>bsf</artifactId>
-+                <version>2.4.0</version>
-+              </dependency>
-+              <dependency>
-+                <groupId>rhino</groupId>
-+                <artifactId>js</artifactId>
-+                <version>1.7R2</version>
-+              </dependency>
-+              <dependency>
-+                <groupId>org.apache.ant</groupId>
-+                <artifactId>ant-apache-bsf</artifactId>
-+                <version>1.8.3</version>
-+              </dependency>
-+              <dependency>
-+                <groupId>org.apache.ant</groupId>
-+                <artifactId>ant-nodeps</artifactId>
-+                <version>1.8.1</version>
-+              </dependency>
-+            </dependencies>
-+          </plugin>
-+        </plugins>
-+      </build>
-+    </profile>
-+	</profiles>
- </project>
-diff --git a/bundles/org.eclipse.equinox.launcher.gtk.linux.x86/pom.xml b/bundles/org.eclipse.equinox.launcher.gtk.linux.x86/pom.xml
-index 59f46ae..e7616ed 100644
---- a/bundles/org.eclipse.equinox.launcher.gtk.linux.x86/pom.xml
-+++ b/bundles/org.eclipse.equinox.launcher.gtk.linux.x86/pom.xml
-@@ -28,4 +28,59 @@
-     <ws>gtk</ws>
-     <arch>x86</arch>
-   </properties>
-+  <profiles>
-+  <profile>
-+      <id>build-native-launchers-gtk.linux.x86</id>
-+      <activation>
-+        <property>
-+          <name>native</name>
-+          <value>gtk.linux.x86</value>
-+        </property>
-+      </activation>
-+      <build>
-+        <plugins>
-+          <plugin>
-+            <artifactId>maven-antrun-plugin</artifactId>
-+            <version> 1.7 </version>
-+            <executions>
-+              <execution>
-+                <id>compile-executable-natives</id>
-+                <phase>generate-resources</phase>
-+                <configuration>
-+                  <target>
-+                    <ant antfile="../../../../features/org.eclipse.equinox.executable.feature/library/gtk/build.xml" dir="../../features/org.eclipse.equinox.executable.feature/library/gtk/" target="build_eclipse"/>
-+                  </target>
-+                </configuration>
-+                <goals>
-+                  <goal>run</goal>
-+                </goals>
-+              </execution>
-+            </executions>
-+            <dependencies>
-+              <dependency>
-+                <groupId>bsf</groupId>
-+                <artifactId>bsf</artifactId>
-+                <version>2.4.0</version>
-+              </dependency>
-+              <dependency>
-+                <groupId>rhino</groupId>
-+                <artifactId>js</artifactId>
-+                <version>1.7R2</version>
-+              </dependency>
-+              <dependency>
-+                <groupId>org.apache.ant</groupId>
-+                <artifactId>ant-apache-bsf</artifactId>
-+                <version>1.8.3</version>
-+              </dependency>
-+              <dependency>
-+                <groupId>org.apache.ant</groupId>
-+                <artifactId>ant-nodeps</artifactId>
-+                <version>1.8.1</version>
-+              </dependency>
-+            </dependencies>
-+          </plugin>
-+        </plugins>
-+      </build>
-+    </profile>
-+  </profiles>
- </project>
-diff --git a/bundles/org.eclipse.equinox.launcher.gtk.linux.x86_64/pom.xml b/bundles/org.eclipse.equinox.launcher.gtk.linux.x86_64/pom.xml
-index d639b6e..8bf7d74 100644
---- a/bundles/org.eclipse.equinox.launcher.gtk.linux.x86_64/pom.xml
-+++ b/bundles/org.eclipse.equinox.launcher.gtk.linux.x86_64/pom.xml
-@@ -28,4 +28,59 @@
+--- rt.equinox.framework/bundles/org.eclipse.equinox.launcher.gtk.linux.x86_64/pom.xml.orig	2014-04-15 14:32:03.000000000 +0100
++++ rt.equinox.framework/bundles/org.eclipse.equinox.launcher.gtk.linux.x86_64/pom.xml	2014-04-16 15:53:08.145402094 +0100
+@@ -27,4 +27,59 @@
      <ws>gtk</ws>
      <arch>x86_64</arch>
    </properties>
@@ -205,76 +60,9 @@ index d639b6e..8bf7d74 100644
 +    </profile>
 +  </profiles>
  </project>
-diff --git a/bundles/org.eclipse.equinox.launcher.win32.win32.x86/pom.xml b/bundles/org.eclipse.equinox.launcher.win32.win32.x86/pom.xml
-index e0b59be..f82005c 100644
---- a/bundles/org.eclipse.equinox.launcher.win32.win32.x86/pom.xml
-+++ b/bundles/org.eclipse.equinox.launcher.win32.win32.x86/pom.xml
-@@ -29,4 +29,60 @@
-     <ws>win32</ws>
-     <arch>x86</arch>
-   </properties>
-+  
-+  <profiles>
-+  <profile>
-+      <id>build-native-launchers-win32.win32.x86</id>
-+      <activation>
-+        <property>
-+          <name>native</name>
-+          <value>win32.win32.x86</value>
-+        </property>
-+      </activation>
-+      <build>
-+        <plugins>
-+          <plugin>
-+            <artifactId>maven-antrun-plugin</artifactId>
-+            <version> 1.7 </version>
-+            <executions>
-+              <execution>
-+                <id>compile-executable-natives</id>
-+                <phase>generate-resources</phase>
-+                <configuration>
-+                  <target>
-+                    <ant antfile="../../../../features/org.eclipse.equinox.executable.feature/library/win32/build.xml" dir="../../features/org.eclipse.equinox.executable.feature/library/win32/" target="build_eclipse"/>
-+                  </target>
-+                </configuration>
-+                <goals>
-+                  <goal>run</goal>
-+                </goals>
-+              </execution>
-+            </executions>
-+            <dependencies>
-+              <dependency>
-+                <groupId>bsf</groupId>
-+                <artifactId>bsf</artifactId>
-+                <version>2.4.0</version>
-+              </dependency>
-+              <dependency>
-+                <groupId>rhino</groupId>
-+                <artifactId>js</artifactId>
-+                <version>1.7R2</version>
-+              </dependency>
-+              <dependency>
-+                <groupId>org.apache.ant</groupId>
-+                <artifactId>ant-apache-bsf</artifactId>
-+                <version>1.8.3</version>
-+              </dependency>
-+              <dependency>
-+                <groupId>org.apache.ant</groupId>
-+                <artifactId>ant-nodeps</artifactId>
-+                <version>1.8.1</version>
-+              </dependency>
-+            </dependencies>
-+          </plugin>
-+        </plugins>
-+      </build>
-+    </profile>
-+  </profiles>
- </project>
-diff --git a/bundles/org.eclipse.equinox.launcher.win32.win32.x86_64/pom.xml b/bundles/org.eclipse.equinox.launcher.win32.win32.x86_64/pom.xml
-index ce4252c..4b72b1f 100644
---- a/bundles/org.eclipse.equinox.launcher.win32.win32.x86_64/pom.xml
-+++ b/bundles/org.eclipse.equinox.launcher.win32.win32.x86_64/pom.xml
-@@ -29,4 +29,60 @@
+--- rt.equinox.framework/bundles/org.eclipse.equinox.launcher.win32.win32.x86_64/pom.xml.orig	2014-04-15 14:32:03.000000000 +0100
++++ rt.equinox.framework/bundles/org.eclipse.equinox.launcher.win32.win32.x86_64/pom.xml	2014-04-16 15:53:08.145402094 +0100
+@@ -27,4 +27,60 @@
      <ws>win32</ws>
      <arch>x86_64</arch>
    </properties>
@@ -335,10 +123,196 @@ index ce4252c..4b72b1f 100644
 +    </profile>
 +  </profiles>
  </project>
-diff --git a/bundles/org.eclipse.equinox.launcher.gtk.linux.s390/pom.xml b/bundles/org.eclipse.equinox.launcher.gtk.linux.s390/pom.xml
-index ce4252c..4b72b1f 100644
---- a/bundles/org.eclipse.equinox.launcher.gtk.linux.s390/pom.xml
-+++ b/bundles/org.eclipse.equinox.launcher.gtk.linux.s390/pom.xml
+--- rt.equinox.framework/bundles/org.eclipse.equinox.launcher.gtk.linux.ppc64le/pom.xml.orig	2014-04-16 15:57:02.805249103 +0100
++++ rt.equinox.framework/bundles/org.eclipse.equinox.launcher.gtk.linux.ppc64le/pom.xml	2014-04-16 15:57:26.204834155 +0100
+@@ -27,4 +27,60 @@
+     <ws>gtk</ws>
+     <arch>ppc64le</arch>
+   </properties>
++
++  <profiles>
++  <profile>
++      <id>build-native-launchers-gtk.linux.ppc64le</id>
++      <activation>
++        <property>
++          <name>native</name>
++          <value>gtk.linux.ppc64le</value>
++        </property>
++      </activation>
++      <build>
++        <plugins>
++          <plugin>
++            <artifactId>maven-antrun-plugin</artifactId>
++            <version> 1.7 </version>
++            <executions>
++              <execution>
++                <id>compile-executable-natives</id>
++                <phase>generate-resources</phase>
++                <configuration>
++                  <target>
++                    <ant antfile="../../../../features/org.eclipse.equinox.executable.feature/library/gtk/build.xml" dir="../../features/org.eclipse.equinox.executable.feature/library/gtk/" target="build_eclipse"/>
++                  </target>
++                </configuration>
++                <goals>
++                  <goal>run</goal>
++                </goals>
++              </execution>
++            </executions>
++            <dependencies>
++              <dependency>
++                <groupId>bsf</groupId>
++                <artifactId>bsf</artifactId>
++                <version>2.4.0</version>
++              </dependency>
++              <dependency>
++                <groupId>rhino</groupId>
++                <artifactId>js</artifactId>
++                <version>1.7R2</version>
++              </dependency>
++              <dependency>
++                <groupId>org.apache.ant</groupId>
++                <artifactId>ant-apache-bsf</artifactId>
++                <version>1.8.3</version>
++              </dependency>
++              <dependency>
++                <groupId>org.apache.ant</groupId>
++                <artifactId>ant-nodeps</artifactId>
++                <version>1.8.1</version>
++              </dependency>
++            </dependencies>
++          </plugin>
++        </plugins>
++      </build>
++    </profile>
++  </profiles>
+ </project>
+--- rt.equinox.framework/bundles/org.eclipse.equinox.launcher.gtk.linux.x86/pom.xml.orig	2014-04-15 14:32:03.000000000 +0100
++++ rt.equinox.framework/bundles/org.eclipse.equinox.launcher.gtk.linux.x86/pom.xml	2014-04-16 15:53:08.145402094 +0100
+@@ -27,4 +27,59 @@
+     <ws>gtk</ws>
+     <arch>x86</arch>
+   </properties>
++  <profiles>
++  <profile>
++      <id>build-native-launchers-gtk.linux.x86</id>
++      <activation>
++        <property>
++          <name>native</name>
++          <value>gtk.linux.x86</value>
++        </property>
++      </activation>
++      <build>
++        <plugins>
++          <plugin>
++            <artifactId>maven-antrun-plugin</artifactId>
++            <version> 1.7 </version>
++            <executions>
++              <execution>
++                <id>compile-executable-natives</id>
++                <phase>generate-resources</phase>
++                <configuration>
++                  <target>
++                    <ant antfile="../../../../features/org.eclipse.equinox.executable.feature/library/gtk/build.xml" dir="../../features/org.eclipse.equinox.executable.feature/library/gtk/" target="build_eclipse"/>
++                  </target>
++                </configuration>
++                <goals>
++                  <goal>run</goal>
++                </goals>
++              </execution>
++            </executions>
++            <dependencies>
++              <dependency>
++                <groupId>bsf</groupId>
++                <artifactId>bsf</artifactId>
++                <version>2.4.0</version>
++              </dependency>
++              <dependency>
++                <groupId>rhino</groupId>
++                <artifactId>js</artifactId>
++                <version>1.7R2</version>
++              </dependency>
++              <dependency>
++                <groupId>org.apache.ant</groupId>
++                <artifactId>ant-apache-bsf</artifactId>
++                <version>1.8.3</version>
++              </dependency>
++              <dependency>
++                <groupId>org.apache.ant</groupId>
++                <artifactId>ant-nodeps</artifactId>
++                <version>1.8.1</version>
++              </dependency>
++            </dependencies>
++          </plugin>
++        </plugins>
++      </build>
++    </profile>
++  </profiles>
+ </project>
+--- rt.equinox.framework/bundles/org.eclipse.equinox.launcher.win32.win32.x86/pom.xml.orig	2014-04-15 14:32:03.000000000 +0100
++++ rt.equinox.framework/bundles/org.eclipse.equinox.launcher.win32.win32.x86/pom.xml	2014-04-16 15:53:08.145402094 +0100
+@@ -27,4 +27,60 @@
+     <ws>win32</ws>
+     <arch>x86</arch>
+   </properties>
++  
++  <profiles>
++  <profile>
++      <id>build-native-launchers-win32.win32.x86</id>
++      <activation>
++        <property>
++          <name>native</name>
++          <value>win32.win32.x86</value>
++        </property>
++      </activation>
++      <build>
++        <plugins>
++          <plugin>
++            <artifactId>maven-antrun-plugin</artifactId>
++            <version> 1.7 </version>
++            <executions>
++              <execution>
++                <id>compile-executable-natives</id>
++                <phase>generate-resources</phase>
++                <configuration>
++                  <target>
++                    <ant antfile="../../../../features/org.eclipse.equinox.executable.feature/library/win32/build.xml" dir="../../features/org.eclipse.equinox.executable.feature/library/win32/" target="build_eclipse"/>
++                  </target>
++                </configuration>
++                <goals>
++                  <goal>run</goal>
++                </goals>
++              </execution>
++            </executions>
++            <dependencies>
++              <dependency>
++                <groupId>bsf</groupId>
++                <artifactId>bsf</artifactId>
++                <version>2.4.0</version>
++              </dependency>
++              <dependency>
++                <groupId>rhino</groupId>
++                <artifactId>js</artifactId>
++                <version>1.7R2</version>
++              </dependency>
++              <dependency>
++                <groupId>org.apache.ant</groupId>
++                <artifactId>ant-apache-bsf</artifactId>
++                <version>1.8.3</version>
++              </dependency>
++              <dependency>
++                <groupId>org.apache.ant</groupId>
++                <artifactId>ant-nodeps</artifactId>
++                <version>1.8.1</version>
++              </dependency>
++            </dependencies>
++          </plugin>
++        </plugins>
++      </build>
++    </profile>
++  </profiles>
+ </project>
+--- rt.equinox.framework/bundles/org.eclipse.equinox.launcher.gtk.linux.s390/pom.xml.orig	2014-04-15 14:32:03.000000000 +0100
++++ rt.equinox.framework/bundles/org.eclipse.equinox.launcher.gtk.linux.s390/pom.xml	2014-04-16 15:53:08.145402094 +0100
 @@ -27,4 +27,60 @@
      <ws>gtk</ws>
      <arch>s390</arch>
@@ -400,10 +374,8 @@ index ce4252c..4b72b1f 100644
 +    </profile>
 +  </profiles>
  </project>
-diff --git a/bundles/org.eclipse.equinox.launcher.gtk.linux.s390x/pom.xml b/bundles/org.eclipse.equinox.launcher.gtk.linux.s390x/pom.xml
-index ce4252c..4b72b1f 100644
---- a/bundles/org.eclipse.equinox.launcher.gtk.linux.s390x/pom.xml
-+++ b/bundles/org.eclipse.equinox.launcher.gtk.linux.s390x/pom.xml
+--- rt.equinox.framework/bundles/org.eclipse.equinox.launcher.gtk.linux.s390x/pom.xml.orig	2014-04-15 14:32:03.000000000 +0100
++++ rt.equinox.framework/bundles/org.eclipse.equinox.launcher.gtk.linux.s390x/pom.xml	2014-04-16 15:53:08.146402075 +0100
 @@ -27,4 +27,60 @@
      <ws>gtk</ws>
      <arch>s390x</arch>
@@ -465,76 +437,9 @@ index ce4252c..4b72b1f 100644
 +    </profile>
 +  </profiles>
  </project>
-diff --git a/bundles/org.eclipse.equinox.launcher.gtk.linux.ppc/pom.xml b/bundles/org.eclipse.equinox.launcher.gtk.linux.ppc/pom.xml
-index ce4252c..4b72b1f 100644
---- a/bundles/org.eclipse.equinox.launcher.gtk.linux.ppc/pom.xml
-+++ b/bundles/org.eclipse.equinox.launcher.gtk.linux.ppc/pom.xml
-@@ -29,4 +29,60 @@
-     <ws>gtk</ws>
-     <arch>ppc</arch>
-   </properties>
-+  
-+  <profiles>
-+  <profile>
-+      <id>build-native-launchers-gtk.linux.ppc</id>
-+      <activation>
-+        <property>
-+          <name>native</name>
-+          <value>gtk.linux.ppc</value>
-+        </property>
-+      </activation>
-+      <build>
-+        <plugins>
-+          <plugin>
-+            <artifactId>maven-antrun-plugin</artifactId>
-+            <version> 1.7 </version>
-+            <executions>
-+              <execution>
-+                <id>compile-executable-natives</id>
-+                <phase>generate-resources</phase>
-+                <configuration>
-+                  <target>
-+                    <ant antfile="../../../../features/org.eclipse.equinox.executable.feature/library/gtk/build.xml" dir="../../features/org.eclipse.equinox.executable.feature/library/gtk/" target="build_eclipse"/>
-+                  </target>
-+                </configuration>
-+                <goals>
-+                  <goal>run</goal>
-+                </goals>
-+              </execution>
-+            </executions>
-+            <dependencies>
-+              <dependency>
-+                <groupId>bsf</groupId>
-+                <artifactId>bsf</artifactId>
-+                <version>2.4.0</version>
-+              </dependency>
-+              <dependency>
-+                <groupId>rhino</groupId>
-+                <artifactId>js</artifactId>
-+                <version>1.7R2</version>
-+              </dependency>
-+              <dependency>
-+                <groupId>org.apache.ant</groupId>
-+                <artifactId>ant-apache-bsf</artifactId>
-+                <version>1.8.3</version>
-+              </dependency>
-+              <dependency>
-+                <groupId>org.apache.ant</groupId>
-+                <artifactId>ant-nodeps</artifactId>
-+                <version>1.8.1</version>
-+              </dependency>
-+            </dependencies>
-+          </plugin>
-+        </plugins>
-+      </build>
-+    </profile>
-+  </profiles>
- </project>
-diff --git a/bundles/org.eclipse.equinox.launcher.gtk.linux.ppc64/pom.xml b/bundles/org.eclipse.equinox.launcher.gtk.linux.ppc64/pom.xml
-index ce4252c..4b72b1f 100644
---- a/bundles/org.eclipse.equinox.launcher.gtk.linux.ppc64/pom.xml
-+++ b/bundles/org.eclipse.equinox.launcher.gtk.linux.ppc64/pom.xml
-@@ -28,4 +28,60 @@
+--- rt.equinox.framework/bundles/org.eclipse.equinox.launcher.gtk.linux.ppc64/pom.xml.orig	2014-04-15 14:32:03.000000000 +0100
++++ rt.equinox.framework/bundles/org.eclipse.equinox.launcher.gtk.linux.ppc64/pom.xml	2014-04-16 15:57:28.315796703 +0100
+@@ -27,4 +27,60 @@
      <ws>gtk</ws>
      <arch>ppc64</arch>
    </properties>
@@ -595,6 +500,66 @@ index ce4252c..4b72b1f 100644
 +    </profile>
 +  </profiles>
  </project>
--- 
-1.8.3.1
-
+--- rt.equinox.framework/bundles/org.eclipse.equinox.launcher.gtk.linux.ppc/pom.xml.orig	2014-04-15 14:32:03.000000000 +0100
++++ rt.equinox.framework/bundles/org.eclipse.equinox.launcher.gtk.linux.ppc/pom.xml	2014-04-16 15:53:08.146402075 +0100
+@@ -27,4 +27,60 @@
+     <ws>gtk</ws>
+     <arch>ppc</arch>
+   </properties>
++  
++  <profiles>
++  <profile>
++      <id>build-native-launchers-gtk.linux.ppc</id>
++      <activation>
++        <property>
++          <name>native</name>
++          <value>gtk.linux.ppc</value>
++        </property>
++      </activation>
++      <build>
++        <plugins>
++          <plugin>
++            <artifactId>maven-antrun-plugin</artifactId>
++            <version> 1.7 </version>
++            <executions>
++              <execution>
++                <id>compile-executable-natives</id>
++                <phase>generate-resources</phase>
++                <configuration>
++                  <target>
++                    <ant antfile="../../../../features/org.eclipse.equinox.executable.feature/library/gtk/build.xml" dir="../../features/org.eclipse.equinox.executable.feature/library/gtk/" target="build_eclipse"/>
++                  </target>
++                </configuration>
++                <goals>
++                  <goal>run</goal>
++                </goals>
++              </execution>
++            </executions>
++            <dependencies>
++              <dependency>
++                <groupId>bsf</groupId>
++                <artifactId>bsf</artifactId>
++                <version>2.4.0</version>
++              </dependency>
++              <dependency>
++                <groupId>rhino</groupId>
++                <artifactId>js</artifactId>
++                <version>1.7R2</version>
++              </dependency>
++              <dependency>
++                <groupId>org.apache.ant</groupId>
++                <artifactId>ant-apache-bsf</artifactId>
++                <version>1.8.3</version>
++              </dependency>
++              <dependency>
++                <groupId>org.apache.ant</groupId>
++                <artifactId>ant-nodeps</artifactId>
++                <version>1.8.1</version>
++              </dependency>
++            </dependencies>
++          </plugin>
++        </plugins>
++      </build>
++    </profile>
++  </profiles>
+ </project>

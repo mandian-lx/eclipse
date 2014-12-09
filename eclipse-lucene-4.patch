@@ -371,14 +371,14 @@ index e860c8d..0d5a8b6 100644
  		}
  	}
 @@ -814,7 +813,7 @@ public class SearchIndex implements IHelpSearchIndex {
- 			//
- 			if (searcher != null) {
- 				try {
--					searcher.close();
-+					searcher.getIndexReader().close();
- 				} catch (IOException ioe) {
- 				}
- 			}
+ 				if (searches.isEmpty()) {
+ 					if (searcher != null) {
+ 						try {
+-							searcher.close();
++							searcher.getIndexReader().close();
+ 						} catch (IOException ioe) {
+ 						}
+ 					}
 @@ -888,9 +887,11 @@ public class SearchIndex implements IHelpSearchIndex {
  	 */
  	private void cleanOldIndex() {
