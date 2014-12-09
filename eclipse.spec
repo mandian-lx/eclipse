@@ -5,7 +5,7 @@
 # Set to 1 to build Eclipse without dependency to eclipse-pde
 # Some parts (help) will not be built, and second run will be required,
 # but this is a way to bootstrap Eclipse on secondary archs.
-%global bootstrap       1
+%global bootstrap       0
 
 
 Epoch:                  1
@@ -175,6 +175,9 @@ BuildRequires: tycho >= 0.19
 BuildRequires: tycho-extras >= 0.19
 BuildRequires: eclipse-ecf-core >= 3.9.0-1
 BuildRequires: eclipse-emf-core >= 1:2.10.1-1
+BuildRequires: tomcat-servlet-3.0-api
+BuildRequires: tomcat-el-2.2-api
+BuildRequires: glassfish-el
 BuildRequires: glassfish-jsp-api >= 2.2.1-4
 BuildRequires: glassfish-jsp >= 2.2.5
 BuildRequires: glassfish-servlet-api >= 3.1.0
