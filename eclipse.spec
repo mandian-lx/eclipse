@@ -178,6 +178,7 @@ BuildRequires: eclipse-emf-core >= 1:2.10.1-1
 BuildRequires: tomcat-servlet-3.0-api
 BuildRequires: tomcat-el-2.2-api
 BuildRequires: glassfish-el
+BuildRequires: glassfish-el-api
 BuildRequires: glassfish-jsp-api >= 2.2.1-4
 BuildRequires: glassfish-jsp >= 2.2.5
 BuildRequires: glassfish-servlet-api >= 3.1.0
