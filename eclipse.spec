@@ -143,6 +143,7 @@ BuildRequires: java-1.8.0-openjdk-devel
 BuildRequires: pkgconfig(xt)
 BuildRequires: webkitgtk-devel
 BuildRequires: pkgconfig(webkitgtk-3.0)
+BuildRequires: pkgconfig(webkit2gtk-4.0)
 BuildRequires: geronimo-annotation >= 1.0-7
 BuildRequires: %{?scl_prefix}icu4j-eclipse >= 1:52.1
 BuildRequires: ant-antlr ant-apache-bcel ant-apache-log4j ant-apache-oro ant-apache-regexp ant-apache-resolver ant-commons-logging ant-apache-bsf ant-commons-net
