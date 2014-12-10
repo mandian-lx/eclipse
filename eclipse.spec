@@ -176,8 +176,6 @@ BuildRequires: tycho >= 0.19
 BuildRequires: tycho-extras >= 0.19
 BuildRequires: eclipse-ecf-core >= 3.9.0-1
 BuildRequires: eclipse-emf-core >= 1:2.10.1-1
-BuildRequires: tomcat-servlet-3.0-api
-BuildRequires: tomcat-el-2.2-api
 BuildRequires: glassfish-el
 BuildRequires: glassfish-el-api
 BuildRequires: glassfish-jsp-api >= 2.2.1-4
