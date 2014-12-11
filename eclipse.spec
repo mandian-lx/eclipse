@@ -201,10 +201,10 @@ Summary:        SWT Library for GTK+
 Group:          Development/Tools
 Requires:       java >= 1:1.7.0
 Requires:       jpackage-utils
-Requires:       gtk2
-Requires:       gtk3
-Requires:       webkitgtk
-Requires:       webkitgtk3
+Requires:       gtk+2.0
+Requires:       gtk+3.0
+Requires:       webkit1.0
+Requires:       webkit3.0
 
 %description swt
 SWT Library for GTK+.
