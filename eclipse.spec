@@ -226,7 +226,7 @@ Requires: ant-javamail ant-jdepend ant-junit ant-swing ant-jsch ant-testutil ant
 Requires: apache-commons-el >= 1.0-23
 Requires: apache-commons-logging
 Requires: apache-commons-codec >= 1.6-2
-Requires: felix-gogo-command >= 0.14.0-2
+Requires: felix-gogo-command >= 0.14.0-1
 Requires: felix-gogo-shell >= 0.10.0-3
 Requires: osgi(org.eclipse.jetty.util) >= %{_jetty_version}
 Requires: osgi(org.eclipse.jetty.server) >= %{_jetty_version}
