@@ -5,7 +5,7 @@
 # Set to 1 to build Eclipse without dependency to eclipse-pde
 # Some parts (help) will not be built, and second run will be required,
 # but this is a way to bootstrap Eclipse on secondary archs.
-%global bootstrap       1
+%global bootstrap       0
 
 
 Epoch:                  1
@@ -39,7 +39,7 @@ Epoch:                  1
 Summary:        An open, extensible IDE
 Name:           %{?scl_prefix}eclipse
 Version:        %{eclipse_version}
-Release:        8%{?dist}
+Release:        8.1%{?dist}
 License:        EPL
 Group:          Development/Tools
 URL:            http://www.eclipse.org/
@@ -438,6 +438,15 @@ done
 %pom_xpath_remove "pom:execution[pom:id[text()='mirror-org.eclipse.releng.tools']]" \
   eclipse.platform.releng.tychoeclipsebuilder/eclipse.platform.repository
 
+# Since Tycho 0.22.0 resources get copied into generated eclipse-repository.
+# We place some content in ${project.build.directory} and use that to place
+# it into some other assembled zip.
+# With 0.22.0 it will get placed also into the eclipse-repository zip.
+# Let's be careful where we place them to avoid duplication.
+%pom_xpath_remove "pom:resources" eclipse.platform.releng.tychoeclipsebuilder/eclipse-junit-tests
+%pom_remove_plugin :maven-resources-plugin eclipse.platform.releng.tychoeclipsebuilder/eclipse-junit-tests
+sed -i 's|\${project.build.directory}/resources|\${project.basedir}/src/main/resources|' eclipse.platform.releng.tychoeclipsebuilder/eclipse-junit-tests/src/main/assembly/assembly.xml eclipse.platform.releng.tychoeclipsebuilder/eclipse-junit-tests/pom.xml
+
 # Remove the SWT build sections from every linux arch that is not currently being built
 # (this is not really necessary but further reduces the build time on arm by around 20
 # minutes per architecture that we are not currently building, over 2.5 hours in total)
@@ -469,8 +478,8 @@ done
 
 #fake dependencies that don't exist in fedora
 ./dependencies/./fake_ant_dependency.sh .m2/p2/repo-sdk/plugins/org.apache.ant_* /usr/share/java /usr/bin -makejar
-cp -r /usr/share/java/eclipse-license/eclipse/features/* .m2/p2/repo-sdk/features
-cp -r /usr/share/java/{ecf,emf}/eclipse/features/* .m2/p2/repo-sdk/features
+#cp -r /usr/share/java/eclipse-license/eclipse/features/* .m2/p2/repo-sdk/features
+#cp -r /usr/share/java/{ecf,emf}/eclipse/features/* .m2/p2/repo-sdk/features
 
 %if %{bootstrap}
 # Use org.eclipse.tycho:org.eclipse.jdt.core (ecj)
