@@ -52,7 +52,7 @@ fi;
 Summary:        An open, extensible IDE
 Name:           %{?scl_prefix}eclipse
 Version:        %{eclipse_version}
-Release:        11.5%{?dist}
+Release:        11.6%{?dist}
 License:        EPL
 
 URL:            http://www.eclipse.org/
@@ -580,6 +580,8 @@ pushd p2/org.eclipse.equinox.p2.engine/.settings
 popd
 
 #ini file adjustements
+sed -i '12i--launcher.GTK_version\n2' t.ini
+
 # Temporary fix until https://bugs.eclipse.org/294877 is resolved
 sed -i "s|-Xms40m|-Xms128m|g" eclipse.ini
 sed -i "s|-Xmx384m|-Xmx512m|g" eclipse.ini
