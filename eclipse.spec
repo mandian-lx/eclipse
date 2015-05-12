@@ -580,7 +580,7 @@ pushd p2/org.eclipse.equinox.p2.engine/.settings
 popd
 
 #ini file adjustements
-sed -i '12i--launcher.GTK_version\n2' t.ini
+sed -i '12i--launcher.GTK_version\n2' eclipse.ini
 
 # Temporary fix until https://bugs.eclipse.org/294877 is resolved
 sed -i "s|-Xms40m|-Xms128m|g" eclipse.ini
